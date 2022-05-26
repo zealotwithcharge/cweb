@@ -56,7 +56,7 @@ def root():
         links.append(temp)
 
     
-    return render_template('index.html',raw_nodes = nodes, raw_links = links)
+    return render_template('force_index.html',raw_nodes = nodes, raw_links = links)
 ########################################
 # boilerplate
 ########################################

@@ -1,0 +1,64 @@
+
+<html>
+<head>
+<style> body { margin: 0; } </style>
+
+  <script src="//unpkg.com/d3-dsv"></script>
+  <script src="//unpkg.com/dat.gui"></script>
+  <script src="//unpkg.com/d3-octree"></script>
+  <script src="//unpkg.com/d3-force-3d"></script>
+
+  <script src="//unpkg.com/3d-force-graph"></script>
+  <!--<script src="../../dist/3d-force-graph.js"></script>-->
+</head>
+
+<body>
+  <div id="3d-graph"></div>
+
+  <script>
+ // controls
+    const controls = { 'DAG Orientation': 'td'};
+    const gui = new dat.GUI();
+    gui.add(controls, 'DAG Orientation', ['td', 'bu', 'lr', 'rl', 'zout', 'zin', 'radialout', 'radialin', null])
+      .onChange(orientation => graph && graph.dagMode(orientation));
+
+    // graph config
+    const NODE_REL_SIZE = 1;
+    const graph = ForceGraph3D()
+      .dagMode('td')
+      .dagLevelDistance(200)
+      .backgroundColor('#101020')
+      .linkColor(() => 'rgba(255,255,255,0.2)')
+      .nodeRelSize(NODE_REL_SIZE)
+      .nodeId('path')
+      .nodeVal('size')
+      .nodeLabel('path')
+      .nodeAutoColorBy('module')
+      .nodeOpacity(0.9)
+      .linkDirectionalParticles(2)
+      .linkDirectionalParticleWidth(0.8)
+      .linkDirectionalParticleSpeed(0.006)
+      .d3Force('collision', d3.forceCollide(node => Math.cbrt(node.size) * NODE_REL_SIZE))
+      .d3VelocityDecay(0.3);
+
+    // Decrease repel intensity
+    graph.d3Force('charge').strength(-15);
+    // Random tree
+    const nodes = [];
+    const links = [];
+    {% for node in raw_nodes %}
+      nodes.push({id: {{node}}});
+      {% endfor %}
+    {% for pair in raw_links %}
+      links.push({source:{{pair[0]}},target:{{pair[1]}},targetNode:nodes[{{pair[1]}}]});
+      {% endfor %}
+    const gData = {
+              nodes,links
+        };
+
+    const Graph = ForceGraph3D()
+      (document.getElementById('3d-graph'))
+        .graphData(gData);
+  </script>
+</body>
+</html>
