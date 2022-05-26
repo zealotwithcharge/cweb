@@ -1,0 +1,31 @@
+<html>
+<head>
+  <style> body { margin: 0; } </style>
+
+  <script src="//unpkg.com/3d-force-graph"></script>
+  <!--<script src="../../dist/3d-force-graph.js"></script>-->
+</head>
+
+<body>
+  <div id="3d-graph"></div>
+
+  <script>
+    // Random tree
+    const nodes = [];
+    const links = [];
+    {% for node in raw_nodes %}
+      nodes.push({id: {{node}}});
+      {% endfor %}
+    {% for pair in raw_links %}
+      links.push({source:{{pair[0]}},target:{{pair[1]}}});
+      {% endfor %}
+    const gData = {
+              nodes,links
+        };
+
+    const Graph = ForceGraph3D()
+      (document.getElementById('3d-graph'))
+        .graphData(gData);
+  </script>
+</body>
+</html>
