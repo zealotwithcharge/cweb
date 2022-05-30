@@ -78,6 +78,8 @@
       Graph.graphData(gData)
       .nodeLabel('id')
       .nodeColor((node) => node.id%2===1 ? 'yellow' : 'blue')
+      .linkDirectionalArrowLength(3.5)
+      .linkDirectionalArrowRelPos(0.5)
       .nodeThreeObject(node => new THREE.Mesh(
           new THREE.SphereGeometry(NODE_REL_SIZE),
           new THREE.MeshBasicMaterial({color:new THREE.Color(0,0.5,0.5)})
@@ -121,12 +123,14 @@
         }
           })
       .postProcessingComposer().addPass(bloomPass);
-      Graph.nodeColor(new THREE.Color(Graph.nodeColor.r/2,Graph.nodeColor.g/2,Graph.nodeColor.b/2));
       
       function refresh(){
       Graph.refresh();
       }
 
+//     .linkWidth(link => highlightLinks.has(link) ? 4 : 1)
+//        .linkDirectionalParticles(link => highlightLinks.has(link) ? 4 : 0)
+//        .linkDirectionalParticleWidth(4)
   </script>
 </body>
 
