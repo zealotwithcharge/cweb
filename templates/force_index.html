@@ -1,3 +1,5 @@
+
+
 <!--TO DO: refer to shapes, graph variable can be used to get node objects and set the parameters-->
 <html>
 
@@ -56,7 +58,7 @@
     graph.d3Force('charge').strength(-15);
 
     // Random tree
-    const nodes = [{id:1}];
+    const nodes = [{ id: 1 }];
     const links = [];
     {% for node in raw_nodes %}
     nodes.push({ id: {{ node }}});
@@ -67,6 +69,31 @@
     const gData = {
       nodes, links
     };
+    gData.links.forEach(link => {
+      const a = gData.nodes[link.source];
+      const b = gData.nodes[link.target];
+      !a.neighbors && (a.neighbors = []);
+      !b.neighbors && (b.neighbors = []);
+      a.neighbors.push(b);
+      b.neighbors.push(a);
+
+      !a.links && (a.links = []);
+      !b.links && (b.links = []);
+      a.links.push(link);
+      b.links.push(link);
+    });
+
+
+
+
+
+
+
+
+
+
+
+
     // bloom config
     const bloomPass = new UnrealBloomPass();
     bloomPass.strength = 1;
@@ -74,17 +101,18 @@
     bloomPass.threshold = 0.5;
     const darkMaterial = new THREE.MeshBasicMaterial({ color: 'black' });
     let selectedNodes = new Set();
+    let highlightLinks = new Set();
     var Graph = ForceGraph3D()(document.getElementById('3d-graph'));
-      Graph.graphData(gData)
+    Graph.graphData(gData)
       .nodeLabel('id')
-      .nodeColor((node) => node.id%2===1 ? 'yellow' : 'blue')
+      .nodeColor((node) => node.id % 2 === 1 ? 'yellow' : 'blue')
       .linkDirectionalArrowLength(3.5)
       .linkDirectionalArrowRelPos(0.5)
       .nodeThreeObject(node => new THREE.Mesh(
-          new THREE.SphereGeometry(NODE_REL_SIZE),
-          new THREE.MeshBasicMaterial({color:new THREE.Color(0,0.5,0.5)})
-          )
-        )
+        new THREE.SphereGeometry(NODE_REL_SIZE),
+        new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) })
+      )
+      )
       .onNodeDrag((node, translate) => {
         if (selectedNodes.has(node)) { // moving a selected node
           [...selectedNodes]
@@ -106,31 +134,58 @@
             node.__threeObj.material.color.r *= 2;
             node.__threeObj.material.color.g *= 2;
             node.__threeObj.material.color.b *= 2;
- //           refresh();
+            if (selectedNodes.size === 1) {
+              node.links.forEach(link => highlightLinks.add(link));
+              updateHighlight();
+            }
+            else {
+              highlightLinks.clear();
+              selectedNodes.forEach(from_node => {
+                selectedNodes.forEach(to_node => {
+                from_node.links.forEach(link => {
+                console.log(link);
+                if (link.source === from_node && link.target === to_node){
+                    highlightLinks.add(link);
+                  }
+                  updateHighlight();
+                });});
+});
+}
+            //           refresh();
           }
-          else{
+          else {
             node.__threeObj.material.color.r /= 2;
             node.__threeObj.material.color.g /= 2;
             node.__threeObj.material.color.b /= 2;
-//            refresh();
-          }
-
+            highlightLinks.forEach(link => {
+              if (link.source === node || link.target === node) {
+                highlightLinks.delete(link);
+              }
+              updateHighlight();
+              //            refresh();
+            });
+}
         }
         else { // single-selection
-          const untoggle = selectedNodes.has(node) && selectedNodes.size === 1;
-          selectedNodes.clear();
-          !untoggle && selectedNodes.add(node);
-        }
-          })
+            const untoggle = selectedNodes.has(node) && selectedNodes.size === 1;
+            selectedNodes.clear();
+            !untoggle && selectedNodes.add(node);
+          }
+        })
+      .linkWidth(link => highlightLinks.has(link) ? 4 : 1)
+      .linkDirectionalParticles(link => highlightLinks.has(link) ? 4 : 0)
+      .linkDirectionalParticleWidth(4)
       .postProcessingComposer().addPass(bloomPass);
-      
-      function refresh(){
-      Graph.refresh();
-      }
 
-//     .linkWidth(link => highlightLinks.has(link) ? 4 : 1)
-//        .linkDirectionalParticles(link => highlightLinks.has(link) ? 4 : 0)
-//        .linkDirectionalParticleWidth(4)
+    function refresh() {
+      Graph.refresh();
+    }
+    function updateHighlight() {
+      // trigger update of highlighted objects in scene
+      Graph
+        .linkWidth(Graph.linkWidth())
+        .linkDirectionalParticles(Graph.linkDirectionalParticles());
+    }
   </script>
 </body>
 
