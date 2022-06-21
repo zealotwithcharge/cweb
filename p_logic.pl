@@ -10,18 +10,23 @@
 
 
 
+% universal intro
+universal(PREDICATE):-
+    a_formula(PREDICATE,u_flag).
+
 % universal elim
 a_formula(PREDICATE,TERM):-
-    \+ TERM == flag,
+    \+ TERM == u_flag,
+    \+ TERM == e_flag,
+    !,
     universal(PREDICATE).
 
 % existential intro
 existential(PREDICATE):-
     a_formula(PREDICATE,_).
 
-% universal intro
-universal(PREDICATE):-
-    a_formula(PREDICATE,flag).
+% existential elim
 
-
-
+a_formula(PREDICATE,e_flag) :-
+    existential(PREDICATE),
+    \+ universal(PREDICATE).
