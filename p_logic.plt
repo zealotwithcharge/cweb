@@ -42,4 +42,16 @@ test(existential_elim1) :-
 test(existential_elim2,[fail]) :-
     a_formula(necessary,e_flag,_).
 
+test(neg1) :-
+    neg(universal(possible,_)).
+
+test(neg2,[fail]) :-
+    neg(universal(necessary,_)).
+
+test(mt1):-
+    neg(a_formula(test,test,_),mt).
+
+test(mt2,[fail]):-
+    neg(universal(necessary),mt).
+
 :- end_tests(p_logic).
