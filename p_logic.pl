@@ -1,52 +1,63 @@
 :- module(p_logic,[
-    a_formula/3,
-    universal/2,
-    existential/2,
-    neg/1,
-    neg/2
-
+    formula/4,
+    formula/5
 
     ]).
 
 :- include(arguments).
-:- discontiguous universal/2.
-:- discontiguous a_formula/3.
-:- discontiguous existential/2.
+:- discontiguous formula/4.
+:- discontiguous formula/5.
 
 
 
 % universal intro
-universal(PREDICATE,[universal_introduction|JUSTIFICATION]):-
-    a_formula(PREDICATE,u_flag,JUSTIFICATION).
+formula(universal,PREDICATE,[NEW_JUSTIFICATION|JUSTIFICATION],NEW_LINE):-
+    formula(unit,PREDICATE,u_flag,JUSTIFICATION,LINE),
+    atom_concat(universal_introduction,LINE,NEW_JUSTIFICATION),
+    length([NEW_JUSTIFICATION|JUSTIFICATION],NEW_LINE).
 
 % universal elim for atomic formula
-a_formula(PREDICATE,TERM,[universal_elimination|JUSTIFICATION]):-
+formula(unit,PREDICATE,TERM,[NEW_JUSTIFICATION|JUSTIFICATION],NEW_LINE):-
     \+ TERM == u_flag,
     \+ TERM == e_flag,
     !,
-    universal(PREDICATE,JUSTIFICATION).
+    formula(universal,PREDICATE,JUSTIFICATION,LINE),
+    atom_concat(universal_elimination,LINE,NEW_JUSTIFICATION),
+    length([NEW_JUSTIFICATION|JUSTIFICATION],NEW_LINE).
 
 % existential intro
-existential(PREDICATE,[existential_introduction|JUSTIFICATION]):-
-    a_formula(PREDICATE,_,JUSTIFICATION).
+formula(existential,PREDICATE,[NEW_JUSTIFICATION|JUSTIFICATION],NEW_LINE):-
+    formula(unit,PREDICATE,_,JUSTIFICATION,LINE),
+    atom_concat(existential_introduction,LINE,NEW_JUSTIFICATION),
+    length([NEW_JUSTIFICATION|JUSTIFICATION],NEW_LINE).
 
 % existential elim
 
-a_formula(PREDICATE,e_flag,[existential_elimination|JUSTIFICATION]) :-
-    existential(PREDICATE,JUSTIFICATION),
-    \+ universal(PREDICATE,_).
+formula(unit,PREDICATE,e_flag,[NEW_JUSTIFICATION|JUSTIFICATION],NEW_LINE) :-
+    formula(existential,PREDICATE,JUSTIFICATION,LINE),
+    \+ formula(universal,PREDICATE,_,_),
+    atom_concat(existential_elimination,LINE,NEW_JUSTIFICATION),
+    length([NEW_JUSTIFICATION|JUSTIFICATION],NEW_LINE).
 
 % negation
 
-neg(FORMULA) :-
+formula(neg,FORMULA,JUSTIFICATION,LINE) :-
     \+ FORMULA.
 
 % modus tollens
 
-neg(FORMULA,mt) :-
-    arrow(FORMULA,CONSE),
-    neg(CONSE).
+formula(neg,FORMULA,[[mt,LINE_A,LINE_B|JUSTIFICATION_A]|JUSTIFICATION_B],LINE) :-
+    formula(arrow,FORMULA,CONSE,JUSTIFICATION_A,LINE_A),
+    formula(neg,CONSE,JUSTIFICATION_B,LINE_B).
 
+% disjunction elimination
+formula(FORMULA_A):-
+    formula(dis,FORMULA_A,FORMULA_B),
+    formula(neg,FORMULA_B).
+
+formula(FORMULA_B):-
+    formula(dis,FORMULA_A,FORMULA_B),
+    formula(neg,FORMULA_A).
 
 
 

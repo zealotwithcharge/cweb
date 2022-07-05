@@ -2,56 +2,56 @@
 :- use_module(p_logic).
 
 test(universal_int1) :-
-    universal(necessary,JUSTIFICATION),
-    JUSTIFICATION = [premise].
+    formula(universal,necessary,JUSTIFICATION,_),
+    JUSTIFICATION = [premise3].
 
 test(universal_int2,[fail]) :-
-    universal(impossible,_).
+    formula(universal,impossible,_,_).
 
 test(universal_int3,[fail]) :-
-    universal(possible,_).
+    formula(universal,possible,_,_).
 
 test(universal_int4) :-
-    universal(u_flag_test,_).
+    formula(universal,u_flag_test,_,_).
 
 test(universal_elim1) :-
-    a_formula(necessary,salmon,JUSTIFICATION),
-    JUSTIFICATION = [universal_elimination,premise].
+    formula(unit,necessary,salmon,JUSTIFICATION,_),
+    JUSTIFICATION = [universal_elimination1,premise3].
 
 test(universal_elim2,[fail]) :-
-    a_formula(impossible,salmon,_).
+    formula(unit,impossible,salmon,_,_).
 
 test(universal_elim2,[fail]) :-
-    a_formula(possible,salmon,_).
+    formula(unit,possible,salmon,_,_).
 
 test(existential_int1) :-
-    existential(necessary,JUSTIFICATION),
-    JUSTIFICATION = [existential_introduction,universal_elimination,premise].
+    formula(existential,necessary,JUSTIFICATION,LINE),
+    JUSTIFICATION = [existential_introduction2,universal_elimination1,premise3],
+    LINE = 3.
 
 test(existential_int2,[fail]) :-
-    existential(impossible,_).
+    formula(existential,impossible,_,_).
 
 test(existential_int3) :-
-    existential(possible,JUSTIFICATION),
-    JUSTIFICATION = [existential_introduction,premise].
+    formula(existential,possible,JUSTIFICATION,_),
+    JUSTIFICATION = [existential_introduction1,premise2].
 
 test(existential_elim1) :-
-    a_formula(possible,e_flag,JUSTIFICATION),
-    JUSTIFICATION = [existential_elimination|_].
+    formula(unit,possible,e_flag,JUSTIFICATION,_).
 
 test(existential_elim2,[fail]) :-
-    a_formula(necessary,e_flag,_).
+    formula(unit,necessary,e_flag,_,_).
 
 test(neg1) :-
-    neg(universal(possible,_)).
+    formula(neg,formula(universal,possible,_,_),_,_).
 
 test(neg2,[fail]) :-
-    neg(universal(necessary,_)).
+    formula(neg,formula(universal,necessary,_,_),_,_).
 
 test(mt1):-
-    neg(a_formula(test,test,_),mt).
+    formula(neg,formula(unit,test,test,_,_),_,_).
 
 test(mt2,[fail]):-
-    neg(universal(necessary),mt).
+    formula(neg,formula(universal,necessary,_,_),_,_).
 
 :- end_tests(p_logic).
