@@ -1,12 +1,14 @@
 <!--TO DO: refer to shapes, graph variable can be used to get node objects and set the parameters-->
 <html>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
   <style>
-    body {
-      margin: 0;
+    body{
       height: 100vh;
       width: 100vw;
+    }
+    body {
+      margin: 0;
       display:flex;
       flex-direction:row;
       overflow:hidden !important;
@@ -26,9 +28,52 @@
     #add_submit{
         height:min-content;
         width:min-content;
+
+    }
+    #load_file, #download_file{
+        height:100%;
+        width:50%;
+    }
+    #db_buttons,#submit_button{
+display:flex;flex-direction:row;
+height:7.5%;
+width:100%;
+    }
+    #submit_button{
+        flex-direction:row-reverse !important;
+    }
+    #drop_area{
+        position:fixed;
+        top:20%;
+        bottom:20%;
+        right:20%;
+        display:none;
+        left:20%;
+        text-align: center;
+        color: rgb(180,180,180);
+        background:white;
+        height:60%;
+        line-height:100%;
+        width:60%;
+        z-index:10;
+        border: 2px solid grey;
+        border-radius:5px;
+        vertical-align:middle;
+    }
+
+    .dummy {
+        height:auto;
+        width:auto;
+    }
+    #drag_text{
         position:absolute;
-        right:0;
-        
+        top:50%;
+        bottom:50%;
+        right:50%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        width:min-content;
+        white-space:nowrap;
     }
   </style>
   <script src="//unpkg.com/d3-dsv"></script>
@@ -39,15 +84,26 @@
 
   <script src="//unpkg.com/3d-force-graph"></script>
   <!--<script src="../../dist/3d-force-graph.js"></script>-->
+<script language="Javascript" >
+
+</script>
 </head>
 
 <body>
+    <div id= "drop_area"><span id="drag_text">Drag and drop file here</span></div>
     <div id="interface">
         <label for="add_node">Add Node</label>
         <textarea id="add_node" name = "add_node" rows="3" cols="50"></textarea>
-        <span style="position:relative">
+        <div id = "submit_button">
             <button type="button" id="add_submit">submit</button>
-        </span>
+            <div class = "dummy"></div>
+        </div>
+        <div id = "db_buttons" >
+            <div class = "dummy"></div>
+            <button type="button" id="load_file">load database</button>
+            <button type="button" id="download_file">download database</button>
+        </div>
+
         <canvas></canvas> 
     </div>
   <div id="3d-graph"></div>
@@ -95,7 +151,7 @@
     {% for pair in raw_links %}
     links.push({ source: {{ pair[0]}}, target: {{ pair[1]}}, targetNode: nodes[{{ pair[1]}}]});
     {% endfor %}
-    const gData = {
+    var gData = {
       nodes, links
     };
 
@@ -123,10 +179,10 @@
     var Graph = ForceGraph3D()(document.getElementById('3d-graph'));
     Graph.graphData(gData)
       .width(document.defaultView.innerWidth*2/3)
-      .height(document.defaultView.innerHeight)
       .nodeLabel('id')
       .nodeColor((node) => node.id % 2 === 1 ? 'yellow' : 'blue')
       .linkDirectionalArrowLength(3.5)
+      .d3VelocityDecay(0.75)
       .linkDirectionalArrowRelPos(0.5)
       .nodeThreeObject(node => new THREE.Mesh(
         new THREE.SphereGeometry(NODE_REL_SIZE),
@@ -201,7 +257,8 @@
             gData.nodes[small_node.id-1].links.push(temp_link);
             gData.nodes[node.id-1].neighbors.push(small_node);
             gData.nodes[node.id-1].links.push(temp_link);
-            refresh();
+            Graph.graphData(gData);
+            Graph.refresh();
           });
             console.log(gData.links[-1]);
           }
@@ -220,18 +277,69 @@
         const input = document.getElementById("add_node").innerText;
         console.log(gData.nodes.length);
         gData.nodes.push({id:gData.nodes.length+1,text:input,neighbors:[],links:[]});
-        refresh();
+        Graph.graphData(gData);
+        Graph.refresh();
     };
-    function refresh() {
-      Graph.graphData(gData);
-      Graph.refresh();
-    }
     function updateHighlight() {
       // trigger update of highlighted objects in scene
       Graph
         .linkWidth(Graph.linkWidth())
         .linkDirectionalParticles(Graph.linkDirectionalParticles());
     }
+
+document.getElementById("download_file").onclick = function() {
+  var pom = document.createElement('a');
+  pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
+encodeURIComponent("hi"));
+var currentdate = new Date(); 
+var datetime = currentdate.getDate() + "-"
+                + (currentdate.getMonth()+1)  + "-" 
+                + currentdate.getFullYear() + "_"  
+                + currentdate.getHours() + "-"  
+                + currentdate.getMinutes() + "-" 
+                + currentdate.getSeconds()+".json";
+  console.log(gData);
+
+  pom.setAttribute('download', datetime);
+
+  pom.style.display = 'none';
+  document.body.appendChild(pom);
+
+  pom.click();
+
+  document.body.removeChild(pom);
+}
+document.getElementById("load_file").onclick = function(){
+    const drop_area = document.getElementById("drop_area")
+    drop_area.style.display = "block";
+    drop_area.addEventListener('dragover', (event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  // Style the drag-and-drop as a "copy file" operation.
+  event.dataTransfer.dropEffect = 'copy';
+});
+
+drop_area.addEventListener('drop', (event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  const fileList = event.dataTransfer.files;
+  console.log(fileList);
+let url = null;
+    let fileObj = fileList[0];
+    if (window.createObjcectURL != undefined) {
+        url = window.createObjectURL(fileObj);
+    } else if (window.URL != undefined) {
+        url = window.URL.createObjectURL(fileObj);
+    } else if (window.webkitURL != undefined) {
+        url = window.webkitURL.createObjectURL(fileObj);
+    }
+    console.log(url);
+  Graph.jsonUrl(url);
+
+  drop_area.style.display="none";
+  Graph.refresh();
+});
+}
   </script>
 </body>
 
