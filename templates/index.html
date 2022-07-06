@@ -87,10 +87,10 @@
     graph.d3Force('charge').strength(-15);
 
     // Graph Data 
-    const nodes = [{ id: 1 }];
+    const nodes = [{ id: 1,text:"" }];
     const links = [];
     {% for node in raw_nodes %}
-    nodes.push({ id: {{ node }}});
+    nodes.push({ id: {{ node }},text:""});
     {% endfor %}
     {% for pair in raw_links %}
     links.push({ source: {{ pair[0]}}, target: {{ pair[1]}}, targetNode: nodes[{{ pair[1]}}]});
@@ -155,13 +155,16 @@
             node.__threeObj.material.color.g *= 2;
             node.__threeObj.material.color.b *= 2;
             if (selectedNodes.size === 1) {
+              if(node.links != null){
               node.links.forEach(link => highlightLinks.add(link));
               updateHighlight();
+              }
             }
             else {
               highlightLinks.clear();
               selectedNodes.forEach(from_node => {
                 selectedNodes.forEach(to_node => {
+                 if(from_node.links!=null){
                   from_node.links.forEach(link => {
                     console.log(link);
                     if (link.source === from_node && link.target === to_node) {
@@ -169,6 +172,7 @@
                     }
                     updateHighlight();
                   });
+}
                 });
               });
             }
@@ -185,12 +189,18 @@
             });
           }
         }
+        //create link
           else if (event.ctrlKey){
           console.log(selectedNodes);
             selectedNodes.forEach(small_node =>{
             console.log(small_node.id);
             console.log(node.id);
-            gData.links.push({source: small_node.id,target:node.id,targetNode:node});
+            const temp_link = {source: small_node.id,target:node.id,targetNode:node}
+            gData.links.push(temp_link);
+            gData.nodes[small_node.id-1].neighbors.push(node);
+            gData.nodes[small_node.id-1].links.push(temp_link);
+            gData.nodes[node.id-1].neighbors.push(small_node);
+            gData.nodes[node.id-1].links.push(temp_link);
             refresh();
           });
             console.log(gData.links[-1]);
@@ -208,7 +218,8 @@
 
     document.getElementById("add_submit").onclick = function(){
         const input = document.getElementById("add_node").innerText;
-        gData.nodes.push({id:nodes.size+1,text:input});
+        console.log(gData.nodes.length);
+        gData.nodes.push({id:gData.nodes.length+1,text:input,neighbors:[],links:[]});
         refresh();
     };
     function refresh() {
