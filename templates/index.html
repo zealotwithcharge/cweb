@@ -143,10 +143,10 @@ width:100%;
     graph.d3Force('charge').strength(-15);
 
     // Graph Data 
-    const nodes = [{ id: 1,text:"" }];
+    const nodes = [{ id: 1,name:"",val:10,text:""}];
     const links = [];
     {% for node in raw_nodes %}
-    nodes.push({ id: {{ node }},text:""});
+    nodes.push({ id: {{ node }},name:"",val:10,text:""});
     {% endfor %}
     {% for pair in raw_links %}
     links.push({ source: {{ pair[0]}}, target: {{ pair[1]}}, targetNode: nodes[{{ pair[1]}}]});
@@ -289,8 +289,22 @@ width:100%;
 
 document.getElementById("download_file").onclick = function() {
   var pom = document.createElement('a');
+  console.log(gData);
+  let db_string = '{"nodes":[';
+  gData.nodes.forEach( node =>{
+    db_string += '{"id": "'+node.id+'","name": "'+node.name+'","val": '+node.val+',"text": "'+node.text+'"},';
+    }
+    )
+    db_string = db_string.slice(0,-1); 
+    db_string += '],"links": [';
+    gData.links.forEach(link =>{
+    db_string += '{"source": "'+link.source.id+'","target": "'+link.target.id+'"},';
+    })
+    db_string = db_string.slice(0,-1); 
+    db_string += ']}';
+
   pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
-encodeURIComponent("hi"));
+encodeURIComponent(db_string));
 var currentdate = new Date(); 
 var datetime = currentdate.getDate() + "-"
                 + (currentdate.getMonth()+1)  + "-" 
@@ -298,7 +312,6 @@ var datetime = currentdate.getDate() + "-"
                 + currentdate.getHours() + "-"  
                 + currentdate.getMinutes() + "-" 
                 + currentdate.getSeconds()+".json";
-  console.log(gData);
 
   pom.setAttribute('download', datetime);
 
@@ -323,21 +336,35 @@ drop_area.addEventListener('drop', (event) => {
   event.stopPropagation();
   event.preventDefault();
   const fileList = event.dataTransfer.files;
-  console.log(fileList);
-let url = null;
-    let fileObj = fileList[0];
-    if (window.createObjcectURL != undefined) {
-        url = window.createObjectURL(fileObj);
-    } else if (window.URL != undefined) {
-        url = window.URL.createObjectURL(fileObj);
-    } else if (window.webkitURL != undefined) {
-        url = window.webkitURL.createObjectURL(fileObj);
-    }
-    console.log(url);
-  Graph.jsonUrl(url);
+  const reader = new FileReader();
+  var json_string = ""
+  reader.addEventListener("load", () => {
+    // this will then display a text file
+    json_string = reader.result;
+    gData = JSON.parse(json_string);
+    gData.links.forEach(link => {
+      const a = gData.nodes[link.source-1];
+      const b = gData.nodes[link.target-1];
+      console.log(b); 
+      !a.neighbors && (a.neighbors = []);
+      !b.neighbors && (b.neighbors = []);
+      a.neighbors.push(b);
+      b.neighbors.push(a);
+
+      !a.links && (a.links = []);
+      !b.links && (b.links = []);
+      a.links.push(link);
+      b.links.push(link);
+    });
+    Graph.graphData(gData);
+    Graph.refresh();
+  }, false);
+  if(fileList[0]){
+    reader.readAsText(fileList[0]);
+  }
+
 
   drop_area.style.display="none";
-  Graph.refresh();
 });
 }
   </script>
