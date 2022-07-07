@@ -75,6 +75,17 @@ width:100%;
         width:min-content;
         white-space:nowrap;
     }
+    .close{
+        color:grey;
+        position:absolute;
+        top:5%;
+        right:2.5%;
+        font-size:3vw;
+
+    }
+    .close:hover{
+        cursor:pointer;
+    }
   </style>
   <script src="//unpkg.com/d3-dsv"></script>
   <script src="//unpkg.com/dat.gui"></script>
@@ -90,7 +101,7 @@ width:100%;
 </head>
 
 <body>
-    <div id= "drop_area"><span id="drag_text">Drag and drop file here</span></div>
+    <div id= "drop_area"><span class="close" id ="close_drop">&times;</span><span id="drag_text">Drag and drop file here</span></div>
     <div id="interface">
         <label for="add_node">Add Node</label>
         <textarea id="add_node" name = "add_node" rows="3" cols="50"></textarea>
@@ -322,6 +333,10 @@ var datetime = currentdate.getDate() + "-"
 
   document.body.removeChild(pom);
 }
+document.getElementById("close_drop").onclick = function(){
+    const drop_area = document.getElementById("drop_area")
+    drop_area.style.display="none";
+}
 document.getElementById("load_file").onclick = function(){
     const drop_area = document.getElementById("drop_area")
     drop_area.style.display = "block";
@@ -367,6 +382,7 @@ drop_area.addEventListener('drop', (event) => {
   drop_area.style.display="none";
 });
 }
+
   </script>
 </body>
 
