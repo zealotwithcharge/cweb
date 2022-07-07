@@ -1,90 +1,113 @@
 <!--TO DO: refer to shapes, graph variable can be used to get node objects and set the parameters-->
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <head>
   <style>
-    body{
+    .node-label {
+      font-size: 12px;
+      padding: 1px 4px;
+      border-radius: 4px;
+      background-color: rgba(0, 0, 0, 0.5);
+      user-select: none;
+    }
+
+    body {
       height: 100vh;
       width: 100vw;
     }
+
     body {
       margin: 0;
-      display:flex;
-      flex-direction:row;
-      overflow:hidden !important;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden !important;
     }
-    #interface{
-        height: 100%;
-        width: 33.3333%;
-        display:flex;
-        flex-direction:column;
-        padding: 1%;
+
+    #interface {
+      height: 100%;
+      width: 33.3333%;
+      display: flex;
+      flex-direction: column;
+      padding: 1%;
     }
-    #add_node{
-        height:20%;
-        width:100%;
-        resize: none;
+
+    #add_node {
+      height: 20%;
+      width: 100%;
+      resize: none;
     }
-    #add_submit{
-        height:min-content;
-        width:min-content;
+
+    #add_submit {
+      height: min-content;
+      width: min-content;
 
     }
-    #load_file, #download_file{
-        height:100%;
-        width:50%;
+
+    #load_file,
+    #download_file {
+      height: 100%;
+      width: 50%;
     }
-    #db_buttons,#submit_button{
-display:flex;flex-direction:row;
-height:7.5%;
-width:100%;
+
+    #db_buttons,
+    #submit_button {
+      display: flex;
+      flex-direction: row;
+      height: 7.5%;
+      width: 100%;
     }
-    #submit_button{
-        flex-direction:row-reverse !important;
+
+    #submit_button {
+      flex-direction: row-reverse !important;
     }
-    #drop_area{
-        position:fixed;
-        top:20%;
-        bottom:20%;
-        right:20%;
-        display:none;
-        left:20%;
-        text-align: center;
-        color: rgb(180,180,180);
-        background:white;
-        height:60%;
-        line-height:100%;
-        width:60%;
-        z-index:10;
-        border: 2px solid grey;
-        border-radius:5px;
-        vertical-align:middle;
+
+    #drop_area {
+      position: fixed;
+      top: 20%;
+      bottom: 20%;
+      right: 20%;
+      display: none;
+      left: 20%;
+      text-align: center;
+      color: rgb(180, 180, 180);
+      background: white;
+      height: 60%;
+      line-height: 100%;
+      width: 60%;
+      z-index: 10;
+      border: 2px solid grey;
+      border-radius: 5px;
+      vertical-align: middle;
     }
 
     .dummy {
-        height:auto;
-        width:auto;
+      height: auto;
+      width: auto;
     }
-    #drag_text{
-        position:absolute;
-        top:50%;
-        bottom:50%;
-        right:50%;
-        left:50%;
-        transform:translate(-50%,-50%);
-        width:min-content;
-        white-space:nowrap;
+
+    #drag_text {
+      position: absolute;
+      top: 50%;
+      bottom: 50%;
+      right: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min-content;
+      white-space: nowrap;
     }
-    .close{
-        color:grey;
-        position:absolute;
-        top:5%;
-        right:2.5%;
-        font-size:3vw;
+
+    .close {
+      color: grey;
+      position: absolute;
+      top: 5%;
+      right: 2.5%;
+      font-size: 3vw;
 
     }
-    .close:hover{
-        cursor:pointer;
+
+    .close:hover {
+      cursor: pointer;
     }
   </style>
   <script src="//unpkg.com/d3-dsv"></script>
@@ -92,31 +115,32 @@ width:100%;
   <script src="//unpkg.com/d3-octree"></script>
   <script src="//unpkg.com/d3-force-3d"></script>
   <script src="//unpkg.com/three"></script>
-
+  <script src="//unpkg.com/three/examples/js/renderers/CSS2DRenderer.js"></script>
   <script src="//unpkg.com/3d-force-graph"></script>
   <!--<script src="../../dist/3d-force-graph.js"></script>-->
-<script language="Javascript" >
+  <script language="Javascript">
 
-</script>
+  </script>
 </head>
 
 <body>
-    <div id= "drop_area"><span class="close" id ="close_drop">&times;</span><span id="drag_text">Drag and drop file here</span></div>
-    <div id="interface">
-        <label for="add_node">Add Node</label>
-        <textarea id="add_node" name = "add_node" rows="3" cols="50"></textarea>
-        <div id = "submit_button">
-            <button type="button" id="add_submit">submit</button>
-            <div class = "dummy"></div>
-        </div>
-        <div id = "db_buttons" >
-            <div class = "dummy"></div>
-            <button type="button" id="load_file">load database</button>
-            <button type="button" id="download_file">download database</button>
-        </div>
-
-        <canvas></canvas> 
+  <div id="drop_area"><span class="close" id="close_drop">&times;</span><span id="drag_text">Drag and drop file
+      here</span></div>
+  <div id="interface">
+    <label for="add_node">Add Node</label>
+    <textarea id="add_node" name="add_node" rows="3" cols="50"></textarea>
+    <div id="submit_button">
+      <button type="button" id="add_submit">submit</button>
+      <div class="dummy"></div>
     </div>
+    <div id="db_buttons">
+      <div class="dummy"></div>
+      <button type="button" id="load_file">load database</button>
+      <button type="button" id="download_file">download database</button>
+    </div>
+
+    <canvas></canvas>
+  </div>
   <div id="3d-graph"></div>
 
   <script type="module">
@@ -154,18 +178,20 @@ width:100%;
     graph.d3Force('charge').strength(-15);
 
     // Graph Data 
-    const nodes = [{ id: 1,name:"",val:10,text:""}];
+    const nodes = [{ id: 1, name: "", val: 10, text: "" ,neighbors: [],links:[]}];
     const links = [];
+    /*
     {% for node in raw_nodes %}
-    nodes.push({ id: {{ node }},name:"",val:10,text:""});
+    nodes.push({ id: {{ node }}, name: "", val: 10, text: ""});
     {% endfor %}
     {% for pair in raw_links %}
     links.push({ source: {{ pair[0]}}, target: {{ pair[1]}}, targetNode: nodes[{{ pair[1]}}]});
     {% endfor %}
+    */
     var gData = {
       nodes, links
     };
-
+    //create neighbors for animation
     gData.links.forEach(link => {
       const a = gData.nodes[link.source];
       const b = gData.nodes[link.target];
@@ -186,20 +212,52 @@ width:100%;
     bloomPass.threshold = 0.5;
     const darkMaterial = new THREE.MeshBasicMaterial({ color: 'black' });
     let selectedNodes = new Set();
+    let visible_node;
+    let visible_nodes = new Set();
     let highlightLinks = new Set();
-    var Graph = ForceGraph3D()(document.getElementById('3d-graph'));
+    // graph definition
+    var Graph = ForceGraph3D({
+      extraRenderers: [new THREE.CSS2DRenderer()]
+    })(document.getElementById('3d-graph'));
     Graph.graphData(gData)
-      .width(document.defaultView.innerWidth*2/3)
+      .width(document.defaultView.innerWidth * 2 / 3)
       .nodeLabel('id')
       .nodeColor((node) => node.id % 2 === 1 ? 'yellow' : 'blue')
       .linkDirectionalArrowLength(3.5)
       .d3VelocityDecay(0.75)
       .linkDirectionalArrowRelPos(0.5)
-      .nodeThreeObject(node => new THREE.Mesh(
-        new THREE.SphereGeometry(NODE_REL_SIZE),
-        new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) })
+      .nodeThreeObject(node => {
+        const mesh = new THREE.Mesh(
+          new THREE.SphereGeometry(NODE_REL_SIZE),
+          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
+        const group = new THREE.Group();
+        const nodeEl = document.createElement('div');
+        nodeEl.textContent = node.text;
+        nodeEl.className = 'node-label';
+        nodeEl.style.visibility = "hidden";
+        console.log(`rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`);
+        nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
+        const css_obj = new THREE.CSS2DObject(nodeEl);
+        group.add(mesh);
+        group.add(css_obj);
+
+        return group;
+
+      }
       )
-      )
+      .onNodeHover((node, prev_node) => {
+        if (node) {
+          node.__threeObj.children[1].element.style.visibility = "visible";
+          visible_node = node;
+        }
+        else if (visible_node != null) {
+        console.log(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node));
+        if(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node)){
+          visible_node.__threeObj.children[1].element.style.visibility = "hidden";
+          }
+          visible_node = null;
+        }
+      })
       .onNodeDrag((node, translate) => {
         if (selectedNodes.has(node)) { // moving a selected node
           [...selectedNodes]
@@ -215,39 +273,45 @@ width:100%;
         }
       })
       .onNodeClick((node, event) => {
+      
         if (event.shiftKey) { // multi-selection
           selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
           if (selectedNodes.has(node)) {
-            node.__threeObj.material.color.r *= 2;
-            node.__threeObj.material.color.g *= 2;
-            node.__threeObj.material.color.b *= 2;
+            node.__threeObj.children[0].material.color.r *= 2;
+            node.__threeObj.children[0].material.color.g *= 2;
+            node.__threeObj.children[0].material.color.b *= 2;
+            node.__threeObj.children[1].element.style.visibility = "visible";
+            visible_nodes.add(node);
+            visible_node = null;
             if (selectedNodes.size === 1) {
-              if(node.links != null){
-              node.links.forEach(link => highlightLinks.add(link));
-              updateHighlight();
+              if (node.links != null) {
+                node.links.forEach(link => highlightLinks.add(link));
+                updateHighlight();
               }
             }
             else {
               highlightLinks.clear();
               selectedNodes.forEach(from_node => {
                 selectedNodes.forEach(to_node => {
-                 if(from_node.links!=null){
-                  from_node.links.forEach(link => {
-                    console.log(link);
-                    if (link.source === from_node && link.target === to_node) {
-                      highlightLinks.add(link);
-                    }
-                    updateHighlight();
-                  });
-}
+                  if (from_node.links != null) {
+                    from_node.links.forEach(link => {
+                      console.log(link);
+                      if (link.source === from_node && link.target === to_node) {
+                        highlightLinks.add(link);
+                      }
+                      updateHighlight();
+                    });
+                  }
                 });
               });
             }
           }
-          else{
-            node.__threeObj.material.color.r /= 2;
-            node.__threeObj.material.color.g /= 2;
-            node.__threeObj.material.color.b /= 2;
+          else {
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+            visible_nodes.delete(node);
+            node.__threeObj.children[0].material.color.r /= 2;
+            node.__threeObj.children[0].material.color.g /= 2;
+            node.__threeObj.children[0].material.color.b /= 2;
             highlightLinks.forEach(link => {
               if (link.source === node || link.target === node) {
                 highlightLinks.delete(link);
@@ -257,39 +321,84 @@ width:100%;
           }
         }
         //create link
-          else if (event.ctrlKey){
+        else if (event.ctrlKey) {
           console.log(selectedNodes);
-            selectedNodes.forEach(small_node =>{
-            console.log(small_node.id);
+          selectedNodes.forEach(small_node => {
+            console.log(small_node.links);
             console.log(node.id);
-            const temp_link = {source: small_node.id,target:node.id,targetNode:node}
+            const temp_link = { source: small_node.id, target: node.id, targetNode: node }
+            let flag = true;
+            small_node.links.forEach(link=>{
+            if(link.source===small_node && link.target===node){
+            flag = false;
+            }
+            })
+            if(small_node.id != node.id && flag){
             gData.links.push(temp_link);
-            gData.nodes[small_node.id-1].neighbors.push(node);
-            gData.nodes[small_node.id-1].links.push(temp_link);
-            gData.nodes[node.id-1].neighbors.push(small_node);
-            gData.nodes[node.id-1].links.push(temp_link);
-            Graph.graphData(gData);
-            Graph.refresh();
+            gData.nodes[small_node.id - 1].neighbors.push(node);
+            gData.nodes[small_node.id - 1].links.push(temp_link);
+            gData.nodes[node.id - 1].neighbors.push(small_node);
+            gData.nodes[node.id - 1].links.push(temp_link);
+            }
           });
-            console.log(gData.links[-1]);
+            Graph.graphData(gData);
+            selectedNodes.forEach(selected => {
+            selected.__threeObj.children[0].material.color.r *= 1;
+            selected.__threeObj.children[0].material.color.g *= 1;
+            selected.__threeObj.children[0].material.color.b *= 1;
+
+            
+              if (selected.links != null) {
+                selected.links.forEach(link => highlightLinks.add(link));
+                updateHighlight();
+              }
+              else {
+                highlightLinks.clear();
+                selectedNodes.forEach(from_selected => {
+                  selectedNodes.forEach(to_selected => {
+                    if (from_selected.links != null) {
+                      from_selected.links.forEach(link => {
+                        console.log(link);
+                        if (link.source === from_selected && link.target === to_selected) {
+                          highlightLinks.add(link);
+                        }
+                        updateHighlight();
+                      });
+                    }
+                  });
+                });
+              }
+            });
+            }
+        else if (event.altKey) {
+            visible_node = null;
+            if (visible_nodes.has(node)) {
+              node.__threeObj.children[1].element.style.visibility = "hidden";
+              visible_nodes.delete(node);
+            }
+            else {
+              node.__threeObj.children[1].element.style.visibility = "visible";
+              visible_nodes.add(node);
+
+            }
           }
-        else { // single-selection
-          const untoggle = selectedNodes.has(node) && selectedNodes.size === 1;
-          selectedNodes.clear();
-          !untoggle && selectedNodes.add(node);
-        }
-      })
+          else { // single-selection
+            const untoggle = selectedNodes.has(node) && selectedNodes.size === 1;
+            selectedNodes.clear();
+            !untoggle && selectedNodes.add(node);
+          }
+        })
       .linkWidth(link => highlightLinks.has(link) ? 4 : 1)
       .linkDirectionalParticles(link => highlightLinks.has(link) ? 4 : 0)
       .linkDirectionalParticleWidth(4)
       .postProcessingComposer().addPass(bloomPass);
 
-    document.getElementById("add_submit").onclick = function(){
-        const input = document.getElementById("add_node").innerText;
-        console.log(gData.nodes.length);
-        gData.nodes.push({id:gData.nodes.length+1,text:input,neighbors:[],links:[]});
-        Graph.graphData(gData);
-        Graph.refresh();
+    document.getElementById("add_submit").onclick = function () {
+      const input = document.getElementById("add_node").value;
+      console.log(input);
+      console.log(gData.nodes.length);
+      gData.nodes.push({ id: gData.nodes.length + 1, text: input, neighbors: [], links: [] });
+      Graph.graphData(gData);
     };
     function updateHighlight() {
       // trigger update of highlighted objects in scene
@@ -298,90 +407,89 @@ width:100%;
         .linkDirectionalParticles(Graph.linkDirectionalParticles());
     }
 
-document.getElementById("download_file").onclick = function() {
-  var pom = document.createElement('a');
-  console.log(gData);
-  let db_string = '{"nodes":[';
-  gData.nodes.forEach( node =>{
-    db_string += '{"id": "'+node.id+'","name": "'+node.name+'","val": '+node.val+',"text": "'+node.text+'"},';
+    document.getElementById("download_file").onclick = function () {
+      var pom = document.createElement('a');
+      console.log(gData);
+      let db_string = '{"nodes":[';
+      gData.nodes.forEach(node => {
+        db_string += '{"id": "' + node.id + '","name": "' + node.name + '","val": ' + node.val + ',"text": "' + node.text + '"},';
+      }
+      )
+      db_string = db_string.slice(0, -1);
+      db_string += '],"links": [';
+      gData.links.forEach(link => {
+        db_string += '{"source": "' + link.source.id + '","target": "' + link.target.id + '"},';
+      })
+      db_string = db_string.slice(0, -1);
+      db_string += ']}';
+
+      pom.setAttribute('href', 'data:text/plain;charset=utf-8,' +
+        encodeURIComponent(db_string));
+      var currentdate = new Date();
+      var datetime = currentdate.getDate() + "-"
+        + (currentdate.getMonth() + 1) + "-"
+        + currentdate.getFullYear() + "_"
+        + currentdate.getHours() + "-"
+        + currentdate.getMinutes() + "-"
+        + currentdate.getSeconds() + ".json";
+
+      pom.setAttribute('download', datetime);
+
+      pom.style.display = 'none';
+      document.body.appendChild(pom);
+
+      pom.click();
+
+      document.body.removeChild(pom);
     }
-    )
-    db_string = db_string.slice(0,-1); 
-    db_string += '],"links": [';
-    gData.links.forEach(link =>{
-    db_string += '{"source": "'+link.source.id+'","target": "'+link.target.id+'"},';
-    })
-    db_string = db_string.slice(0,-1); 
-    db_string += ']}';
+    document.getElementById("close_drop").onclick = function () {
+      const drop_area = document.getElementById("drop_area")
+      drop_area.style.display = "none";
+    }
+    document.getElementById("load_file").onclick = function () {
+      const drop_area = document.getElementById("drop_area")
+      drop_area.style.display = "block";
+      drop_area.addEventListener('dragover', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        // Style the drag-and-drop as a "copy file" operation.
+        event.dataTransfer.dropEffect = 'copy';
+      });
 
-  pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
-encodeURIComponent(db_string));
-var currentdate = new Date(); 
-var datetime = currentdate.getDate() + "-"
-                + (currentdate.getMonth()+1)  + "-" 
-                + currentdate.getFullYear() + "_"  
-                + currentdate.getHours() + "-"  
-                + currentdate.getMinutes() + "-" 
-                + currentdate.getSeconds()+".json";
+      drop_area.addEventListener('drop', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        const fileList = event.dataTransfer.files;
+        const reader = new FileReader();
+        var json_string = ""
+        reader.addEventListener("load", () => {
+          // this will then display a text file
+          json_string = reader.result;
+          gData = JSON.parse(json_string);
+          gData.links.forEach(link => {
+            const a = gData.nodes[link.source - 1];
+            const b = gData.nodes[link.target - 1];
+            console.log(b);
+            !a.neighbors && (a.neighbors = []);
+            !b.neighbors && (b.neighbors = []);
+            a.neighbors.push(b);
+            b.neighbors.push(a);
 
-  pom.setAttribute('download', datetime);
-
-  pom.style.display = 'none';
-  document.body.appendChild(pom);
-
-  pom.click();
-
-  document.body.removeChild(pom);
-}
-document.getElementById("close_drop").onclick = function(){
-    const drop_area = document.getElementById("drop_area")
-    drop_area.style.display="none";
-}
-document.getElementById("load_file").onclick = function(){
-    const drop_area = document.getElementById("drop_area")
-    drop_area.style.display = "block";
-    drop_area.addEventListener('dragover', (event) => {
-  event.stopPropagation();
-  event.preventDefault();
-  // Style the drag-and-drop as a "copy file" operation.
-  event.dataTransfer.dropEffect = 'copy';
-});
-
-drop_area.addEventListener('drop', (event) => {
-  event.stopPropagation();
-  event.preventDefault();
-  const fileList = event.dataTransfer.files;
-  const reader = new FileReader();
-  var json_string = ""
-  reader.addEventListener("load", () => {
-    // this will then display a text file
-    json_string = reader.result;
-    gData = JSON.parse(json_string);
-    gData.links.forEach(link => {
-      const a = gData.nodes[link.source-1];
-      const b = gData.nodes[link.target-1];
-      console.log(b); 
-      !a.neighbors && (a.neighbors = []);
-      !b.neighbors && (b.neighbors = []);
-      a.neighbors.push(b);
-      b.neighbors.push(a);
-
-      !a.links && (a.links = []);
-      !b.links && (b.links = []);
-      a.links.push(link);
-      b.links.push(link);
-    });
-    Graph.graphData(gData);
-    Graph.refresh();
-  }, false);
-  if(fileList[0]){
-    reader.readAsText(fileList[0]);
-  }
+            !a.links && (a.links = []);
+            !b.links && (b.links = []);
+            a.links.push(link);
+            b.links.push(link);
+          });
+          Graph.graphData(gData);
+        }, false);
+        if (fileList[0]) {
+          reader.readAsText(fileList[0]);
+        }
 
 
-  drop_area.style.display="none";
-});
-}
+        drop_area.style.display = "none";
+      });
+    }
 
   </script>
 </body>
