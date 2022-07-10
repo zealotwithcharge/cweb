@@ -1,108 +1,111 @@
+<!DOCTYPE html>
 <!--TO DO: refer to shapes, graph variable can be used to get node objects and set the parameters-->
-<html>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<head>
-  <style>
-    .node-label {
-      font-size: 12px;
-      padding: 1px 4px;
-      border-radius: 4px;
-      background-color: rgba(0, 0, 0, 0.5);
-      user-select: none;
+
+<html lang="en-us">
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+
+.node-label {
+    font-size: 12px;
+    padding: 1px 4px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    user-select: none;
+}
+    body {
+        height: 100vh;
+        width: 100vw;
     }
 
     body {
-      height: 100vh;
-      width: 100vw;
-    }
-
-    body {
-      margin: 0;
-      display: flex;
-      flex-direction: row;
-      overflow: hidden !important;
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+        overflow: hidden !important;
     }
 
     #interface {
-      height: 100%;
-      width: 33.3333%;
-      display: flex;
-      flex-direction: column;
-      padding: 1%;
+        height: 100%;
+        width: 33.3333%;
+        display: flex;
+        flex-direction: column;
+        padding: 1%;
     }
 
     #add_node {
-      height: 20%;
-      width: 100%;
-      resize: none;
+        height: 20%;
+        width: 100%;
+        resize: none;
     }
 
     #add_submit {
-      height: min-content;
-      width: min-content;
+        height: min-content;
+        width: min-content;
 
     }
 
     #load_file,
     #download_file {
-      height: 100%;
-      width: 50%;
+        height: 100%;
+        width: 50%;
     }
 
     #db_buttons,
     #submit_button {
-      display: flex;
-      flex-direction: row;
-      height: 7.5%;
-      width: 100%;
+        display: flex;
+        flex-direction: row;
+        height: 7.5%;
+        width: 100%;
     }
 
     #submit_button {
-      flex-direction: row-reverse !important;
+        flex-direction: row-reverse !important;
     }
 
     #drop_area {
-      position: fixed;
-      top: 20%;
-      bottom: 20%;
-      right: 20%;
-      display: none;
-      left: 20%;
-      text-align: center;
-      color: rgb(180, 180, 180);
-      background: white;
-      height: 60%;
-      line-height: 100%;
-      width: 60%;
-      z-index: 10;
-      border: 2px solid grey;
-      border-radius: 5px;
-      vertical-align: middle;
+        position: fixed;
+        top: 20%;
+        bottom: 20%;
+        right: 20%;
+        display: none;
+        left: 20%;
+        text-align: center;
+        color: rgb(180, 180, 180);
+        background: white;
+        height: 60%;
+        line-height: 100%;
+        width: 60%;
+        z-index: 10;
+        border: 2px solid grey;
+        border-radius: 5px;
+        vertical-align: middle;
     }
 
     .dummy {
-      height: auto;
-      width: auto;
+        height: auto;
+        width: auto;
     }
 
     #drag_text {
-      position: absolute;
-      top: 50%;
-      bottom: 50%;
-      right: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: min-content;
-      white-space: nowrap;
+        position: absolute;
+        top: 50%;
+        bottom: 50%;
+        right: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min-content;
+        white-space: nowrap;
     }
 
     .close {
-      color: grey;
-      position: absolute;
-      top: 5%;
-      right: 2.5%;
-      font-size: 3vw;
+        color: grey;
+        position: absolute;
+        top: 5%;
+        right: 2.5%;
+        font-size: 3vw;
 
     }
 
@@ -112,79 +115,79 @@
 
     }
     .close:hover {
-      cursor: pointer;
+        cursor: pointer;
     }
 
-.switch {
-    font-size:1vw;
-  position: relative;
-  display: inline-block;
-  width: 3em;
-  height: 4em;
-  font-family: Arial, Helvetica, sans-serif;
-  border-radius:5px;
-}
-.slider_text{
-    font-size:1vw;
-    position:absolute;
-}
+    .switch {
+        font-size:1vw;
+        position: relative;
+        display: inline-block;
+        width: 3em;
+        height: 4em;
+        font-family: Arial, Helvetica, sans-serif;
+        border-radius:5px;
+    }
+    .slider_text{
+        font-size:1vw;
+        position:absolute;
+    }
 
-.switch input { 
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+    .switch input { 
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
 
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #000066;
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius:5px;
-}
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #000066;
+        -webkit-transition: .4s;
+        transition: .4s;
+        border-radius:5px;
+    }
 
-.slider:before {
-  position: absolute;
-  height: 1.4em;
-  content:"TXT";
-  color:#000066;
-  width: 2.8em; 
-  vertical-align:sub;
-    display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-direction: column;
-  text-align:center;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-  top:.1em;
-  left:0.15em;
-  right:0.15em;
-  border-radius:5px;
-}
+    .slider:before {
+        position: absolute;
+        height: 1.4em;
+        content:"TXT";
+        color:#000066;
+        width: 2.8em; 
+        vertical-align:sub;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+        text-align:center;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+        top:.1em;
+        left:0.15em;
+        right:0.15em;
+        border-radius:5px;
+    }
 
-input:checked + .slider {
-  background-color: maroon;
-  color:maroon;
-}
+    input:checked + .slider {
+        background-color: maroon;
+        color:maroon;
+    }
 
-input:focus + .slider {
-  box-shadow: 0 0 1px maroon;
-}
+    input:focus + .slider {
+        box-shadow: 0 0 1px maroon;
+    }
 
-input:checked + .slider:before {
-    content:"IMG";
-    color:maroon;
-  -webkit-transform: translateY(2.4em);
-  -ms-transform: translateY(2.4em);
-  transform: translateY(2.4em);
-}
+    input:checked + .slider:before {
+        content:"IMG";
+        color:maroon;
+        -webkit-transform: translateY(2.4em);
+        -ms-transform: translateY(2.4em);
+        transform: translateY(2.4em);
+    }
 
     .node_content{
         resize:none;
@@ -192,54 +195,54 @@ input:checked + .slider:before {
     }
     .content_container{
         display:flex;
-            flex-direction:row;
+        flex-direction:row;
     }
-  </style>
-  <script src="//unpkg.com/d3-dsv"></script>
-  <script src="//unpkg.com/dat.gui"></script>
-  <script src="//unpkg.com/d3-octree"></script>
-  <script src="//unpkg.com/d3-force-3d"></script>
-  <script src="//unpkg.com/three"></script>
-  <script src="//unpkg.com/three/examples/js/renderers/CSS2DRenderer.js"></script>
-  <script src="//unpkg.com/3d-force-graph"></script>
-  <!--<script src="../../dist/3d-force-graph.js"></script>-->
-  <script language="Javascript">
+        </style>
+        <script src="//unpkg.com/d3-dsv"></script>
+        <script src="//unpkg.com/dat.gui"></script>
+        <script src="//unpkg.com/d3-octree"></script>
+        <script src="//unpkg.com/d3-force-3d"></script>
+        <script src="//unpkg.com/three"></script>
+        <script src="//unpkg.com/three/examples/js/renderers/CSS2DRenderer.js"></script>
+        <script src="//unpkg.com/3d-force-graph"></script>
+        <!--<script src="../../dist/3d-force-graph.js"></script>-->
+        <title>Charlette's Web</title>
+    </head>
 
-  </script>
-</head>
+    <body>
+        <div id="drop_area"><span class="close" id="close_drop">&times;</span><span id="drag_text">Drag and drop file
+                here</span></div>
+        <div id="interface">
+            <label for="add_node">Add Node</label>
+            <textarea id="add_node" name="add_node" rows="3" cols="50"></textarea>
+            <div id="submit_button">
+                <button type="button" id="add_submit">submit</button>
+                <div class="dummy"></div>
+            </div>
 
-<body>
-  <div id="drop_area"><span class="close" id="close_drop">&times;</span><span id="drag_text">Drag and drop file
-      here</span></div>
-  <div id="interface">
-    <label for="add_node">Add Node</label>
-    <textarea id="add_node" name="add_node" rows="3" cols="50"></textarea>
-    <div id="submit_button">
-      <button type="button" id="add_submit">submit</button>
-      <div class="dummy"></div>
-    </div>
-    <div id="node_lister">
-        <div class ="content_container">
-<label class="switch">
-  <input type="checkbox">
-  <span class="slider"></span>
-</label>
+            <div id="node_lister">
+                <!-- content_container template
+                <div class ="content_container">
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
 
-  <textarea class="node_content" rows="2" cols="40"></textarea>
-    </div>
-    </div>
-    <div id="db_buttons">
-      <div class="dummy"></div>
-      <button type="button" id="load_file">load database</button>
-      <button type="button" id="download_file">download database</button>
-    </div>
+                    <textarea class="node_content" rows="2" cols="40"></textarea>
+                </div>
+                --!>
+            </div>
+            <div id="db_buttons">
+                <div class="dummy"></div>
+                <button type="button" id="load_file">load database</button>
+                <button type="button" id="download_file">download database</button>
+            </div>
 
-   
-  </div>
-  <div id="3d-graph"></div>
+        </div>
+        <div id="3d-graph"></div>
 
-  <script type="module">
-    import { UnrealBloomPass } from '//cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js';
+        <script type="module">
+            import { UnrealBloomPass } from '//cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js';
 
     const ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
     const bloomLayer = new THREE.Layers();
@@ -286,6 +289,28 @@ input:checked + .slider:before {
     var gData = {
       nodes, links
     };
+    const node_container = document.getElementById("node_lister");
+    gData.nodes.forEach(node =>{
+    let new_container = document.createElement("div");
+    new_container.className = "content_container";
+    let new_switch = document.createElement("label");
+    new_switch.className = "switch";
+
+    let new_checkbox = document.createElement("input");
+    new_checkbox.type = "checkbox";
+    let new_slider = document.createElement("span");
+    new_slider.className = "slider";
+
+    let new_textarea = document.createElement("textarea");
+    new_textarea.className = "node_content";
+    new_textarea.rows = "2";
+    new_textarea.cols = "40";
+    new_switch.appendChild(new_checkbox);
+    new_switch.appendChild(new_slider);
+    new_container.appendChild(new_switch);
+    new_container.appendChild(new_textarea);
+    node_container.appendChild(new_container);
+    });
     //create neighbors for animation
     gData.links.forEach(link => {
       const a = gData.nodes[link.source];
@@ -326,16 +351,30 @@ input:checked + .slider:before {
           new THREE.SphereGeometry(NODE_REL_SIZE),
           new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
         const group = new THREE.Group();
+        group.add(mesh);
+        if (node.text.indexOf("img src") == -1){
         const nodeEl = document.createElement('div');
         nodeEl.textContent = node.text;
         nodeEl.className = 'node-label';
         nodeEl.style.visibility = "hidden";
-        console.log(`rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`);
         nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
         const css_obj = new THREE.CSS2DObject(nodeEl);
-        group.add(mesh);
         group.add(css_obj);
-
+        }
+        else{
+        const nodeEl = document.createElement('img');
+        nodeEl.src = node.text.slice(node.text.indexOf("=")+2,-2);
+        console.log(node.text.slice(node.text.indexOf("=")+2,-2));
+        nodeEl.className = 'node-label';
+        nodeEl.style.visibility = "hidden";
+        nodeEl.style.objectFit = "contain";
+        nodeEl.style.maxWidth = "100px";
+    nodeEl.style.maxHeight = "100px";
+        
+        nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
+        const css_obj = new THREE.CSS2DObject(nodeEl);
+        group.add(css_obj);
+        }
         return group;
 
       }
@@ -368,7 +407,7 @@ input:checked + .slider:before {
         }
       })
       .onNodeClick((node, event) => {
-      
+
         if (event.shiftKey) { // multi-selection
           selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
           if (selectedNodes.has(node)) {
@@ -442,7 +481,7 @@ input:checked + .slider:before {
             selected.__threeObj.children[0].material.color.g *= 1;
             selected.__threeObj.children[0].material.color.b *= 1;
 
-            
+
               if (selected.links != null) {
                 selected.links.forEach(link => highlightLinks.add(link));
                 updateHighlight();
@@ -492,7 +531,7 @@ input:checked + .slider:before {
       const input = document.getElementById("add_node").value;
       console.log(input);
       console.log(gData.nodes.length);
-      gData.nodes.push({ id: gData.nodes.length + 1, text: input, neighbors: [], links: [] });
+      gData.nodes.push({ id: gData.nodes.length + 1, text: input, name:gData.nodes.length+1,val:10, neighbors: [], links: [] });
       Graph.graphData(gData);
     };
     function updateHighlight() {
@@ -511,11 +550,14 @@ input:checked + .slider:before {
       }
       )
       db_string = db_string.slice(0, -1);
-      db_string += '],"links": [';
+      db_string += '],"links":[';
       gData.links.forEach(link => {
         db_string += '{"source": "' + link.source.id + '","target": "' + link.target.id + '"},';
       })
+      if (gData.links.length>0){
+
       db_string = db_string.slice(0, -1);
+      }
       db_string += ']}';
 
       pom.setAttribute('href', 'data:text/plain;charset=utf-8,' +
@@ -575,6 +617,28 @@ input:checked + .slider:before {
             a.links.push(link);
             b.links.push(link);
           });
+    gData.nodes.forEach(node =>{
+    let new_container = document.createElement("div");
+    new_container.className = "content_container";
+    let new_switch = document.createElement("label");
+    new_switch.className = "switch";
+
+    let new_checkbox = document.createElement("input");
+    new_checkbox.type = "checkbox";
+    let new_slider = document.createElement("span");
+    new_slider.className = "slider";
+
+    let new_textarea = document.createElement("textarea");
+    new_textarea.className = "node_content";
+    new_textarea.textContent = node.text;
+    new_textarea.rows = "2";
+    new_textarea.cols = "40";
+    new_switch.appendChild(new_checkbox);
+    new_switch.appendChild(new_slider);
+    new_container.appendChild(new_switch);
+    new_container.appendChild(new_textarea);
+    node_container.appendChild(new_container);
+    });
           Graph.graphData(gData);
         }, false);
         if (fileList[0]) {
@@ -586,7 +650,7 @@ input:checked + .slider:before {
       });
     }
 
-  </script>
-</body>
+        </script>
+    </body>
 
 </html>
