@@ -26,7 +26,10 @@
         flex-direction: row;
         overflow: hidden !important;
     }
-
+    h1 {
+        font-size:1em;
+        padding-right:1vw;
+    }
     #interface {
         height: 100%;
         width: 33.3333%;
@@ -43,7 +46,7 @@
 
     #add_submit {
         height: min-content;
-        width: min-content;
+        width: 100%;
 
     }
 
@@ -122,7 +125,7 @@
         font-size:1vw;
         position: relative;
         display: inline-block;
-        width: 3em;
+        width: 3.6em;
         height: 4em;
         font-family: Arial, Helvetica, sans-serif;
         border-radius:5px;
@@ -167,8 +170,8 @@
         -webkit-transition: .4s;
         transition: .4s;
         top:.1em;
-        left:0.15em;
-        right:0.15em;
+        left:1%;
+        right:1%;
         border-radius:5px;
     }
 
@@ -213,12 +216,6 @@
         <div id="drop_area"><span class="close" id="close_drop">&times;</span><span id="drag_text">Drag and drop file
                 here</span></div>
         <div id="interface">
-            <label for="add_node">Add Node</label>
-            <textarea id="add_node" name="add_node" rows="3" cols="50"></textarea>
-            <div id="submit_button">
-                <button type="button" id="add_submit">submit</button>
-                <div class="dummy"></div>
-            </div>
 
             <div id="node_lister">
                 <!-- content_container template
@@ -232,6 +229,17 @@
                 </div>
                 --!>
             </div>
+            
+            <!--
+            <label for="add_node">Add Node</label>
+            <textarea id="add_node" name="add_node" rows="3" cols="50"></textarea>
+            --!>
+            <div id="submit_button">
+                <div class="dummy"></div>
+                <button type="button" id="add_submit">Add Node</button>
+                <div class="dummy"></div>
+            </div>
+
             <div id="db_buttons">
                 <div class="dummy"></div>
                 <button type="button" id="load_file">load database</button>
@@ -293,6 +301,8 @@
     gData.nodes.forEach(node =>{
     let new_container = document.createElement("div");
     new_container.className = "content_container";
+    let new_num = document.createElement("h1");
+    new_num.textContent = node.id;
     let new_switch = document.createElement("label");
     new_switch.className = "switch";
 
@@ -305,8 +315,20 @@
     new_textarea.className = "node_content";
     new_textarea.rows = "2";
     new_textarea.cols = "40";
+    new_textarea.onchange = (event)=>{
+    console.log(event);
+    let field = event.target;
+    console.log(event.target);
+    let temp_id = field.parentElement.children[0].textContent;
+
+    console.log(field.parentElement.children[0].textContent);
+    document.getElementById('node_'+temp_id).textContent = field.value;
+    Graph.graphData(gData);
+    };
+    
     new_switch.appendChild(new_checkbox);
     new_switch.appendChild(new_slider);
+    new_container.appendChild(new_num);
     new_container.appendChild(new_switch);
     new_container.appendChild(new_textarea);
     node_container.appendChild(new_container);
@@ -356,6 +378,7 @@
         const nodeEl = document.createElement('div');
         nodeEl.textContent = node.text;
         nodeEl.className = 'node-label';
+        nodeEl.id = 'node_'+node.id; 
         nodeEl.style.visibility = "hidden";
         nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
         const css_obj = new THREE.CSS2DObject(nodeEl);
@@ -366,6 +389,7 @@
         nodeEl.src = node.text.slice(node.text.indexOf("=")+2,-2);
         console.log(node.text.slice(node.text.indexOf("=")+2,-2));
         nodeEl.className = 'node-label';
+        nodeEl.id = 'node_'+node.id; 
         nodeEl.style.visibility = "hidden";
         nodeEl.style.objectFit = "contain";
         nodeEl.style.maxWidth = "100px";
@@ -528,10 +552,10 @@
       .postProcessingComposer().addPass(bloomPass);
 
     document.getElementById("add_submit").onclick = function () {
-      const input = document.getElementById("add_node").value;
-      console.log(input);
-      console.log(gData.nodes.length);
-      gData.nodes.push({ id: gData.nodes.length + 1, text: input, name:gData.nodes.length+1,val:10, neighbors: [], links: [] });
+      gData.nodes.push({ id: gData.nodes.length + 1, text: "", name:gData.nodes.length+1,val:10, neighbors: [], links: [] });
+      console.log(gData);
+      console.log(gData.nodes.at(-1));
+      create_node(gData.nodes.at(-1));
       Graph.graphData(gData);
     };
     function updateHighlight() {
@@ -540,7 +564,6 @@
         .linkWidth(Graph.linkWidth())
         .linkDirectionalParticles(Graph.linkDirectionalParticles());
     }
-
     document.getElementById("download_file").onclick = function () {
       var pom = document.createElement('a');
       console.log(gData);
@@ -579,11 +602,48 @@
 
       document.body.removeChild(pom);
     }
+    function create_node(node){
+
+    let new_container = document.createElement("div");
+    new_container.className = "content_container";
+    let new_switch = document.createElement("label");
+    new_switch.className = "switch";
+
+    let new_checkbox = document.createElement("input");
+    new_checkbox.type = "checkbox";
+    if (node.text.indexOf("img src")!=-1){
+    new_checkbox.checked = true;
+    }
+    let new_slider = document.createElement("span");
+    new_slider.className = "slider";
+
+    let new_num = document.createElement("h1");
+    new_num.textContent = node.id;
+    let new_textarea = document.createElement("textarea");
+    new_textarea.className = "node_content";
+    new_textarea.textContent = node.text;
+    new_textarea.rows = "2";
+    new_textarea.cols = "40";
+    new_textarea.onchange = (event)=>{
+    let field = event.target;
+    let temp_id = field.parentElement.children[0].textContent;
+    document.getElementById('node_'+temp_id).textContent = field.value;
+    Graph.graphData(gData);
+    };
+    new_switch.appendChild(new_checkbox);
+    new_switch.appendChild(new_slider);
+    new_container.appendChild(new_num);
+    new_container.appendChild(new_switch);
+    new_container.appendChild(new_textarea);
+    node_container.appendChild(new_container);
+
+}
     document.getElementById("close_drop").onclick = function () {
       const drop_area = document.getElementById("drop_area")
       drop_area.style.display = "none";
     }
     document.getElementById("load_file").onclick = function () {
+      
       const drop_area = document.getElementById("drop_area")
       drop_area.style.display = "block";
       drop_area.addEventListener('dragover', (event) => {
@@ -599,8 +659,7 @@
         const fileList = event.dataTransfer.files;
         const reader = new FileReader();
         var json_string = ""
-        reader.addEventListener("load", () => {
-          // this will then display a text file
+        reader.addEventListener("load", () => { // this will then display a text file
           json_string = reader.result;
           gData = JSON.parse(json_string);
           gData.links.forEach(link => {
@@ -617,6 +676,13 @@
             a.links.push(link);
             b.links.push(link);
           });
+          let old_containers = document.getElementsByClassName("content_container");
+          console.log(old_containers);
+          for(let i = old_containers.length-1; i>=0;i--){
+          console.log(i);
+          console.log(old_containers[i]);
+          old_containers[i].remove();
+          }
     gData.nodes.forEach(node =>{
     let new_container = document.createElement("div");
     new_container.className = "content_container";
@@ -625,16 +691,30 @@
 
     let new_checkbox = document.createElement("input");
     new_checkbox.type = "checkbox";
+    if (node.text.indexOf("img src")!=-1){
+    new_checkbox.checked = true;
+    }
     let new_slider = document.createElement("span");
     new_slider.className = "slider";
 
+    let new_num = document.createElement("h1");
+    new_num.textContent = node.id;
     let new_textarea = document.createElement("textarea");
     new_textarea.className = "node_content";
     new_textarea.textContent = node.text;
     new_textarea.rows = "2";
     new_textarea.cols = "40";
+    new_textarea.onchange = (event)=>{
+    let field = event.target;
+    let temp_id = field.parentElement.children[0].textContent;
+
+    document.getElementById('node_'+temp_id).textContent = field.value;
+    Graph.graphData(gData);
+    };
+    
     new_switch.appendChild(new_checkbox);
     new_switch.appendChild(new_slider);
+    new_container.appendChild(new_num);
     new_container.appendChild(new_switch);
     new_container.appendChild(new_textarea);
     node_container.appendChild(new_container);
