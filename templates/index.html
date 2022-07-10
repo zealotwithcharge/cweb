@@ -106,8 +106,93 @@
 
     }
 
+    #node_lister {
+        display:flex;
+        flex-direction:column;
+
+    }
     .close:hover {
       cursor: pointer;
+    }
+
+.switch {
+    font-size:1vw;
+  position: relative;
+  display: inline-block;
+  width: 3em;
+  height: 4em;
+  font-family: Arial, Helvetica, sans-serif;
+  border-radius:5px;
+}
+.slider_text{
+    font-size:1vw;
+    position:absolute;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000066;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius:5px;
+}
+
+.slider:before {
+  position: absolute;
+  height: 1.4em;
+  content:"TXT";
+  color:#000066;
+  width: 2.8em; 
+  vertical-align:sub;
+    display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  text-align:center;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  top:.1em;
+  left:0.15em;
+  right:0.15em;
+  border-radius:5px;
+}
+
+input:checked + .slider {
+  background-color: maroon;
+  color:maroon;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px maroon;
+}
+
+input:checked + .slider:before {
+    content:"IMG";
+    color:maroon;
+  -webkit-transform: translateY(2.4em);
+  -ms-transform: translateY(2.4em);
+  transform: translateY(2.4em);
+}
+
+    .node_content{
+        resize:none;
+        overflow-y:scroll;
+    }
+    .content_container{
+        display:flex;
+            flex-direction:row;
     }
   </style>
   <script src="//unpkg.com/d3-dsv"></script>
@@ -133,13 +218,23 @@
       <button type="button" id="add_submit">submit</button>
       <div class="dummy"></div>
     </div>
+    <div id="node_lister">
+        <div class ="content_container">
+<label class="switch">
+  <input type="checkbox">
+  <span class="slider"></span>
+</label>
+
+  <textarea class="node_content" rows="2" cols="40"></textarea>
+    </div>
+    </div>
     <div id="db_buttons">
       <div class="dummy"></div>
       <button type="button" id="load_file">load database</button>
       <button type="button" id="download_file">download database</button>
     </div>
 
-    <canvas></canvas>
+   
   </div>
   <div id="3d-graph"></div>
 
