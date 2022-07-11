@@ -315,16 +315,7 @@
     new_textarea.className = "node_content";
     new_textarea.rows = "2";
     new_textarea.cols = "40";
-    new_textarea.onchange = (event)=>{
-    console.log(event);
-    let field = event.target;
-    console.log(event.target);
-    let temp_id = field.parentElement.children[0].textContent;
-
-    console.log(field.parentElement.children[0].textContent);
-    document.getElementById('node_'+temp_id).textContent = field.value;
-    Graph.graphData(gData);
-    };
+    new_textarea.onchange = (event)=>{text_change(event);};
     
     new_switch.appendChild(new_checkbox);
     new_switch.appendChild(new_slider);
@@ -374,7 +365,7 @@
           new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
         const group = new THREE.Group();
         group.add(mesh);
-        if (node.text.indexOf("img src") == -1){
+    if(!is_image(node.text)){
         const nodeEl = document.createElement('div');
         nodeEl.textContent = node.text;
         nodeEl.className = 'node-label';
@@ -386,8 +377,7 @@
         }
         else{
         const nodeEl = document.createElement('img');
-        nodeEl.src = node.text.slice(node.text.indexOf("=")+2,-2);
-        console.log(node.text.slice(node.text.indexOf("=")+2,-2));
+        nodeEl.src = node.text;
         nodeEl.className = 'node-label';
         nodeEl.id = 'node_'+node.id; 
         nodeEl.style.visibility = "hidden";
@@ -564,6 +554,46 @@
         .linkWidth(Graph.linkWidth())
         .linkDirectionalParticles(Graph.linkDirectionalParticles());
     }
+    function is_image(url){
+  return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
+    }
+    function text_change(event){
+        let field = event.target;
+        let temp_id = field.parentElement.children[0].textContent;
+        let target_node = gData.nodes.at(temp_id-1);
+        target_node.__threeObj.children[1].removeFromParent();
+        
+        if(is_image(field.value)){
+        const nodeEl = document.createElement('img');
+        nodeEl.src = field.value;
+        nodeEl.className = 'node-label';
+        nodeEl.id = 'node_'+temp_id;
+        nodeEl.style.visibility = "hidden";
+        nodeEl.style.objectFit = "contain";
+        nodeEl.style.maxWidth = "100px";
+    nodeEl.style.maxHeight = "100px";
+        const css_obj = new THREE.CSS2DObject(nodeEl);
+        target_node.__threeObj.add(css_obj); 
+        field.parentElement.children[1].children[0].checked=true;
+        }
+        else{
+        let mesh = target_node.__threeObj.children[0];
+        const nodeEl = document.createElement('div');
+        nodeEl.textContent =field.value;
+        nodeEl.className = 'node-label';
+        nodeEl.id = 'node_'+temp_id;
+        nodeEl.style.visibility = "hidden";
+        nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
+        const css_obj = new THREE.CSS2DObject(nodeEl);
+        target_node.__threeObj.add(css_obj); 
+        field.parentElement.children[1].children[0].checked=false;
+        }
+
+        console.log(target_node);
+        console.log(gData);
+        Graph.graphData(gData);
+        
+    }
     document.getElementById("download_file").onclick = function () {
       var pom = document.createElement('a');
       console.log(gData);
@@ -611,7 +641,7 @@
 
     let new_checkbox = document.createElement("input");
     new_checkbox.type = "checkbox";
-    if (node.text.indexOf("img src")!=-1){
+    if(is_image(node.text)){
     new_checkbox.checked = true;
     }
     let new_slider = document.createElement("span");
@@ -624,20 +654,14 @@
     new_textarea.textContent = node.text;
     new_textarea.rows = "2";
     new_textarea.cols = "40";
-    new_textarea.onchange = (event)=>{
-    let field = event.target;
-    let temp_id = field.parentElement.children[0].textContent;
-    document.getElementById('node_'+temp_id).textContent = field.value;
-    Graph.graphData(gData);
-    };
+    new_textarea.onchange = (event)=>{text_change(event);};
     new_switch.appendChild(new_checkbox);
     new_switch.appendChild(new_slider);
     new_container.appendChild(new_num);
     new_container.appendChild(new_switch);
     new_container.appendChild(new_textarea);
     node_container.appendChild(new_container);
-
-}
+    }
     document.getElementById("close_drop").onclick = function () {
       const drop_area = document.getElementById("drop_area")
       drop_area.style.display = "none";
@@ -691,7 +715,7 @@
 
     let new_checkbox = document.createElement("input");
     new_checkbox.type = "checkbox";
-    if (node.text.indexOf("img src")!=-1){
+    if(is_image(node.text)){
     new_checkbox.checked = true;
     }
     let new_slider = document.createElement("span");
@@ -704,13 +728,7 @@
     new_textarea.textContent = node.text;
     new_textarea.rows = "2";
     new_textarea.cols = "40";
-    new_textarea.onchange = (event)=>{
-    let field = event.target;
-    let temp_id = field.parentElement.children[0].textContent;
-
-    document.getElementById('node_'+temp_id).textContent = field.value;
-    Graph.graphData(gData);
-    };
+    new_textarea.onchange = (event)=>{text_change(event);};
     
     new_switch.appendChild(new_checkbox);
     new_switch.appendChild(new_slider);
