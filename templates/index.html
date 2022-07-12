@@ -301,44 +301,43 @@
     };
     const node_container = document.getElementById("node_lister");
     gData.nodes.forEach(node =>{
-    let new_container = document.createElement("div");
-    new_container.className = "content_container";
-    let new_num = document.createElement("h1");
-    new_num.textContent = node.id;
-    let new_switch = document.createElement("label");
-    new_switch.className = "switch";
-
-    let new_checkbox = document.createElement("input");
-    new_checkbox.type = "checkbox";
-    let new_slider = document.createElement("span");
-    new_slider.className = "slider";
-
-    let new_textarea = document.createElement("textarea");
-    new_textarea.className = "node_content";
-    new_textarea.rows = "2";
-    new_textarea.cols = "40";
-    new_textarea.onchange = (event)=>{text_change(event);};
-    
-    new_switch.appendChild(new_checkbox);
-    new_switch.appendChild(new_slider);
-    new_container.appendChild(new_num);
-    new_container.appendChild(new_switch);
-    new_container.appendChild(new_textarea);
-    node_container.appendChild(new_container);
+    create_node(node);
     });
+
     //create neighbors for animation
     gData.links.forEach(link => {
       const a = gData.nodes[link.source];
       const b = gData.nodes[link.target];
-      !a.neighbors && (a.neighbors = []);
-      !b.neighbors && (b.neighbors = []);
-      a.neighbors.push(b);
-      b.neighbors.push(a);
+            if(a.neighbors === null){
+            a.neighbors = [];
+            }
+            if(b.neighbors === null){
+            b.neighbors = [];
+            }
+            !a.neighbors && (a.neighbors = []);
+            !b.neighbors && (b.neighbors = []);
+            a.neighbors.push(b);
+            b.neighbors.push(a);
 
-      !a.links && (a.links = []);
-      !b.links && (b.links = []);
-      a.links.push(link);
-      b.links.push(link);
+            if(a.links === null){
+            a.links = [];
+            }
+            if(b.links === null){
+            b.links = [];
+            }
+            !a.links && (a.links = []);
+            !b.links && (b.links = []);
+            a.links.push(link);
+            b.links.push(link);
+          
+    });
+    gData.nodes.forEach(node=>{
+    if(Object.keys(node).indexOf('neighbors') === -1){
+    node.neighbors = [];
+    }
+    if(Object.keys(node).indexOf('links') === -1){
+    node.links = [];
+    }
     });
     // bloom config
     const bloomPass = new UnrealBloomPass();
@@ -539,10 +538,26 @@
           }
         })
       .linkWidth(link => highlightLinks.has(link) ? 4 : 1)
+      .onLinkClick((link,event)=>{
+      if(event.altKey){
+        remove_item(gData.links,link);
+        Graph.graphData(gData);
+      }
+      })
       .linkDirectionalParticles(link => highlightLinks.has(link) ? 4 : 0)
       .linkDirectionalParticleWidth(4)
       .postProcessingComposer().addPass(bloomPass);
-
+function remove_item(arr, value) {
+  var i = 0;
+  while (i < arr.length) {
+    if (arr[i] === value) {
+      arr.splice(i, 1);
+    } else {
+      ++i;
+    }
+  }
+  return arr;
+}
     document.getElementById("add_submit").onclick = function () {
       gData.nodes.push({ id: gData.nodes.length + 1, text: "", name:gData.nodes.length+1,val:10, neighbors: [], links: [] });
       console.log(gData);
@@ -657,11 +672,31 @@
     new_textarea.rows = "2";
     new_textarea.cols = "40";
     new_textarea.onchange = (event)=>{text_change(event);};
+
+    let new_focus = document.createElement("button");
+    new_focus.type ="button";
+    new_focus.onclick = (event)=>{
+        let temp_id = event.target.parentElement.children[0].textContent;
+        let node = gData.nodes.at(temp_id-1);
+const distance = 40;
+          const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+
+          const newPos = node.x || node.y || node.z
+            ? { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }
+            : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
+
+          Graph.cameraPosition(
+            newPos, // new position
+            node, // lookAt ({ x, y, z })
+            3000  // ms transition duration
+          );
+    };
     new_switch.appendChild(new_checkbox);
     new_switch.appendChild(new_slider);
     new_container.appendChild(new_num);
     new_container.appendChild(new_switch);
     new_container.appendChild(new_textarea);
+    new_container.appendChild(new_focus);
     node_container.appendChild(new_container);
     }
     document.getElementById("close_drop").onclick = function () {
@@ -692,11 +727,23 @@
             const a = gData.nodes[link.source - 1];
             const b = gData.nodes[link.target - 1];
             console.log(b);
+            if(a.neighbors === null){
+            a.neighbors = [];
+            }
+            if(b.neighbors === null){
+            b.neighbors = [];
+            }
             !a.neighbors && (a.neighbors = []);
             !b.neighbors && (b.neighbors = []);
             a.neighbors.push(b);
             b.neighbors.push(a);
 
+            if(a.links === null){
+            a.links = [];
+            }
+            if(b.links === null){
+            b.links = [];
+            }
             !a.links && (a.links = []);
             !b.links && (b.links = []);
             a.links.push(link);
@@ -710,34 +757,13 @@
           old_containers[i].remove();
           }
     gData.nodes.forEach(node =>{
-    let new_container = document.createElement("div");
-    new_container.className = "content_container";
-    let new_switch = document.createElement("label");
-    new_switch.className = "switch";
-
-    let new_checkbox = document.createElement("input");
-    new_checkbox.type = "checkbox";
-    if(is_image(node.text)){
-    new_checkbox.checked = true;
+    if(Object.keys(node).indexOf('neighbors') === -1){
+    node.neighbors = [];
     }
-    let new_slider = document.createElement("span");
-    new_slider.className = "slider";
-
-    let new_num = document.createElement("h1");
-    new_num.textContent = node.id;
-    let new_textarea = document.createElement("textarea");
-    new_textarea.className = "node_content";
-    new_textarea.textContent = node.text;
-    new_textarea.rows = "2";
-    new_textarea.cols = "40";
-    new_textarea.onchange = (event)=>{text_change(event);};
-    
-    new_switch.appendChild(new_checkbox);
-    new_switch.appendChild(new_slider);
-    new_container.appendChild(new_num);
-    new_container.appendChild(new_switch);
-    new_container.appendChild(new_textarea);
-    node_container.appendChild(new_container);
+    if(Object.keys(node).indexOf('links') === -1){
+    node.links = [];
+    }
+    create_node(node);
     });
           Graph.graphData(gData);
         }, false);
