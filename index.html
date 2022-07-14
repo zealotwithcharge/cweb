@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<!--TO DO: refer to shapes, graph variable can be used to get node objects and set the parameters-->
+
+
+<html lang="en-us">
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+
+.node-label {
+    font-size: 12px;
+    padding: 1px 4px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+    body {
+        height: 100vh;
+        width: 100vw;
+    }
+
+    body {
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+        overflow: hidden !important;
+    }
+    h1 {
+        font-size:1em;
+        padding-right:1vw;
+    }
+    #interface {
+        height: 100%;
+        width: 33.3333%;
+        display: flex;
+        flex-direction: column;
+        padding: 1%;
+    }
+
+    #add_node {
+        height: 20%;
+        width: 100%;
+        resize: none;
+    }
+
+    #add_submit {
+        height: min-content;
+        width: 100%;
+
+    }
+
+    #load_file,
+    #download_file {
+        height: 100%;
+        width: 50%;
+    }
+
+    #db_buttons,
+    #submit_button {
+        display: flex;
+        flex-direction: row;
+        height: 7.5%;
+        width: 100%;
+    }
+
+    #submit_button {
+        flex-direction: row-reverse !important;
+    }
+
+    #drop_area {
+        position: fixed;
+        top: 20%;
+        bottom: 20%;
+        right: 20%;
+        display: none;
+        left: 20%;
+        text-align: center;
+        color: rgb(180, 180, 180);
+        background: white;
+        height: 60%;
+        line-height: 100%;
+        width: 60%;
+        z-index: 10;
+        border: 2px solid grey;
+        border-radius: 5px;
+        vertical-align: middle;
+    }
+
+    .dummy {
+        height: auto;
+        width: auto;
+    }
+
+    #drag_text {
+        position: absolute;
+        top: 50%;
+        bottom: 50%;
+        right: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min-content;
+        white-space: nowrap;
+    }
+
+    .close {
+        color: grey;
+        position: absolute;
+        top: 5%;
+        right: 2.5%;
+        font-size: 3vw;
+
+    }
+
+    #node_lister {
+        display:flex;
+        flex-direction:column;
+        overflow-y:scroll;
+        height:80%;
+
+    }
+    .close:hover {
+        cursor: pointer;
+    }
+
+    .switch {
+        font-size:1vw;
+        position: relative;
+        display: inline-block;
+        width: 3.6em;
+        height: 4em;
+        font-family: Arial, Helvetica, sans-serif;
+        border-radius:5px;
+    }
+    .slider_text{
+        font-size:1vw;
+        position:absolute;
+    }
+
+    .switch input { 
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #000066;
+        -webkit-transition: .4s;
+        transition: .4s;
+        border-radius:5px;
+    }
+
+    .slider:before {
+        position: absolute;
+        height: 1.4em;
+        content:"TXT";
+        color:#000066;
+        width: 2.8em; 
+        vertical-align:sub;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-direction: column;
+        text-align:center;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+        top:.1em;
+        left:1%;
+        right:1%;
+        border-radius:5px;
+    }
+
+    input:checked + .slider {
+        background-color: maroon;
+        color:maroon;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px maroon;
+    }
+
+    input:checked + .slider:before {
+        content:"IMG";
+        color:maroon;
+        -webkit-transform: translateY(2.4em);
+        -ms-transform: translateY(2.4em);
+        transform: translateY(2.4em);
+    }
+    .scene-container div img{
+  pointer-events:auto;
+}
+
+.scene-container div .grabbable {
+  cursor: move !important;
+  cursor: grab !important;
+  cursor: -moz-grab !important;
+  cursor: -webkit-grab !important;
+}
+
+.scene-container div .grabbable:active {
+  cursor: grabbing !important;
+  cursor: -moz-grabbing !important;
+  cursor: -webkit-grabbing !important;
+}
+    .node_content{
+        resize:none;
+        overflow-y:scroll;
+    }
+    .content_container{
+        display:flex;
+        flex-direction:row;
+    }
+        </style>
+        <script src="//unpkg.com/d3-dsv"></script>
+        <script src="//unpkg.com/dat.gui"></script>
+        <script src="//unpkg.com/d3-octree"></script>
+        <script src="//unpkg.com/d3-force-3d"></script>
+        <script src="//unpkg.com/three"></script>
+        <script src="//unpkg.com/three/examples/js/renderers/CSS2DRenderer.js"></script>
+        <script src="//unpkg.com/3d-force-graph"></script>
+        <!--<script src="../../dist/3d-force-graph.js"></script>-->
+        <title>Charlette's Web</title>
+    </head>
+
+    <body>
+        <div id="drop_area"><span class="close" id="close_drop">&times;</span><span id="drag_text">Drag and drop file
+                here</span></div>
+        <div id="interface">
+
+            <div id="node_lister">
+                <!-- content_container template
+                <div class ="content_container">
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+
+                    <textarea class="node_content" rows="2" cols="40"></textarea>
+                </div>
+                --!>
+            </div>
+            
+            <!--
+            <label for="add_node">Add Node</label>
+            <textarea id="add_node" name="add_node" rows="3" cols="50"></textarea>
+            --!>
+            <div id="submit_button">
+                <div class="dummy"></div>
+                <button type="button" id="add_submit">Add Node</button>
+                <div class="dummy"></div>
+            </div>
+
+            <div id="db_buttons">
+                <div class="dummy"></div>
+                <button type="button" id="load_file">load database</button>
+                <button type="button" id="download_file">download database</button>
+            </div>
+
+        </div>
+        <div id="3d-graph"></div>
+
+        <script type="module">
+            import { UnrealBloomPass } from '//cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+    const ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
+    const bloomLayer = new THREE.Layers();
+    bloomLayer.set(BLOOM_SCENE);
+
+    const materials = {};
+    // controls
+    const controls = { 'DAG Orientation': 'td' };
+    const gui = new dat.GUI();
+    gui.add(controls, 'DAG Orientation', ['td', 'bu', 'lr', 'rl', 'zout', 'zin', 'radialout', 'radialin', null])
+      .onChange(orientation => graph && graph.dagMode(orientation));
+
+    // graph config
+    const NODE_REL_SIZE = 6;
+    const graph = ForceGraph3D()
+      .dagMode('td')
+      .dagLevelDistance(200)
+      .backgroundColor('#101020')
+      .linkColor(() => 'rgba(255,255,255,0.2)')
+      .nodeRelSize(NODE_REL_SIZE)
+      .nodeId('path')
+      .nodeVal('size')
+      .nodeOpacity(0.9)
+      .linkDirectionalParticles(2)
+      .linkDirectionalParticleWidth(0.8)
+      .linkDirectionalParticleSpeed(0.006)
+      .d3Force('collision', d3.forceCollide(node => Math.cbrt(node.size) * NODE_REL_SIZE))
+      .d3VelocityDecay(0.3);
+
+    // Decrease repel intensity
+    graph.d3Force('charge').strength(-15);
+
+    // Graph Data 
+    const nodes = [{ id: 1, name: "", val: 10, text: "" ,neighbors: [],links:[]}];
+    const links = [];
+    var gData = {
+      nodes, links
+    };
+    const node_container = document.getElementById("node_lister");
+    gData.nodes.forEach(node =>{
+    create_node(node);
+    });
+
+    //create neighbors for animation
+    gData.links.forEach(link => {
+      const a = gData.nodes[link.source];
+      const b = gData.nodes[link.target];
+            if(a.neighbors === null){
+            a.neighbors = [];
+            }
+            if(b.neighbors === null){
+            b.neighbors = [];
+            }
+            !a.neighbors && (a.neighbors = []);
+            !b.neighbors && (b.neighbors = []);
+            a.neighbors.push(b);
+            b.neighbors.push(a);
+
+            if(a.links === null){
+            a.links = [];
+            }
+            if(b.links === null){
+            b.links = [];
+            }
+            !a.links && (a.links = []);
+            !b.links && (b.links = []);
+            a.links.push(link);
+            b.links.push(link);
+          
+    });
+    gData.nodes.forEach(node=>{
+    if(Object.keys(node).indexOf('neighbors') === -1){
+    node.neighbors = [];
+    }
+    if(Object.keys(node).indexOf('links') === -1){
+    node.links = [];
+    }
+    });
+    // bloom config
+    const bloomPass = new UnrealBloomPass();
+    bloomPass.strength = 1;
+    bloomPass.radius = 1;
+    bloomPass.threshold = 0.5;
+    const darkMaterial = new THREE.MeshBasicMaterial({ color: 'black' });
+    let selectedNodes = new Set();
+    let visible_node;
+    let visible_nodes = new Set();
+    let highlightLinks = new Set();
+    // graph definition
+    var Graph = ForceGraph3D({
+      extraRenderers: [new THREE.CSS2DRenderer()]
+    })(document.getElementById('3d-graph'));
+    Graph.graphData(gData)
+      .width(document.defaultView.innerWidth * 2 / 3)
+      .nodeLabel('id')
+      .nodeColor((node) => node.id % 2 === 1 ? 'yellow' : 'blue')
+      .linkDirectionalArrowLength(3.5)
+      .d3VelocityDecay(0.75)
+      .linkDirectionalArrowRelPos(0.5)
+      .nodeThreeObject(node => {
+        const mesh = new THREE.Mesh(
+          new THREE.SphereGeometry(NODE_REL_SIZE),
+          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
+        const group = new THREE.Group();
+        group.add(mesh);
+    if(!is_image(node.text)){
+        const nodeEl = document.createElement('div');
+        nodeEl.textContent = node.text;
+        nodeEl.className = 'node-label';
+        nodeEl.id = 'node_'+node.id; 
+        nodeEl.style.visibility = "hidden";
+        nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
+        const css_obj = new THREE.CSS2DObject(nodeEl);
+        group.add(css_obj);
+        }
+        else{
+        const nodeEl = document.createElement('img');
+        nodeEl.src = node.text;
+        nodeEl.className = 'node-label';
+        nodeEl.id = 'node_'+node.id; 
+        nodeEl.style.visibility = "hidden";
+        nodeEl.style.objectFit = "contain";
+        nodeEl.style.maxWidth = "100px";
+        nodeEl.style.maxHeight = "100px";
+        nodeEl.style.pointerEvents = "auto";
+        nodeEl.ondragend = (event) =>{
+        up(event);
+        event.target.style.pointerEvents ="auto";
+        };
+        nodeEl.onmousemove = (event) =>{
+        move(event.clientX,event.clientY);
+        };
+        nodeEl.onmousedown = (event)=>{
+
+        let elem = event.target;
+        if (elem.style.visibility != "hidden"){
+        const split_transform = elem.style.transform.split('translate(');
+        const split_xy = split_transform[2].split('px, ');
+        let elem_x = parseFloat(split_xy[0]);
+        let elem_y = parseFloat(split_xy[1].slice(0,-3));
+
+        let selected_node = null;
+        let selected_distance = 0;
+        
+        gData.nodes.forEach(node=>{
+        let coord = Graph.graph2ScreenCoords(node['x'],node['y'],node['z']);
+        let camera_coord = Graph.cameraPosition();
+        /*
+        if(coord.x < elem_x+elem.clientWidth && coord.x > elem_x
+          && coord.y < elem_y +elem.clientHeight && coord.y > elem_y)
+          */
+          if(Math.abs(coord.x-elem_x)<1 && Math.abs(coord.y-elem_y)<1)
+          {
+            let temp_distance = Math.sqrt(Math.pow(camera_coord.x - node['x'])+Math.pow(camera_coord.y - node['y'])+Math.pow(camera_coord.z - node['z']));
+            if (temp_distance < selected_distance){
+            selected_node = node;
+            selected_distance = temp_distance;
+            }
+            else if (selected_distance === 0){
+
+            selected_node = node;
+            selected_distance = temp_distance;
+            }
+
+          }
+        });
+        console.log('image_xy');
+        console.log(selected_node);
+        let node_coords = Graph.graph2ScreenCoords(node['x'],node['y'],node['z']);
+        let scene = document.getElementsByClassName('scene-container')[0].children[2].getBoundingClientRect();
+        //elem.style.pointerEvents = 'none';
+        console.log(node_coords);
+        console.log(scene.left);
+        console.log(scene.top);
+        down(scene.left,node_coords.x,scene.top,node_coords.y);
+}
+        };
+
+        nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
+        const css_obj = new THREE.CSS2DObject(nodeEl);
+        group.add(css_obj);
+        }
+        return group;
+
+      }
+      )
+      .onNodeHover((node, prev_node) => {
+        if (node) {
+        if(is_image(node.text)){
+const imgTexture = new THREE.TextureLoader().load(node.text+'/allow_cors');
+        const material = new THREE.SpriteMaterial({ map: imgTexture });
+        const sprite = new THREE.Sprite(material);
+        sprite.scale.set(12, 12);
+        node.__threeObj = sprite;
+        }
+        else{
+          node.__threeObj.children[1].element.style.visibility = "visible";
+          visible_node = node;
+          }
+        }
+        else if (visible_node != null) {
+        if(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node)+'/allow_cors'){
+        if(is_image(visible_node.text)){
+const imgTexture = new THREE.TextureLoader().load(visible_node.text);
+        const mesh = new THREE.Mesh(
+          new THREE.SphereGeometry(NODE_REL_SIZE),
+          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
+        visible_node.__threeObj = mesh;
+        }
+        else{
+          visible_node.__threeObj.children[1].element.style.visibility = "hidden";
+          }
+          }
+          visible_node = null;
+        }
+      })
+      .onNodeDrag((node, translate) => {
+        if (selectedNodes.has(node)) { // moving a selected node
+          [...selectedNodes]
+            .filter(selNode => selNode !== node) // don't touch node being dragged
+            .forEach(node => ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = node[coord] + translate[coord])); // translate other nodes by same amount
+        }
+      })
+      .onNodeDragEnd(node => {
+        if (selectedNodes.has(node)) { // finished moving a selected node
+          [...selectedNodes]
+            .filter(selNode => selNode !== node) // don't touch node being dragged
+            .forEach(node => ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = undefined)); // unfix controlled nodes
+        }
+      })
+      .onNodeClick((node, event) => {
+
+        console.log(node);
+        if (event.shiftKey) { // multi-selection
+          selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
+          if (selectedNodes.has(node)) {
+            node.__threeObj.children[0].material.color.r *= 2;
+            node.__threeObj.children[0].material.color.g *= 2;
+            node.__threeObj.children[0].material.color.b *= 2;
+            node.__threeObj.children[1].element.style.visibility = "visible";
+            visible_nodes.add(node);
+            visible_node = null;
+            if (selectedNodes.size === 1) {
+              if (node.links != null) {
+                node.links.forEach(link => highlightLinks.add(link));
+                updateHighlight();
+              }
+            }
+            else {
+              highlightLinks.clear();
+              selectedNodes.forEach(from_node => {
+                selectedNodes.forEach(to_node => {
+                  if (from_node.links != null) {
+                    from_node.links.forEach(link => {
+                      console.log(link);
+                      if (link.source === from_node && link.target === to_node) {
+                        highlightLinks.add(link);
+                      }
+                      updateHighlight();
+                    });
+                  }
+                });
+              });
+            }
+          }
+          else {
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+            visible_nodes.delete(node);
+            node.__threeObj.children[0].material.color.r /= 2;
+            node.__threeObj.children[0].material.color.g /= 2;
+            node.__threeObj.children[0].material.color.b /= 2;
+            highlightLinks.forEach(link => {
+              if (link.source === node || link.target === node) {
+                highlightLinks.delete(link);
+              }
+              updateHighlight();
+            });
+          }
+        }
+        //create link
+        else if (event.ctrlKey) {
+          selectedNodes.forEach(small_node => {
+            const temp_link = { source: small_node.id, target: node.id, targetNode: node }
+            let flag = true;
+            small_node.links.forEach(link=>{
+            if(link.source===small_node && link.target===node){
+            flag = false;
+            }
+            })
+            if(small_node.id != node.id && flag){
+            gData.links.push(temp_link);
+            gData.nodes[small_node.id - 1].neighbors.push(node);
+            gData.nodes[small_node.id - 1].links.push(temp_link);
+            gData.nodes[node.id - 1].neighbors.push(small_node);
+            gData.nodes[node.id - 1].links.push(temp_link);
+            }
+          });
+            Graph.graphData(gData);
+            selectedNodes.forEach(selected => {
+            selected.__threeObj.children[0].material.color.r *= 1;
+            selected.__threeObj.children[0].material.color.g *= 1;
+            selected.__threeObj.children[0].material.color.b *= 1;
+
+
+              if (selected.links != null) {
+                selected.links.forEach(link => highlightLinks.add(link));
+                updateHighlight();
+              }
+              else {
+                highlightLinks.clear();
+                selectedNodes.forEach(from_selected => {
+                  selectedNodes.forEach(to_selected => {
+                    if (from_selected.links != null) {
+                      from_selected.links.forEach(link => {
+                        if (link.source === from_selected && link.target === to_selected) {
+                          highlightLinks.add(link);
+                        }
+                        updateHighlight();
+                      });
+                    }
+                  });
+                });
+              }
+            });
+            }
+        else if (event.altKey) {
+            visible_node = null;
+            if (visible_nodes.has(node)) {
+              node.__threeObj.children[1].element.style.visibility = "hidden";
+              visible_nodes.delete(node);
+            }
+            else {
+              node.__threeObj.children[1].element.style.visibility = "visible";
+              visible_nodes.add(node);
+
+            }
+          }
+          else { // single-selection
+            const untoggle = selectedNodes.has(node) && selectedNodes.size === 1;
+            selectedNodes.clear();
+            !untoggle && selectedNodes.add(node);
+          }
+        })
+      .linkWidth(link => highlightLinks.has(link) ? 4 : 1)
+      .onLinkClick((link,event)=>{
+      if(event.altKey){
+        remove_item(gData.links,link);
+        Graph.graphData(gData);
+      }
+      })
+      .linkDirectionalParticles(link => highlightLinks.has(link) ? 4 : 0)
+      .linkDirectionalParticleWidth(4)
+      .postProcessingComposer().addPass(bloomPass);
+function remove_item(arr, value) {
+  var i = 0;
+  while (i < arr.length) {
+    if (arr[i] === value) {
+      arr.splice(i, 1);
+    } else {
+      ++i;
+    }
+  }
+  return arr;
+}
+    document.getElementById("add_submit").onclick = function () {
+      gData.nodes.push({ id: gData.nodes.length + 1, text: "", name:gData.nodes.length+1,val:10, neighbors: [], links: [] });
+      create_node(gData.nodes.at(-1));
+      Graph.graphData(gData);
+    };
+    function updateHighlight() {
+      // trigger update of highlighted objects in scene
+      Graph
+        .linkWidth(Graph.linkWidth())
+        .linkDirectionalParticles(Graph.linkDirectionalParticles());
+    }
+    function is_image(url){
+  return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
+    }
+    function text_change(event){
+        let field = event.target;
+        let temp_id = field.parentElement.children[0].textContent;
+        let target_node = gData.nodes.at(temp_id-1);
+        target_node.__threeObj.children[1].removeFromParent();
+        
+        if(is_image(field.value)){
+        const nodeEl = document.createElement('img');
+        nodeEl.src = field.value;
+        nodeEl.className = 'node-label';
+        nodeEl.id = 'node_'+temp_id;
+        nodeEl.style.visibility = "hidden";
+        nodeEl.style.objectFit = "contain";
+        nodeEl.style.maxWidth = "100px";
+    nodeEl.style.maxHeight = "100px";
+        const css_obj = new THREE.CSS2DObject(nodeEl);
+        target_node.__threeObj.add(css_obj); 
+        field.parentElement.children[1].children[0].checked=true;
+        }
+        else{
+        let mesh = target_node.__threeObj.children[0];
+        const nodeEl = document.createElement('div');
+        nodeEl.textContent =field.value;
+        nodeEl.className = 'node-label';
+        nodeEl.id = 'node_'+temp_id;
+        nodeEl.style.visibility = "hidden";
+        nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
+        const css_obj = new THREE.CSS2DObject(nodeEl);
+        target_node.__threeObj.add(css_obj); 
+        field.parentElement.children[1].children[0].checked=false;
+        }
+
+        Graph.graphData(gData);
+        
+    }
+function down(x1,x2,y1,y2){
+    var ev = document.createEvent('MouseEvent');
+    ev.initMouseEvent(
+
+        "click",
+        true /* bubble */, true /* cancelable */,
+        window, null,
+        0,0,x1+x2, y1+y2, /* coordinates */
+        false, false, false, false, /* modifier keys */
+        0 /*left*/, null
+        );
+    var el = document.getElementsByClassName('scene-container')[0].children[2];
+    console.log(x1);
+    console.log(x2);
+    console.log(y1);
+    console.log(y2);
+    /*
+    let hm = document.createElement('p');
+    hm.style.position="absolute";
+    hm.style.left=x+'px';
+    hm.style.top=y+'px';
+    hm.style.width ='min-content';
+    hm.style.height ='min-content';
+    hm.style.color = 'white';
+    hm.style.margin = '0';
+    hm.style.zIndex = '100000';
+    hm.innerHTML = '0'
+    hm.pointerEvents = 'none';
+    document.body.appendChild(hm);
+    */
+    e
+    console.log(ev);
+}
+function move(x,y){
+    var ev = document.createEvent('MouseEvent');
+    ev.initMouseEvent(
+
+        "mousemove",
+        true /* bubble */, true /* cancelable */,
+        window, null,
+        x, y, 0, 0, /* coordinates */
+        false, false, false, false, /* modifier keys */
+        0 /*left*/, null
+        );
+    var el = document.getElementsByClassName('scene-container')[0].children[2];
+    el.dispatchEvent(ev);
+
+}
+    
+    document.getElementsByClassName('scene-container')[0].children[2].onclick = (event)=>{
+    console.log(event);
+    };
+    document.getElementsByClassName('scene-container')[0].children[2].onmousedown = (event)=>{
+    console.log(event);
+    };
+function up(event){
+    console.log('mouseup');
+    var ev = document.createEvent('MouseEvent');
+    ev.initMouseEvent('mouseup');
+    var el = document.getElementsByClassName('scene-container')[0].children[2];
+    el.dispatchEvent(ev);
+}
+    document.getElementById("download_file").onclick = function () {
+      var pom = document.createElement('a');
+      let db_string = '{"nodes":[';
+      gData.nodes.forEach(node => {
+        db_string += '{"id": "' + node.id + '","name": "' + node.name + '","val": ' + node.val + ',"text": "' + node.text + '"},';
+      }
+      )
+      db_string = db_string.slice(0, -1);
+      db_string += '],"links":[';
+      gData.links.forEach(link => {
+        db_string += '{"source": "' + link.source.id + '","target": "' + link.target.id + '"},';
+      })
+      if (gData.links.length>0){
+
+      db_string = db_string.slice(0, -1);
+      }
+      db_string += ']}';
+
+      pom.setAttribute('href', 'data:text/plain;charset=utf-8,' +
+        encodeURIComponent(db_string));
+      var currentdate = new Date();
+      var datetime = currentdate.getDate() + "-"
+        + (currentdate.getMonth() + 1) + "-"
+        + currentdate.getFullYear() + "_"
+        + currentdate.getHours() + "-"
+        + currentdate.getMinutes() + "-"
+        + currentdate.getSeconds() + ".json";
+
+      pom.setAttribute('download', datetime);
+
+      pom.style.display = 'none';
+      document.body.appendChild(pom);
+
+      pom.click();
+
+      document.body.removeChild(pom);
+    }
+    function create_node(node){
+
+    let new_container = document.createElement("div");
+    new_container.className = "content_container";
+    let new_switch = document.createElement("label");
+    new_switch.className = "switch";
+
+    let new_checkbox = document.createElement("input");
+    new_checkbox.type = "checkbox";
+    if(is_image(node.text)){
+    new_checkbox.checked = true;
+    }
+    let new_slider = document.createElement("span");
+    new_slider.className = "slider";
+
+    let new_num = document.createElement("h1");
+    new_num.textContent = node.id;
+    let new_textarea = document.createElement("textarea");
+    new_textarea.className = "node_content";
+    new_textarea.textContent = node.text;
+    new_textarea.rows = "2";
+    new_textarea.cols = "40";
+    new_textarea.onchange = (event)=>{text_change(event);};
+
+    let new_focus = document.createElement("button");
+    new_focus.type ="button";
+    new_focus.onclick = (event)=>{
+        let temp_id = event.target.parentElement.children[0].textContent;
+        let node = gData.nodes.at(temp_id-1);
+const distance = 40;
+          const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+
+          const newPos = node.x || node.y || node.z
+            ? { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }
+            : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
+
+          Graph.cameraPosition(
+            newPos, // new position
+            node, // lookAt ({ x, y, z })
+            3000  // ms transition duration
+          );
+    };
+    new_switch.appendChild(new_checkbox);
+    new_switch.appendChild(new_slider);
+    new_container.appendChild(new_num);
+    new_container.appendChild(new_switch);
+    new_container.appendChild(new_textarea);
+    new_container.appendChild(new_focus);
+    node_container.appendChild(new_container);
+    }
+    document.getElementById("close_drop").onclick = function () {
+      const drop_area = document.getElementById("drop_area")
+      drop_area.style.display = "none";
+    }
+    document.getElementById("load_file").onclick = function () {
+      
+      const drop_area = document.getElementById("drop_area")
+      drop_area.style.display = "block";
+      drop_area.addEventListener('dragover', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        // Style the drag-and-drop as a "copy file" operation.
+        event.dataTransfer.dropEffect = 'copy';
+      });
+
+      drop_area.addEventListener('drop', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        const fileList = event.dataTransfer.files;
+        const reader = new FileReader();
+        var json_string = ""
+        reader.addEventListener("load", () => { // this will then display a text file
+          json_string = reader.result;
+          gData = JSON.parse(json_string);
+          gData.links.forEach(link => {
+            const a = gData.nodes[link.source - 1];
+            const b = gData.nodes[link.target - 1];
+            if(a.neighbors === null){
+            a.neighbors = [];
+            }
+            if(b.neighbors === null){
+            b.neighbors = [];
+            }
+            !a.neighbors && (a.neighbors = []);
+            !b.neighbors && (b.neighbors = []);
+            a.neighbors.push(b);
+            b.neighbors.push(a);
+
+            if(a.links === null){
+            a.links = [];
+            }
+            if(b.links === null){
+            b.links = [];
+            }
+            !a.links && (a.links = []);
+            !b.links && (b.links = []);
+            a.links.push(link);
+            b.links.push(link);
+          });
+          let old_containers = document.getElementsByClassName("content_container");
+          for(let i = old_containers.length-1; i>=0;i--){
+          old_containers[i].remove();
+          }
+    gData.nodes.forEach(node =>{
+    if(Object.keys(node).indexOf('neighbors') === -1){
+    node.neighbors = [];
+    }
+    if(Object.keys(node).indexOf('links') === -1){
+    node.links = [];
+    }
+    create_node(node);
+    });
+          Graph.graphData(gData);
+        }, false);
+        if (fileList[0]) {
+          reader.readAsText(fileList[0]);
+        }
+
+
+        drop_area.style.display = "none";
+      });
+    }
+
+        </script>
+    </body>
+
+</html>
