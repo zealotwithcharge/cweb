@@ -13,7 +13,6 @@
     padding: 1px 4px;
     border-radius: 4px;
     background-color: rgba(0, 0, 0, 0.5);
-    user-select: none;
 }
     body {
         height: 100vh;
@@ -193,7 +192,22 @@
         -ms-transform: translateY(2.4em);
         transform: translateY(2.4em);
     }
+    .scene-container div img{
+  pointer-events:auto;
+}
 
+.scene-container div .grabbable {
+  cursor: move !important;
+  cursor: grab !important;
+  cursor: -moz-grab !important;
+  cursor: -webkit-grab !important;
+}
+
+.scene-container div .grabbable:active {
+  cursor: grabbing !important;
+  cursor: -moz-grabbing !important;
+  cursor: -webkit-grabbing !important;
+}
     .node_content{
         resize:none;
         overflow-y:scroll;
@@ -288,14 +302,6 @@
     // Graph Data 
     const nodes = [{ id: 1, name: "", val: 10, text: "" ,neighbors: [],links:[]}];
     const links = [];
-    /*
-    {% for node in raw_nodes %}
-    nodes.push({ id: {{ node }}, name: "", val: 10, text: ""});
-    {% endfor %}
-    {% for pair in raw_links %}
-    links.push({ source: {{ pair[0]}}, target: {{ pair[1]}}, targetNode: nodes[{{ pair[1]}}]});
-    {% endfor %}
-    */
     var gData = {
       nodes, links
     };
@@ -384,8 +390,61 @@
         nodeEl.style.visibility = "hidden";
         nodeEl.style.objectFit = "contain";
         nodeEl.style.maxWidth = "100px";
-    nodeEl.style.maxHeight = "100px";
+        nodeEl.style.maxHeight = "100px";
+        nodeEl.style.pointerEvents = "auto";
+        nodeEl.ondragend = (event) =>{
+        up(event);
+        event.target.style.pointerEvents ="auto";
+        };
+        nodeEl.onmousemove = (event) =>{
+        move(event.clientX,event.clientY);
+        };
+        nodeEl.onmousedown = (event)=>{
+
+        let elem = event.target;
+        if (elem.style.visibility != "hidden"){
+        const split_transform = elem.style.transform.split('translate(');
+        const split_xy = split_transform[2].split('px, ');
+        let elem_x = parseFloat(split_xy[0]);
+        let elem_y = parseFloat(split_xy[1].slice(0,-3));
+
+        let selected_node = null;
+        let selected_distance = 0;
         
+        gData.nodes.forEach(node=>{
+        let coord = Graph.graph2ScreenCoords(node['x'],node['y'],node['z']);
+        let camera_coord = Graph.cameraPosition();
+        /*
+        if(coord.x < elem_x+elem.clientWidth && coord.x > elem_x
+          && coord.y < elem_y +elem.clientHeight && coord.y > elem_y)
+          */
+          if(Math.abs(coord.x-elem_x)<1 && Math.abs(coord.y-elem_y)<1)
+          {
+            let temp_distance = Math.sqrt(Math.pow(camera_coord.x - node['x'])+Math.pow(camera_coord.y - node['y'])+Math.pow(camera_coord.z - node['z']));
+            if (temp_distance < selected_distance){
+            selected_node = node;
+            selected_distance = temp_distance;
+            }
+            else if (selected_distance === 0){
+
+            selected_node = node;
+            selected_distance = temp_distance;
+            }
+
+          }
+        });
+        console.log('image_xy');
+        console.log(selected_node);
+        let node_coords = Graph.graph2ScreenCoords(node['x'],node['y'],node['z']);
+        let scene = document.getElementsByClassName('scene-container')[0].children[2].getBoundingClientRect();
+        //elem.style.pointerEvents = 'none';
+        console.log(node_coords);
+        console.log(scene.left);
+        console.log(scene.top);
+        down(scene.left,node_coords.x,scene.top,node_coords.y);
+}
+        };
+
         nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
         const css_obj = new THREE.CSS2DObject(nodeEl);
         group.add(css_obj);
@@ -396,13 +455,30 @@
       )
       .onNodeHover((node, prev_node) => {
         if (node) {
+        if(is_image(node.text)){
+const imgTexture = new THREE.TextureLoader().load(node.text+'/allow_cors');
+        const material = new THREE.SpriteMaterial({ map: imgTexture });
+        const sprite = new THREE.Sprite(material);
+        sprite.scale.set(12, 12);
+        node.__threeObj = sprite;
+        }
+        else{
           node.__threeObj.children[1].element.style.visibility = "visible";
           visible_node = node;
+          }
         }
         else if (visible_node != null) {
-        console.log(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node));
-        if(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node)){
+        if(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node)+'/allow_cors'){
+        if(is_image(visible_node.text)){
+const imgTexture = new THREE.TextureLoader().load(visible_node.text);
+        const mesh = new THREE.Mesh(
+          new THREE.SphereGeometry(NODE_REL_SIZE),
+          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
+        visible_node.__threeObj = mesh;
+        }
+        else{
           visible_node.__threeObj.children[1].element.style.visibility = "hidden";
+          }
           }
           visible_node = null;
         }
@@ -423,6 +499,7 @@
       })
       .onNodeClick((node, event) => {
 
+        console.log(node);
         if (event.shiftKey) { // multi-selection
           selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
           if (selectedNodes.has(node)) {
@@ -471,10 +548,7 @@
         }
         //create link
         else if (event.ctrlKey) {
-          console.log(selectedNodes);
           selectedNodes.forEach(small_node => {
-            console.log(small_node.links);
-            console.log(node.id);
             const temp_link = { source: small_node.id, target: node.id, targetNode: node }
             let flag = true;
             small_node.links.forEach(link=>{
@@ -507,7 +581,6 @@
                   selectedNodes.forEach(to_selected => {
                     if (from_selected.links != null) {
                       from_selected.links.forEach(link => {
-                        console.log(link);
                         if (link.source === from_selected && link.target === to_selected) {
                           highlightLinks.add(link);
                         }
@@ -560,8 +633,6 @@ function remove_item(arr, value) {
 }
     document.getElementById("add_submit").onclick = function () {
       gData.nodes.push({ id: gData.nodes.length + 1, text: "", name:gData.nodes.length+1,val:10, neighbors: [], links: [] });
-      console.log(gData);
-      console.log(gData.nodes.at(-1));
       create_node(gData.nodes.at(-1));
       Graph.graphData(gData);
     };
@@ -606,14 +677,73 @@ function remove_item(arr, value) {
         field.parentElement.children[1].children[0].checked=false;
         }
 
-        console.log(target_node);
-        console.log(gData);
         Graph.graphData(gData);
         
     }
+function down(x1,x2,y1,y2){
+    var ev = document.createEvent('MouseEvent');
+    ev.initMouseEvent(
+
+        "click",
+        true /* bubble */, true /* cancelable */,
+        window, null,
+        0,0,x1+x2, y1+y2, /* coordinates */
+        false, false, false, false, /* modifier keys */
+        0 /*left*/, null
+        );
+    var el = document.getElementsByClassName('scene-container')[0].children[2];
+    console.log(x1);
+    console.log(x2);
+    console.log(y1);
+    console.log(y2);
+    /*
+    let hm = document.createElement('p');
+    hm.style.position="absolute";
+    hm.style.left=x+'px';
+    hm.style.top=y+'px';
+    hm.style.width ='min-content';
+    hm.style.height ='min-content';
+    hm.style.color = 'white';
+    hm.style.margin = '0';
+    hm.style.zIndex = '100000';
+    hm.innerHTML = '0'
+    hm.pointerEvents = 'none';
+    document.body.appendChild(hm);
+    */
+    e
+    console.log(ev);
+}
+function move(x,y){
+    var ev = document.createEvent('MouseEvent');
+    ev.initMouseEvent(
+
+        "mousemove",
+        true /* bubble */, true /* cancelable */,
+        window, null,
+        x, y, 0, 0, /* coordinates */
+        false, false, false, false, /* modifier keys */
+        0 /*left*/, null
+        );
+    var el = document.getElementsByClassName('scene-container')[0].children[2];
+    el.dispatchEvent(ev);
+
+}
+    
+    document.getElementsByClassName('scene-container')[0].children[2].onclick = (event)=>{
+    console.log(event);
+    };
+    document.getElementsByClassName('scene-container')[0].children[2].onmousedown = (event)=>{
+    console.log(event);
+    };
+function up(event){
+    console.log('mouseup');
+    var ev = document.createEvent('MouseEvent');
+    ev.initMouseEvent('mouseup');
+    var el = document.getElementsByClassName('scene-container')[0].children[2];
+    el.dispatchEvent(ev);
+}
     document.getElementById("download_file").onclick = function () {
       var pom = document.createElement('a');
-      console.log(gData);
       let db_string = '{"nodes":[';
       gData.nodes.forEach(node => {
         db_string += '{"id": "' + node.id + '","name": "' + node.name + '","val": ' + node.val + ',"text": "' + node.text + '"},';
@@ -726,7 +856,6 @@ const distance = 40;
           gData.links.forEach(link => {
             const a = gData.nodes[link.source - 1];
             const b = gData.nodes[link.target - 1];
-            console.log(b);
             if(a.neighbors === null){
             a.neighbors = [];
             }
@@ -750,10 +879,7 @@ const distance = 40;
             b.links.push(link);
           });
           let old_containers = document.getElementsByClassName("content_container");
-          console.log(old_containers);
           for(let i = old_containers.length-1; i>=0;i--){
-          console.log(i);
-          console.log(old_containers[i]);
           old_containers[i].remove();
           }
     gData.nodes.forEach(node =>{
