@@ -680,6 +680,25 @@ function remove_item(arr, value) {
         Graph.graphData(gData);
         
     }
+document.addEventListener('keydown',
+        (event) => {
+        console.log(event);
+        if (event.key === 'Escape'){
+        selectedNodes.forEach((node)=>{
+            node.__threeObj.children[0].material.color.r /= 2;
+            node.__threeObj.children[0].material.color.g /= 2;
+            node.__threeObj.children[0].material.color.b /= 2;
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+        });
+        selectedNodes.clear();
+        highlightLinks.clear();
+        updateHighlight();
+        console.log(selectedNodes);
+        console.log(highlightLinks);
+        }
+        }
+    );
+
 function down(x1,x2,y1,y2){
     var ev = document.createEvent('MouseEvent');
     ev.initMouseEvent(
