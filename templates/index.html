@@ -604,6 +604,7 @@ function remove_item(arr, value) {
         const css_obj = new THREE.CSS2DObject(nodeEl);
         target_node.__threeObj.add(css_obj); 
         field.parentElement.children[1].children[0].checked=false;
+        target_node.text = field.value;
         }
 
         console.log(target_node);
@@ -703,6 +704,30 @@ const distance = 40;
       const drop_area = document.getElementById("drop_area")
       drop_area.style.display = "none";
     }
+document.addEventListener('keydown',
+        (event) => {
+        console.log(event);
+        if (event.key === 'Escape'){
+        selectedNodes.forEach((node)=>{
+            node.__threeObj.children[0].material.color.r /= 2;
+            node.__threeObj.children[0].material.color.g /= 2;
+            node.__threeObj.children[0].material.color.b /= 2;
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+        });
+
+        visible_nodes.forEach((node)=>{
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+        });
+        selectedNodes.clear();
+        highlightLinks.clear();
+        visible_nodes.clear();
+        updateHighlight();
+        console.log(selectedNodes);
+        console.log(highlightLinks);
+        }
+        }
+    );
+
     document.getElementById("load_file").onclick = function () {
       
       const drop_area = document.getElementById("drop_area")
