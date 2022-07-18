@@ -396,6 +396,10 @@
       )
       .onNodeHover((node, prev_node) => {
         if (node) {
+            if (visible_node != null)
+            {
+            visible_node.__threeObj.children[1].element.style.visibility = "hidden";
+            }
           node.__threeObj.children[1].element.style.visibility = "visible";
           visible_node = node;
         }
