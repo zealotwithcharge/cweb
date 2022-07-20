@@ -7,13 +7,17 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-
+.scene-tooltip{
+    pointer-events:none;
+    user-select:none;
+}
 .node-label {
     font-size: 12px;
     padding: 1px 4px;
     border-radius: 4px;
     background-color: rgba(0, 0, 0, 0.5);
     user-select: none;
+    pointer-events:none;
 }
     body {
         height: 100vh;
@@ -29,6 +33,9 @@
     h1 {
         font-size:1em;
         padding-right:1vw;
+    }
+    .text_node{
+        z-index: 10000 !important;
     }
     #interface {
         height: 100%;
@@ -358,7 +365,7 @@
       .nodeLabel('id')
       .nodeColor((node) => node.id % 2 === 1 ? 'yellow' : 'blue')
       .linkDirectionalArrowLength(3.5)
-      .d3VelocityDecay(0.75)
+      .d3VelocityDecay(0.9)
       .linkDirectionalArrowRelPos(0.5)
       .nodeThreeObject(node => {
         const mesh = new THREE.Mesh(
@@ -369,7 +376,7 @@
     if(!is_image(node.text)){
         const nodeEl = document.createElement('div');
         nodeEl.textContent = node.text;
-        nodeEl.className = 'node-label';
+        nodeEl.className = 'node-label text_node';
         nodeEl.id = 'node_'+node.id; 
         nodeEl.style.visibility = "hidden";
         nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
@@ -384,6 +391,7 @@
         nodeEl.style.visibility = "hidden";
         nodeEl.style.objectFit = "contain";
         nodeEl.style.maxWidth = "100px";
+        nodeEl.style.zIndex = "100000";
     nodeEl.style.maxHeight = "100px";
         
         nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
@@ -419,11 +427,15 @@
         }
       })
       .onNodeDragEnd(node => {
+            node.fx = node.x;
+          node.fy = node.y;
+          node.fz = node.z;
         if (selectedNodes.has(node)) { // finished moving a selected node
           [...selectedNodes]
             .filter(selNode => selNode !== node) // don't touch node being dragged
             .forEach(node => ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = undefined)); // unfix controlled nodes
         }
+
       })
       .onNodeClick((node, event) => {
 
@@ -634,7 +646,7 @@ function remove_item(arr, value) {
       db_string = db_string.slice(0, -1);
       }
       db_string += ']}';
-
+       db_string= db_string.replaceAll("\n","");
       pom.setAttribute('href', 'data:text/plain;charset=utf-8,' +
         encodeURIComponent(db_string));
       var currentdate = new Date();
@@ -728,6 +740,40 @@ document.addEventListener('keydown',
         updateHighlight();
         console.log(selectedNodes);
         console.log(highlightLinks);
+        }
+        else if (event.key === 'ArrowUp'){
+        visible_nodes.clear();
+        gData.nodes.forEach((node)=>{
+            node.__threeObj.children[1].element.style.visibility = "visible";
+            visible_nodes.add(node);
+        });
+        }
+        else if (event.key === 'ArrowDown'){
+        gData.nodes.forEach((node)=>{
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+        });
+
+        visible_nodes.clear();
+        }
+        else if (event.key === '-'){
+        let current_size_px = gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
+        let desired_size = parseInt(current_size_px.slice(0,-2))-10;
+        let desired_size_px = desired_size+'px';
+        gData.nodes.forEach((node)=>{
+            node.__threeObj.children[1].element.style.maxWidth = desired_size_px;
+            node.__threeObj.children[1].element.style.maxHeight = desired_size_px;
+        });
+
+        }
+        else if (event.key === '+'){
+        let current_size_px = gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
+        let desired_size = parseInt(current_size_px.slice(0,-2))+10;
+        let desired_size_px = desired_size+'px';
+        gData.nodes.forEach((node)=>{
+            node.__threeObj.children[1].element.style.maxWidth = desired_size_px;
+            node.__threeObj.children[1].element.style.maxHeight = desired_size_px;
+        });
+
         }
         }
     );
