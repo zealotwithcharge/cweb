@@ -207,7 +207,7 @@
         <script src="//unpkg.com/dat.gui"></script>
         <script src="//unpkg.com/d3-octree"></script>
         <script src="//unpkg.com/d3-force-3d"></script>
-        <script src="//unpkg.com/three"></script>
+        <script src="//unpkg.com/three@0.142.0/build/three.js"></script>
         <script src="//unpkg.com/three/examples/js/renderers/CSS2DRenderer.js"></script>
         <script src="//unpkg.com/3d-force-graph"></script>
         <!--<script src="../../dist/3d-force-graph.js"></script>-->
@@ -357,6 +357,7 @@
       .width(document.defaultView.innerWidth * 2 / 3)
       .nodeLabel('id')
       .nodeColor((node) => node.id % 2 === 1 ? 'yellow' : 'blue')
+      .nodeVisibility((node) => node.text === "dummy" ? false : true)
       .linkDirectionalArrowLength(3.5)
       .d3VelocityDecay(0.75)
       .linkDirectionalArrowRelPos(0.5)
@@ -366,6 +367,11 @@
           new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
         const group = new THREE.Group();
         group.add(mesh);
+        if(node.text==="dummy"){
+        group.visible = false;
+         
+        return group;
+        }
     if(!is_image(node.text)){
         const nodeEl = document.createElement('div');
         nodeEl.textContent = node.text;
@@ -396,8 +402,11 @@
       )
       .onNodeHover((node, prev_node) => {
         if (node) {
+        if(node.text != "dummy"){
+
           node.__threeObj.children[1].element.style.visibility = "visible";
           visible_node = node;
+        }
         }
         else if (visible_node != null) {
         console.log(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node));
@@ -471,11 +480,39 @@
         }
         //create link
         else if (event.ctrlKey) {
+        if(selectedNodes.size === 0){
+        return;
+        }
           console.log(selectedNodes);
+          let target_value;
+          let targetNode_value;
+          if (selectedNodes.size !== 1){
+            let dummy_node = {id:"",text:"dummy",name:'-'+node.id,val:0,neighbors:[],links:[]};
+            //dummy_node.__threeObj.visible = 'false';
+          let temp_id = '_';
+            selectedNodes.forEach(small_node => {
+            temp_id += small_node.id+'-';
+            });
+            dummy_node.id = temp_id;
+            let mult_temp_link = {source:dummy_node.id,target:node.id,targetNode:node};
+            gData.links.push(mult_temp_link);
+            dummy_node.neighbors.push(node);
+            dummy_node.links.push(mult_temp_link);
+            node.neighbors.push(dummy_node);
+            node.links.push(mult_temp_link);
+            target_value = temp_id;
+            targetNode_value = dummy_node;
+            gData.nodes.push(dummy_node);
+            Graph.graphData(gData);
+            }
+          else{
+          target_value = node.id;
+          targetNode_value = node;
+          }
           selectedNodes.forEach(small_node => {
             console.log(small_node.links);
             console.log(node.id);
-            const temp_link = { source: small_node.id, target: node.id, targetNode: node }
+            const temp_link = { source: small_node.id, target: target_value,targetNode: targetNode_value }
             let flag = true;
             small_node.links.forEach(link=>{
             if(link.source===small_node && link.target===node){
@@ -484,10 +521,10 @@
             })
             if(small_node.id != node.id && flag){
             gData.links.push(temp_link);
-            gData.nodes[small_node.id - 1].neighbors.push(node);
-            gData.nodes[small_node.id - 1].links.push(temp_link);
-            gData.nodes[node.id - 1].neighbors.push(small_node);
-            gData.nodes[node.id - 1].links.push(temp_link);
+            small_node.neighbors.push(targetNode_value);
+            small_node.links.push(temp_link);
+            targetNode_value.neighbors.push(small_node);
+            targetNode_value.links.push(temp_link);
             }
           });
             Graph.graphData(gData);
@@ -518,6 +555,13 @@
                 });
               }
             });
+            Graph.refresh();
+            if(selectedNodes.size !== 1){
+            const event = document.createEvent('Event');
+            event.initEvent('build',true,true);
+            document.dispatchEvent(event);
+            }
+            selectedNodes.clear();
             }
         else if (event.altKey) {
             visible_node = null;
@@ -565,6 +609,12 @@ function remove_item(arr, value) {
       create_node(gData.nodes.at(-1));
       Graph.graphData(gData);
     };
+    document.addEventListener('hide_dummy',function(e){
+            let check = gData.nodes.at(-1);
+            console.log(check);
+                gData.nodes.at(-1).__threeObj.visible = false;
+                gData.nodes.at(-1).__threeObj.visible = false;
+    },false);
     function updateHighlight() {
       // trigger update of highlighted objects in scene
       Graph
