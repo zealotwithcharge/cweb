@@ -250,8 +250,21 @@
 
         </div>
         <div id="3d-graph"></div>
-
+        <script>
+            class _Node{
+                            constructor(id,text,name,val,links,neighbors,split){
+                                            this.id = id;
+                                            this.text = text;
+                                            this.name = name;
+                                            this.val = val;
+                                            this.links = links;
+                                            this.neighbors = neighbors;
+                                            this.split = split;
+                                        }
+                        }
+        </script>
         <script type="module">
+            
             import { UnrealBloomPass } from '//cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js';
 
     const ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
@@ -286,7 +299,7 @@
     graph.d3Force('charge').strength(-15);
 
     // Graph Data 
-    const nodes = [{ id: 1, name: "", val: 10, text: "" ,neighbors: [],links:[]}];
+    const nodes = [{ id: 1, name: "", val: 10, text: "" ,neighbors: [],links:[],split:"1"}];
     const links = [];
     /*
     {% for node in raw_nodes %}
@@ -356,15 +369,37 @@
     Graph.graphData(gData)
       .width(document.defaultView.innerWidth * 2 / 3)
       .nodeLabel('id')
-      .nodeColor((node) => node.id % 2 === 1 ? 'yellow' : 'blue')
+      .nodeColor((node) => {
+      if(node.split != "" && parseInt(node.split)>0){
+        return 'red'; 
+      }
+      else{
+        return 'blue';
+      }
+      })
       .nodeVisibility((node) => node.text === "dummy" ? false : true)
       .linkDirectionalArrowLength(3.5)
       .d3VelocityDecay(0.75)
       .linkDirectionalArrowRelPos(0.5)
       .nodeThreeObject(node => {
-        const mesh = new THREE.Mesh(
+      let mesh;
+      if(node.split != ""){
+      if(parseInt(node.split)>0){
+        mesh = new THREE.Mesh(
+          new THREE.SphereGeometry(NODE_REL_SIZE,32,16,Math.PI*1.5,Math.PI,0,Math.PI),
+          new THREE.MeshBasicMaterial({ color: new THREE.Color(0.5, 0, 0) }));
+          }
+          else{
+          mesh = new THREE.Mesh(
+          new THREE.SphereGeometry(NODE_REL_SIZE,32,16,Math.PI*0.5,Math.PI,0,Math.PI),
+          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
+          }
+      }
+      else{
+        mesh = new THREE.Mesh(
           new THREE.SphereGeometry(NODE_REL_SIZE),
           new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
+          }
         const group = new THREE.Group();
         group.add(mesh);
         if(node.text==="dummy"){
