@@ -4,230 +4,238 @@
 
 <html lang="en-us">
 
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-.scene-tooltip{
-    pointer-events:none;
-    user-select:none;
-}
-.node-label {
-    font-size: 12px;
-    padding: 1px 4px;
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.5);
-    user-select: none;
-    pointer-events:none;
-}
-    body {
-        height: 100vh;
-        width: 100vw;
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .scene-tooltip {
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .node-label {
+      font-size: 12px;
+      padding: 1px 4px;
+      border-radius: 4px;
+      background-color: rgba(0, 0, 0, 0.5);
+      user-select: none;
+      pointer-events: none;
     }
 
     body {
-        margin: 0;
-        display: flex;
-        flex-direction: row;
-        overflow: hidden !important;
+      height: 100vh;
+      width: 100vw;
     }
+
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden !important;
+    }
+
     h1 {
-        font-size:1em;
-        padding-right:1vw;
+      font-size: 1em;
+      padding-right: 1vw;
     }
-    .text_node{
-        z-index: 10000 !important;
+
+    .text_node {
+      z-index: 10000 !important;
     }
+
     #interface {
-        height: 100%;
-        width: 33.3333%;
-        display: flex;
-        flex-direction: column;
-        padding: 1%;
+      height: 100%;
+      width: 33.3333%;
+      display: flex;
+      flex-direction: column;
+      padding: 1%;
     }
 
     #add_node {
-        height: 20%;
-        width: 100%;
-        resize: none;
+      height: 20%;
+      width: 100%;
+      resize: none;
     }
 
     #add_submit {
-        height: min-content;
-        width: 100%;
+      height: min-content;
+      width: 100%;
 
     }
 
     #load_file,
     #download_file {
-        height: 100%;
-        width: 50%;
+      height: 100%;
+      width: 50%;
     }
 
     #db_buttons,
     #submit_button {
-        display: flex;
-        flex-direction: row;
-        height: 7.5%;
-        width: 100%;
+      display: flex;
+      flex-direction: row;
+      height: 7.5%;
+      width: 100%;
     }
 
     #submit_button {
-        flex-direction: row-reverse !important;
+      flex-direction: row-reverse !important;
     }
 
     #drop_area {
-        position: fixed;
-        top: 20%;
-        bottom: 20%;
-        right: 20%;
-        display: none;
-        left: 20%;
-        text-align: center;
-        color: rgb(180, 180, 180);
-        background: white;
-        height: 60%;
-        line-height: 100%;
-        width: 60%;
-        z-index: 10;
-        border: 2px solid grey;
-        border-radius: 5px;
-        vertical-align: middle;
+      position: fixed;
+      top: 20%;
+      bottom: 20%;
+      right: 20%;
+      display: none;
+      left: 20%;
+      text-align: center;
+      color: rgb(180, 180, 180);
+      background: white;
+      height: 60%;
+      line-height: 100%;
+      width: 60%;
+      z-index: 10;
+      border: 2px solid grey;
+      border-radius: 5px;
+      vertical-align: middle;
     }
 
     .dummy {
-        height: auto;
-        width: auto;
+      height: auto;
+      width: auto;
     }
 
     #drag_text {
-        position: absolute;
-        top: 50%;
-        bottom: 50%;
-        right: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: min-content;
-        white-space: nowrap;
+      position: absolute;
+      top: 50%;
+      bottom: 50%;
+      right: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min-content;
+      white-space: nowrap;
     }
 
     .close {
-        color: grey;
-        position: absolute;
-        top: 5%;
-        right: 2.5%;
-        font-size: 3vw;
+      color: grey;
+      position: absolute;
+      top: 5%;
+      right: 2.5%;
+      font-size: 3vw;
 
     }
 
     #node_lister {
-        display:flex;
-        flex-direction:column;
-        overflow-y:scroll;
-        height:80%;
+      display: flex;
+      flex-direction: column;
+      overflow-y: scroll;
+      height: 80%;
 
     }
+
     .close:hover {
-        cursor: pointer;
+      cursor: pointer;
     }
 
     .switch {
-        font-size:1vw;
-        position: relative;
-        display: inline-block;
-        width: 3.6em;
-        height: 4em;
-        font-family: Arial, Helvetica, sans-serif;
-        border-radius:5px;
-    }
-    .slider_text{
-        font-size:1vw;
-        position:absolute;
+      font-size: 1vw;
+      position: relative;
+      display: inline-block;
+      width: 3.6em;
+      height: 4em;
+      font-family: Arial, Helvetica, sans-serif;
+      border-radius: 5px;
     }
 
-    .switch input { 
-        opacity: 0;
-        width: 0;
-        height: 0;
+    .slider_text {
+      font-size: 1vw;
+      position: absolute;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
     }
 
     .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #000066;
-        -webkit-transition: .4s;
-        transition: .4s;
-        border-radius:5px;
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #000066;
+      -webkit-transition: .4s;
+      transition: .4s;
+      border-radius: 5px;
     }
 
     .slider:before {
-        position: absolute;
-        height: 1.4em;
-        content:"TXT";
-        color:#000066;
-        width: 2.8em; 
-        vertical-align:sub;
-        display: flex;
-        justify-content: center;
-        align-content: center;
-        flex-direction: column;
-        text-align:center;
-        background-color: white;
-        -webkit-transition: .4s;
-        transition: .4s;
-        top:.1em;
-        left:1%;
-        right:1%;
-        border-radius:5px;
+      position: absolute;
+      height: 1.4em;
+      content: "TXT";
+      color: #000066;
+      width: 2.8em;
+      vertical-align: sub;
+      display: flex;
+      justify-content: center;
+      align-content: center;
+      flex-direction: column;
+      text-align: center;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+      top: .1em;
+      left: 1%;
+      right: 1%;
+      border-radius: 5px;
     }
 
-    input:checked + .slider {
-        background-color: maroon;
-        color:maroon;
+    input:checked+.slider {
+      background-color: maroon;
+      color: maroon;
     }
 
-    input:focus + .slider {
-        box-shadow: 0 0 1px maroon;
+    input:focus+.slider {
+      box-shadow: 0 0 1px maroon;
     }
 
-    input:checked + .slider:before {
-        content:"IMG";
-        color:maroon;
-        -webkit-transform: translateY(2.4em);
-        -ms-transform: translateY(2.4em);
-        transform: translateY(2.4em);
+    input:checked+.slider:before {
+      content: "IMG";
+      color: maroon;
+      -webkit-transform: translateY(2.4em);
+      -ms-transform: translateY(2.4em);
+      transform: translateY(2.4em);
     }
 
-    .node_content{
-        resize:none;
-        overflow-y:scroll;
+    .node_content {
+      resize: none;
+      overflow-y: scroll;
     }
-    .content_container{
-        display:flex;
-        flex-direction:row;
+
+    .content_container {
+      display: flex;
+      flex-direction: row;
     }
-        </style>
-        <script src="//unpkg.com/d3-dsv"></script>
-        <script src="//unpkg.com/dat.gui"></script>
-        <script src="//unpkg.com/d3-octree"></script>
-        <script src="//unpkg.com/d3-force-3d"></script>
-        <script src="//unpkg.com/three"></script>
-        <script src="//unpkg.com/three/examples/js/renderers/CSS2DRenderer.js"></script>
-        <script src="//unpkg.com/3d-force-graph"></script>
-        <!--<script src="../../dist/3d-force-graph.js"></script>-->
-        <title>Charlette's Web</title>
-    </head>
+  </style>
+  <script src="//unpkg.com/d3-dsv"></script>
+  <script src="//unpkg.com/dat.gui"></script>
+  <script src="//unpkg.com/d3-octree"></script>
+  <script src="//unpkg.com/d3-force-3d"></script>
+  <script src="//unpkg.com/three"></script>
+  <script src="//unpkg.com/three/examples/js/renderers/CSS2DRenderer.js"></script>
+  <script src="//unpkg.com/3d-force-graph"></script>
+  <!--<script src="../../dist/3d-force-graph.js"></script>-->
+  <title>Charlette's Web</title>
+</head>
 
-    <body>
-        <div id="drop_area"><span class="close" id="close_drop">&times;</span><span id="drag_text">Drag and drop file
-                here</span></div>
-        <div id="interface">
+<body>
+  <div id="drop_area"><span class="close" id="close_drop">&times;</span><span id="drag_text">Drag and drop file
+      here</span></div>
+  <div id="interface">
 
-            <div id="node_lister">
-                <!-- content_container template
+    <div id="node_lister">
+      <!-- content_container template
                 <div class ="content_container">
                     <label class="switch">
                         <input type="checkbox">
