@@ -15,6 +15,14 @@
     background-color: rgba(0, 0, 0, 0.5);
     user-select: none;
 }
+    .slider_overlay{
+        position:absolute;
+        top:0;
+        left:0;
+        height:100%;
+        width:100%;
+        background-color:grey;
+    }
     body {
         height: 100vh;
         width: 100vw;
@@ -299,9 +307,12 @@
     graph.d3Force('charge').strength(-15);
 
     // Graph Data 
-    const nodes = [{ id: 1, name: "", val: 10, text: "" ,neighbors: [],links:[],split:"1"}];
+    const nodes = [{ id: 1, name: "1", val: 10, text: "" ,neighbors: [],links:[],split:"2",index:0},
+    {id:2,name:"-1",val:10,text:"",neighbors:[],links:[],split:"1",index:1}];
+    //const links = [{source:1,target:2,targetNode:nodes.at(1),split:"1"}];
     const links = [];
     /*
+    
     {% for node in raw_nodes %}
     nodes.push({ id: {{ node }}, name: "", val: 10, text: ""});
     {% endfor %}
@@ -314,13 +325,15 @@
     };
     const node_container = document.getElementById("node_lister");
     gData.nodes.forEach(node =>{
+    if(parseInt(node.name)>0){
     create_node(node);
+    }
     });
 
     //create neighbors for animation
     gData.links.forEach(link => {
-      const a = gData.nodes[link.source];
-      const b = gData.nodes[link.target];
+      const a = gData.nodes[link.source-1];
+      const b = gData.nodes[link.target-1];
             if(a.neighbors === null){
             a.neighbors = [];
             }
@@ -370,7 +383,7 @@
       .width(document.defaultView.innerWidth * 2 / 3)
       .nodeLabel('id')
       .nodeColor((node) => {
-      if(node.split != "" && parseInt(node.split)>0){
+      if(node.split != "" && parseInt(node.name)<0){
         return 'red'; 
       }
       else{
@@ -383,16 +396,25 @@
       .linkDirectionalArrowRelPos(0.5)
       .nodeThreeObject(node => {
       let mesh;
+      const group = new THREE.Group();
+      console.log(Graph.graphData());
       if(node.split != ""){
-      if(parseInt(node.split)>0){
+      if(parseInt(node.name)<0){
+      //negation
         mesh = new THREE.Mesh(
           new THREE.SphereGeometry(NODE_REL_SIZE,32,16,Math.PI*1.5,Math.PI,0,Math.PI),
           new THREE.MeshBasicMaterial({ color: new THREE.Color(0.5, 0, 0) }));
+        
           }
           else{
+          //non-negated
           mesh = new THREE.Mesh(
           new THREE.SphereGeometry(NODE_REL_SIZE,32,16,Math.PI*0.5,Math.PI,0,Math.PI),
           new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
+          }
+          if(Graph.graphData().nodes.at(parseInt(node.split)-1).hasOwnProperty('__threeObj')){
+            let sibling_mesh = Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0];
+            mesh.attach(sibling_mesh);
           }
       }
       else{
@@ -400,13 +422,13 @@
           new THREE.SphereGeometry(NODE_REL_SIZE),
           new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
           }
-        const group = new THREE.Group();
         group.add(mesh);
         if(node.text==="dummy"){
         group.visible = false;
          
         return group;
         }
+        let css_obj;
     if(!is_image(node.text)){
         const nodeEl = document.createElement('div');
         nodeEl.textContent = node.text;
@@ -414,8 +436,7 @@
         nodeEl.id = 'node_'+node.id; 
         nodeEl.style.visibility = "hidden";
         nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
-        const css_obj = new THREE.CSS2DObject(nodeEl);
-        group.add(css_obj);
+        css_obj = new THREE.CSS2DObject(nodeEl);
         }
         else{
         const nodeEl = document.createElement('img');
@@ -428,17 +449,24 @@
     nodeEl.style.maxHeight = "100px";
         
         nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
-        const css_obj = new THREE.CSS2DObject(nodeEl);
-        group.add(css_obj);
+        css_obj = new THREE.CSS2DObject(nodeEl);
         }
+      if(node.split != ""){
+      if(parseInt(node.name)<0){
+ //     mesh.position.set(-1*node.val,0,0);
+      
+      }else{
+
+//      mesh.position.set(1*node.val,0,0);
+      }}
+      group.add(css_obj);
         return group;
 
       }
       )
       .onNodeHover((node, prev_node) => {
         if (node) {
-        if(node.text != "dummy"){
-
+        if(node.text != "dummy" && node.__threeObj.size > 1){
           node.__threeObj.children[1].element.style.visibility = "visible";
           visible_node = node;
         }
@@ -616,7 +644,7 @@
             !untoggle && selectedNodes.add(node);
           }
         })
-      .linkWidth(link => highlightLinks.has(link) ? 4 : 1)
+      .linkWidth(link => highlightLinks.has(link) ? 3 : 1)
       .onLinkClick((link,event)=>{
       if(event.altKey){
         remove_item(gData.links,link);
@@ -625,7 +653,31 @@
       })
       .linkDirectionalParticles(link => highlightLinks.has(link) ? 4 : 0)
       .linkDirectionalParticleWidth(4)
+      .linkThreeObject(link=>{
+
+      if(link.split){
+        const mesh = new THREE.LineSegments(new THREE.SphereGeometry(0.1))
+          return mesh;
+          }
+      })
+      .linkThreeObjectExtend(link=>{
+      if(link.split){
+      console.log('hello');
+      return false;
+      }
+      else{
+      return true;
+      }
+      })
       .postProcessingComposer().addPass(bloomPass);
+      Graph.d3Force('link').distance(link=>{
+      if(link.split){
+        return 0.001;
+      }
+      else{
+      return 10;
+      }
+      });
 function remove_item(arr, value) {
   var i = 0;
   while (i < arr.length) {
@@ -638,7 +690,7 @@ function remove_item(arr, value) {
   return arr;
 }
     document.getElementById("add_submit").onclick = function () {
-      gData.nodes.push({ id: gData.nodes.length + 1, text: "", name:gData.nodes.length+1,val:10, neighbors: [], links: [] });
+      gData.nodes.push({ id: gData.nodes.length + 1, text: "", name:gData.nodes.length+1,val:10, neighbors: [], links: [],split:"" });
       console.log(gData);
       console.log(gData.nodes.at(-1));
       create_node(gData.nodes.at(-1));
@@ -743,9 +795,6 @@ function remove_item(arr, value) {
 
     let new_checkbox = document.createElement("input");
     new_checkbox.type = "checkbox";
-    if(is_image(node.text)){
-    new_checkbox.checked = true;
-    }
     let new_slider = document.createElement("span");
     new_slider.className = "slider";
 
@@ -776,6 +825,13 @@ const distance = 40;
             3000  // ms transition duration
           );
     };
+    if(node.split==""){
+    let new_overlay = document.createElement("span");
+    new_overlay.className = "slider_overlay";
+    new_overlay.onclick = (event)=>{
+    event.target.remove();
+    };
+    }
     new_switch.appendChild(new_checkbox);
     new_switch.appendChild(new_slider);
     new_container.appendChild(new_num);
