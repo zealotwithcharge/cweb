@@ -301,7 +301,7 @@
     graph.d3Force('charge').strength(-15);
 
     // Graph Data 
-    const nodes = [{ id: 1, name: "", val: 10, text: "" ,neighbors: [],links:[]}];
+    const nodes = [{ id: 1,  text: "", name: 1, val: 10,neighbors: [],links:[]}];
     const links = [];
     /*
     {% for node in raw_nodes %}
@@ -376,11 +376,9 @@
       return 4+node.links.length;
       })
       .nodeVal((node) =>{
-      console.log(10+node.links.length);
       return 10*(1+node.links.length*0.5);
       })
       .linkDirectionalArrowLength(3.5)
-      .d3VelocityDecay(0.9)
       .linkDirectionalArrowRelPos(0.5)
       .nodeThreeObject(node => {
       let flagger = true
@@ -441,7 +439,7 @@
           visible_node = node;
         }
         else if (visible_node != null) {
-        console.log(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node));
+        //console.log(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node));
         if(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node)){
           visible_node.__threeObj.children[1].element.style.visibility = "hidden";
           }
@@ -469,8 +467,12 @@
       .onNodeClick((node, event) => {
 
         if (event.shiftKey) { // multi-selection
+      Graph.d3Force('charge').strength(0);
+      Graph.d3VelocityDecay(0.9);
           selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
+          //console.log(selectedNodes);
           if (selectedNodes.has(node)) {
+            //console.log('what');
             node.__threeObj.children[0].material.color.r *= 2;
             node.__threeObj.children[0].material.color.g *= 2;
             node.__threeObj.children[0].material.color.b *= 2;
@@ -478,7 +480,7 @@
             visible_nodes.add(node);
             visible_node = null;
             if (selectedNodes.size === 1) {
-              if (node.links != null) {
+              if (node.links != []) {
                 node.links.forEach(link => highlightLinks.add(link));
                 updateHighlight();
               }
@@ -489,7 +491,7 @@
                 selectedNodes.forEach(to_node => {
                   if (from_node.links != null) {
                     from_node.links.forEach(link => {
-                      console.log(link);
+                      //console.log(link);
                       if (link.source === from_node && link.target === to_node) {
                         highlightLinks.add(link);
                       }
@@ -516,10 +518,13 @@
         }
         //create link
         else if (event.ctrlKey) {
-          console.log(selectedNodes);
+          //console.log(selectedNodes);
+          if(selectedNodes.length !== 0){
+          node.__threeObj.children[0].material.color.b = 0.5;
+          }
           selectedNodes.forEach(small_node => {
-            console.log(small_node.links);
-            console.log(node.id);
+            //console.log(small_node.links);
+            //console.log(node.id);
             const temp_link = { source: small_node.id, target: node.id, targetNode: node }
             let flag = true;
             small_node.links.forEach(link=>{
@@ -552,7 +557,7 @@
                   selectedNodes.forEach(to_selected => {
                     if (from_selected.links != null) {
                       from_selected.links.forEach(link => {
-                        console.log(link);
+                        //console.log(link);
                         if (link.source === from_selected && link.target === to_selected) {
                           highlightLinks.add(link);
                         }
@@ -600,13 +605,16 @@ function remove_item(arr, value) {
 }
     document.getElementById("add_submit").onclick = function () {
       gData.nodes.push({ id: gData.nodes.length + 1, text: "", name:gData.nodes.length+1,val:10, neighbors: [], links: [] });
-      console.log(gData);
-      console.log(gData.nodes.at(-1));
+      //console.log(gData);
+      //console.log(gData.nodes.at(-1));
       create_node(gData.nodes.at(-1));
       Graph.graphData(gData);
-      Graph.refresh();
+      Graph.d3Force('charge').strength(-15);
+      Graph.d3VelocityDecay(0.9);
     };
     function updateHighlight() {
+    //console.log(gData); 
+    Graph.graphData(gData);
       // trigger update of highlighted objects in scene
       Graph
         .linkWidth(Graph.linkWidth())
@@ -648,14 +656,14 @@ function remove_item(arr, value) {
         target_node.text = field.value;
         }
 
-        console.log(target_node);
-        console.log(gData);
+        //console.log(target_node);
+        //console.log(gData);
         Graph.graphData(gData);
         
     }
     document.getElementById("download_file").onclick = function () {
       var pom = document.createElement('a');
-      console.log(gData);
+      //console.log(gData);
       let db_string = '{"nodes":[';
       gData.nodes.forEach(node => {
         db_string += '{"id": "' + node.id + '","name": "' + node.name + '","val": ' + node.val + ',"text": "' + node.text + '"},';
@@ -760,7 +768,7 @@ const distance = 40;
                 selectedNodes.forEach(to_node => {
                   if (from_node.links != null) {
                     from_node.links.forEach(link => {
-                      console.log(link);
+                      //console.log(link);
                       if (link.source === from_node && link.target === to_node) {
                         highlightLinks.add(link);
                       }
@@ -801,7 +809,7 @@ const distance = 40;
     }
 document.addEventListener('keydown',
         (event) => {
-        console.log(event);
+        //console.log(event);
         if (event.key === 'Escape'){
         selectedNodes.forEach((node)=>{
             node.__threeObj.children[0].material.color.r /= 2;
@@ -817,8 +825,8 @@ document.addEventListener('keydown',
         highlightLinks.clear();
         visible_nodes.clear();
         updateHighlight();
-        console.log(selectedNodes);
-        console.log(highlightLinks);
+        //console.log(selectedNodes);
+        //console.log(highlightLinks);
         }
         else if (event.key === 'ArrowUp'){
         visible_nodes.clear();
@@ -880,7 +888,7 @@ document.addEventListener('keydown',
           gData.links.forEach(link => {
             const a = gData.nodes[link.source - 1];
             const b = gData.nodes[link.target - 1];
-            console.log(b);
+            //console.log(b);
             if(a.neighbors === null){
             a.neighbors = [];
             }
@@ -904,10 +912,10 @@ document.addEventListener('keydown',
             b.links.push(link);
           });
           let old_containers = document.getElementsByClassName("content_container");
-          console.log(old_containers);
+          //console.log(old_containers);
           for(let i = old_containers.length-1; i>=0;i--){
-          console.log(i);
-          console.log(old_containers[i]);
+          //console.log(i);
+          //console.log(old_containers[i]);
           old_containers[i].remove();
           }
     gData.nodes.forEach(node =>{
@@ -928,6 +936,9 @@ document.addEventListener('keydown',
 
         drop_area.style.display = "none";
       });
+      Graph.d3Force('charge').strength(-30);
+      Graph.d3VelocityDecay(0.4);
+
     }
 
         </script>
