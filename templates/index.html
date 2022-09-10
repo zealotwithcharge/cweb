@@ -7,6 +7,9 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    .dg.ac div{
+        visibility:hidden;
+    }
     .scene-tooltip {
       pointer-events: none;
       user-select: none;
@@ -661,6 +664,8 @@ function remove_item(arr, value) {
         Graph.graphData(gData);
         
     }
+            let nav = document.getElementsByClassName('scene-nav-info')[0];
+            nav.innerText = "Left-click: rotate, Mouse-wheel/middle-click: zoom, Right-click: pan\nShift+LMB: Select Node, Ctrl+LMB: Create link from selected nodes, Alt+LMB on node: Hide/Show node text\nAlt+LMB on Link: Remove link";
     document.getElementById("download_file").onclick = function () {
       var pom = document.createElement('a');
       //console.log(gData);
@@ -725,7 +730,7 @@ function remove_item(arr, value) {
 
     let new_focus = document.createElement("button");
     new_focus.type ="button";
-    new_focus.innerText = "Focus";
+    new_focus.innerText = "F";
     new_focus.onclick = (event)=>{
         let temp_id = event.target.parentElement.children[0].textContent;
         let node = gData.nodes.at(temp_id-1);
@@ -744,7 +749,7 @@ const distance = 40;
     };
     let new_select = document.createElement("button");
     new_select.type ="button";
-    new_select.innerText = "Select";
+    new_select.innerText = "S";
     new_select.onclick = (event)=>{
         let temp_id = event.target.parentElement.children[0].textContent;
         let node = gData.nodes.at(temp_id-1);
