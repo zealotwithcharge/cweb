@@ -469,9 +469,11 @@
       })
       .onNodeClick((node, event) => {
 
-        if (event.shiftKey) { // multi-selection
-      Graph.d3Force('charge').strength(0);
+      Graph.d3Force('charge').strength(null);
+      Graph.d3Force('link').strength(null);
+      Graph.d3Force('center').strength(null);
       Graph.d3VelocityDecay(0.9);
+        if (event.shiftKey) { // multi-selection
           selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
           //console.log(selectedNodes);
           if (selectedNodes.has(node)) {
@@ -612,7 +614,7 @@ function remove_item(arr, value) {
       //console.log(gData.nodes.at(-1));
       create_node(gData.nodes.at(-1));
       Graph.graphData(gData);
-      Graph.d3Force('charge').strength(-15);
+      Graph.d3Force('charge').strength(-10);
       Graph.d3VelocityDecay(0.9);
     };
     function updateHighlight() {
