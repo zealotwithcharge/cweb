@@ -394,10 +394,11 @@
       .linkDirectionalArrowLength(3.5)
       .d3VelocityDecay(0.75)
       .linkDirectionalArrowRelPos(0.5)
+      .linkColor(link=>link.color)
       .nodeThreeObject(node => {
       let mesh;
       const group = new THREE.Group();
-      console.log(Graph.graphData());
+      //console.log(Graph.graphData());
       if(node.split != ""){
       if(parseInt(node.name)<0){
       //negation
@@ -413,6 +414,7 @@
           new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
           }
           if(Graph.graphData().nodes.at(parseInt(node.split)-1).hasOwnProperty('__threeObj')){
+          console.log(Graph.graphData());
             let sibling_mesh = Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0];
             mesh.attach(sibling_mesh);
           }
@@ -472,7 +474,7 @@
         }
         }
         else if (visible_node != null) {
-        console.log(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node));
+        //console.log(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node));
         if(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node)){
           visible_node.__threeObj.children[1].element.style.visibility = "hidden";
           }
@@ -516,7 +518,7 @@
                 selectedNodes.forEach(to_node => {
                   if (from_node.links != null) {
                     from_node.links.forEach(link => {
-                      console.log(link);
+                      //console.log(link);
                       if (link.source === from_node && link.target === to_node) {
                         highlightLinks.add(link);
                       }
@@ -546,7 +548,7 @@
         if(selectedNodes.size === 0){
         return;
         }
-          console.log(selectedNodes);
+          //console.log(selectedNodes);
           let target_value;
           let targetNode_value;
           if (selectedNodes.size !== 1){
@@ -557,7 +559,7 @@
             temp_id += small_node.id+'-';
             });
             dummy_node.id = temp_id;
-            let mult_temp_link = {source:dummy_node.id,target:node.id,targetNode:node};
+            let mult_temp_link = {source:dummy_node.id,target:node.id,targetNode:node,color:"blue"};
             gData.links.push(mult_temp_link);
             dummy_node.neighbors.push(node);
             dummy_node.links.push(mult_temp_link);
@@ -573,9 +575,9 @@
           targetNode_value = node;
           }
           selectedNodes.forEach(small_node => {
-            console.log(small_node.links);
-            console.log(node.id);
-            const temp_link = { source: small_node.id, target: target_value,targetNode: targetNode_value }
+            //console.log(small_node.links);
+            //console.log(node.id);
+            const temp_link = { source: small_node.id, target: target_value,targetNode: targetNode_value,color:"blue" }
             let flag = true;
             small_node.links.forEach(link=>{
             if(link.source===small_node && link.target===node){
@@ -607,7 +609,7 @@
                   selectedNodes.forEach(to_selected => {
                     if (from_selected.links != null) {
                       from_selected.links.forEach(link => {
-                        console.log(link);
+                        //console.log(link);
                         if (link.source === from_selected && link.target === to_selected) {
                           highlightLinks.add(link);
                         }
@@ -650,25 +652,56 @@
         remove_item(gData.links,link);
         Graph.graphData(gData);
       }
+      else{
+      console.log(link);
+      if(link.color === "blue"){
+      //var newMaterial = (keepCloning(link.__lineObj.material));
+      //newMaterial.color = {'isColor':true,'r':1,'g':0,'b':0};
+
+      //link.__lineObj.material.color = newMaterial; 
+      link.__arrowObj.material.color = {'isColor':true,'r':1,'g':0,'b':0};
+      link.__photonsObj.children.forEach(mesh=>{
+      mesh.material.color = {'isColor':true,'r':1,'g':0,'b':0};
+      });
+      link.color = "red";
+      }
+      else{
+      //link.__lineObj.material.color = {'isColor':true,'r':0,'g':0,'b':1};
+      //var newMaterial = (keepCloning(link.__lineObj.material));
+      //newMaterial.color = {'isColor':true,'r':1,'g':0,'b':0};
+
+      //link.__lineObj.material.color = newMaterial; 
+      link.__arrowObj.material.color = {'isColor':true,'r':0,'g':0,'b':1};
+      link.__photonsObj.children.forEach(mesh=>{
+      mesh.material.color = {'isColor':true,'r':0,'g':0,'b':1};
+      });
+      link.color = "blue";
+      }
+      console.log(Graph.graphData());
+      }
       })
       .linkDirectionalParticles(link => highlightLinks.has(link) ? 4 : 0)
-      .linkDirectionalParticleWidth(4)
+      .linkDirectionalParticleWidth(1)
+      .linkDirectionalParticleColor(link =>link.color)
+      .linkDirectionalArrowColor(link=>link.color)
       .linkThreeObject(link=>{
 
       if(link.split){
-        const mesh = new THREE.LineSegments(new THREE.SphereGeometry(0.1))
+        const mesh = new THREE.LineSegments(new THREE.SphereGeometry(0.1),
+          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0, 0) }));
           return mesh;
           }
       })
       .linkThreeObjectExtend(link=>{
       if(link.split){
-      console.log('hello');
+      //console.log('hello');
       return false;
       }
       else{
       return true;
       }
       })
+      .linkWidth(0)
       .postProcessingComposer().addPass(bloomPass);
       Graph.d3Force('link').distance(link=>{
       if(link.split){
@@ -678,6 +711,17 @@
       return 10;
       }
       });
+function keepCloning(objectpassed) {
+  if (objectpassed === null || typeof objectpassed !== 'object') {
+     return objectpassed;
+  }
+// give temporary-storage the original obj's constructor
+var temporary_storage = new THREE.MeshLambertMaterial();
+for (var key in objectpassed) {
+    temporary_storage[key] = keepCloning(objectpassed[key]);
+  }
+  return temporary_storage;
+}
 function remove_item(arr, value) {
   var i = 0;
   while (i < arr.length) {
@@ -689,16 +733,74 @@ function remove_item(arr, value) {
   }
   return arr;
 }
+//show and hide text
+document.addEventListener('keydown',
+        (event) => {
+        //console.log(event);
+        if (event.key === 'Escape'){
+        selectedNodes.forEach((node)=>{
+            node.__threeObj.children[0].material.color.r /= 2;
+            node.__threeObj.children[0].material.color.g /= 2;
+            node.__threeObj.children[0].material.color.b /= 2;
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+        });
+
+        visible_nodes.forEach((node)=>{
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+        });
+        selectedNodes.clear();
+        highlightLinks.clear();
+        visible_nodes.clear();
+        updateHighlight();
+        //console.log(selectedNodes);
+        //console.log(highlightLinks);
+        }
+        else if (event.key === 'ArrowUp'){
+        visible_nodes.clear();
+        gData.nodes.forEach((node)=>{
+            node.__threeObj.children[1].element.style.visibility = "visible";
+            visible_nodes.add(node);
+        });
+        }
+        else if (event.key === 'ArrowDown'){
+        gData.nodes.forEach((node)=>{
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+        });
+
+        visible_nodes.clear();
+        }
+        else if (event.key === '-'){
+        let current_size_px = gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
+        let desired_size = parseInt(current_size_px.slice(0,-2))-10;
+        let desired_size_px = desired_size+'px';
+        gData.nodes.forEach((node)=>{
+            node.__threeObj.children[1].element.style.maxWidth = desired_size_px;
+            node.__threeObj.children[1].element.style.maxHeight = desired_size_px;
+        });
+
+        }
+        else if (event.key === '+'){
+        let current_size_px = gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
+        let desired_size = parseInt(current_size_px.slice(0,-2))+10;
+        let desired_size_px = desired_size+'px';
+        gData.nodes.forEach((node)=>{
+            node.__threeObj.children[1].element.style.maxWidth = desired_size_px;
+            node.__threeObj.children[1].element.style.maxHeight = desired_size_px;
+        });
+
+        }
+        }
+    );
     document.getElementById("add_submit").onclick = function () {
       gData.nodes.push({ id: gData.nodes.length + 1, text: "", name:gData.nodes.length+1,val:10, neighbors: [], links: [],split:"" });
-      console.log(gData);
-      console.log(gData.nodes.at(-1));
+      //console.log(gData);
+      //console.log(gData.nodes.at(-1));
       create_node(gData.nodes.at(-1));
       Graph.graphData(gData);
     };
     document.addEventListener('hide_dummy',function(e){
             let check = gData.nodes.at(-1);
-            console.log(check);
+            //console.log(check);
                 gData.nodes.at(-1).__threeObj.visible = false;
                 gData.nodes.at(-1).__threeObj.visible = false;
     },false);
@@ -743,23 +845,23 @@ function remove_item(arr, value) {
         field.parentElement.children[1].children[0].checked=false;
         }
 
-        console.log(target_node);
-        console.log(gData);
+        //console.log(target_node);
+        //console.log(gData);
         Graph.graphData(gData);
         
     }
     document.getElementById("download_file").onclick = function () {
       var pom = document.createElement('a');
-      console.log(gData);
+      //console.log(gData);
       let db_string = '{"nodes":[';
       gData.nodes.forEach(node => {
-        db_string += '{"id": "' + node.id + '","name": "' + node.name + '","val": ' + node.val + ',"text": "' + node.text + '"},';
+        db_string += '{"id": "' + node.id + '","name": "' + node.name + '","split": ' + node.split +',"val": ' + node.val + ',"text": "' + node.text + '"},';
       }
       )
       db_string = db_string.slice(0, -1);
       db_string += '],"links":[';
       gData.links.forEach(link => {
-        db_string += '{"source": "' + link.source.id + '","target": "' + link.target.id + '"},';
+        db_string += '{"source": "' + link.source.id + '","color": "' + link.color +'","target": "' + link.target.id + '"},';
       })
       if (gData.links.length>0){
 
@@ -867,7 +969,7 @@ const distance = 40;
           gData.links.forEach(link => {
             const a = gData.nodes[link.source - 1];
             const b = gData.nodes[link.target - 1];
-            console.log(b);
+            //console.log(b);
             if(a.neighbors === null){
             a.neighbors = [];
             }
@@ -891,10 +993,10 @@ const distance = 40;
             b.links.push(link);
           });
           let old_containers = document.getElementsByClassName("content_container");
-          console.log(old_containers);
+          //console.log(old_containers);
           for(let i = old_containers.length-1; i>=0;i--){
-          console.log(i);
-          console.log(old_containers[i]);
+          //console.log(i);
+          //console.log(old_containers[i]);
           old_containers[i].remove();
           }
     gData.nodes.forEach(node =>{
