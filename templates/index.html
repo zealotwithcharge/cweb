@@ -229,51 +229,51 @@
 
             <div id="node_lister">
                 <!-- content_container template
-                <div class ="content_container">
+                    <div class ="content_container">
                     <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider"></span>
+                    <input type="checkbox">
+                    <span class="slider"></span>
                     </label>
 
                     <textarea class="node_content" rows="2" cols="40"></textarea>
-                </div>
-                --!>
-            </div>
-            
-            <!--
-            <label for="add_node">Add Node</label>
-            <textarea id="add_node" name="add_node" rows="3" cols="50"></textarea>
-            --!>
-            <div id="submit_button">
-                <div class="dummy"></div>
-                <button type="button" id="add_submit">Add Node</button>
-                <div class="dummy"></div>
-            </div>
+                    </div>
+                    --!>
+                    </div>
 
-            <div id="db_buttons">
-                <div class="dummy"></div>
-                <button type="button" id="load_file">load database</button>
-                <button type="button" id="download_file">download database</button>
-            </div>
+                    <!--
+                        <label for="add_node">Add Node</label>
+                        <textarea id="add_node" name="add_node" rows="3" cols="50"></textarea>
+                        --!>
+                        <div id="submit_button">
+                        <div class="dummy"></div>
+                        <button type="button" id="add_submit">Add Node</button>
+                        <div class="dummy"></div>
+                        </div>
 
-        </div>
-        <div id="3d-graph"></div>
-        <script>
-            class _Node{
-                            constructor(id,text,name,val,links,neighbors,split){
-                                            this.id = id;
-                                            this.text = text;
-                                            this.name = name;
-                                            this.val = val;
-                                            this.links = links;
-                                            this.neighbors = neighbors;
-                                            this.split = split;
-                                        }
-                        }
-        </script>
-        <script type="module">
-            
-            import { UnrealBloomPass } from '//cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js';
+                        <div id="db_buttons">
+                        <div class="dummy"></div>
+                        <button type="button" id="load_file">load database</button>
+                        <button type="button" id="download_file">download database</button>
+                        </div>
+
+                        </div>
+                        <div id="3d-graph"></div>
+                        <script>
+                            class _Node{
+                                                            constructor(id,text,name,val,links,neighbors,split){
+                                                                                            this.id = id;
+                                                                                            this.text = text;
+                                                                                            this.name = name;
+                                                                                            this.val = val;
+                                                                                            this.links = links;
+                                                                                            this.neighbors = neighbors;
+                                                                                            this.split = split;
+                                                                                        }
+                                                        }
+                        </script>
+                        <script type="module">
+
+                            import { UnrealBloomPass } from '//cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js';
 
     const ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
     const bloomLayer = new THREE.Layers();
@@ -309,17 +309,9 @@
     // Graph Data 
     const nodes = [{ id: 1, name: "1", val: 10, text: "" ,neighbors: [],links:[],split:"2",index:0},
     {id:2,name:"-1",val:10,text:"",neighbors:[],links:[],split:"1",index:1}];
-    //const links = [{source:1,target:2,targetNode:nodes.at(1),split:"1"}];
-    const links = [];
-    /*
-    
-    {% for node in raw_nodes %}
-    nodes.push({ id: {{ node }}, name: "", val: 10, text: ""});
-    {% endfor %}
-    {% for pair in raw_links %}
-    links.push({ source: {{ pair[0]}}, target: {{ pair[1]}}, targetNode: nodes[{{ pair[1]}}]});
-    {% endfor %}
-    */
+    const links = [{source:1,target:2,targetNode:nodes.at(1),split:"1"}];
+//    const links = [{source:0,target:0,targetNode:null,split:"0"}];
+//    const links = [];
     var gData = {
       nodes, links
     };
@@ -355,7 +347,7 @@
             !b.links && (b.links = []);
             a.links.push(link);
             b.links.push(link);
-          
+
     });
     gData.nodes.forEach(node=>{
     if(Object.keys(node).indexOf('neighbors') === -1){
@@ -405,18 +397,20 @@
         mesh = new THREE.Mesh(
           new THREE.SphereGeometry(NODE_REL_SIZE,32,16,Math.PI*1.5,Math.PI,0,Math.PI),
           new THREE.MeshBasicMaterial({ color: new THREE.Color(0.5, 0, 0) }));
-        
+
+          if(Graph.graphData().nodes.at(parseInt(node.split)-1).hasOwnProperty('__threeObj')){
+          console.log(Graph.graphData());
+            let sibling_mesh = Graph.graphData().nodes[parseInt(node.split)-1];
+//            mesh.position.set(sibling_mesh.position.x,sibling_mesh.position.y,sibling_mesh.position.z);
+            ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = sibling_mesh[coord]);
+            }
+
           }
           else{
           //non-negated
           mesh = new THREE.Mesh(
           new THREE.SphereGeometry(NODE_REL_SIZE,32,16,Math.PI*0.5,Math.PI,0,Math.PI),
           new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
-          }
-          if(Graph.graphData().nodes.at(parseInt(node.split)-1).hasOwnProperty('__threeObj')){
-          console.log(Graph.graphData());
-            let sibling_mesh = Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0];
-            mesh.attach(sibling_mesh);
           }
       }
       else{
@@ -427,7 +421,7 @@
         group.add(mesh);
         if(node.text==="dummy"){
         group.visible = false;
-         
+
         return group;
         }
         let css_obj;
@@ -449,14 +443,14 @@
         nodeEl.style.objectFit = "contain";
         nodeEl.style.maxWidth = "100px";
     nodeEl.style.maxHeight = "100px";
-        
+
         nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
         css_obj = new THREE.CSS2DObject(nodeEl);
         }
       if(node.split != ""){
       if(parseInt(node.name)<0){
  //     mesh.position.set(-1*node.val,0,0);
-      
+
       }else{
 
 //      mesh.position.set(1*node.val,0,0);
@@ -487,6 +481,15 @@
             .filter(selNode => selNode !== node) // don't touch node being dragged
             .forEach(node => ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = node[coord] + translate[coord])); // translate other nodes by same amount
         }
+            let split_node = Graph.graphData().nodes[parseInt(node.split)-1];
+        ['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = node[coord]);
+        /*
+        console.log(node.__threeObj.children[0]);
+        let temp_three = node.__threeObj.children[0];
+      Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0].position.set(temp_three.position.x,temp_three.position.y,temp_three.position.z);
+      Graph.refresh();
+      console.log(Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0].position);
+      */
       })
       .onNodeDragEnd(node => {
         if (selectedNodes.has(node)) { // finished moving a selected node
@@ -494,6 +497,15 @@
             .filter(selNode => selNode !== node) // don't touch node being dragged
             .forEach(node => ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = undefined)); // unfix controlled nodes
         }
+            let split_node = Graph.graphData().nodes[parseInt(node.split)-1];
+        ['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = node[coord]);
+//        ['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = undefined);
+        /*
+        let temp_three = node.__threeObj.children[0];
+      Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0].position.set(temp_three.position.x,temp_three.position.y,temp_three.position.z);
+      Graph.refresh();
+      console.log(Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0].position);
+      */
       })
       .onNodeClick((node, event) => {
 
@@ -548,7 +560,7 @@
         if(selectedNodes.size === 0){
         return;
         }
-          //console.log(selectedNodes);
+          //cosole.log(selectedNodes);
           let target_value;
           let targetNode_value;
           if (selectedNodes.size !== 1){
@@ -647,6 +659,19 @@
           }
         })
       .linkWidth(link => highlightLinks.has(link) ? 3 : 1)
+      .linkPositionUpdate((link_three,{start,end},link)=>{
+      if(parseInt(link.target.name)<0){
+        let target=link.target;
+        let source=link.source;
+        link_three.visible = false;
+        link.__arrowObj.visible = false;
+        link.__lineObj.visible = false;
+        if (target.name<0){
+        ['x', 'y', 'z'].forEach(coord => target[`f${coord}`] = source[coord]);
+        }
+      }
+      
+      })
       .onLinkClick((link,event)=>{
       if(event.altKey){
         remove_item(gData.links,link);
@@ -702,16 +727,59 @@
       }
       })
       .linkWidth(0)
+//      .forceEngine(Graph.graphData().nodes).force('link',d3.forceLink(Graph.graphData().links).iterations(0))
+//      .d3Force('link',d3.forceLink(Graph.graphData().links).iterations(0))
       .postProcessingComposer().addPass(bloomPass);
       Graph.d3Force('link').distance(link=>{
       if(link.split){
-        return 0.001;
+        return 0;
       }
       else{
       return 10;
       }
       });
-function keepCloning(objectpassed) {
+      Graph.d3Force('link').strength(link=>{
+      if(link.split){
+        return 0;
+      }
+      else{
+      return 10;
+      }
+      });
+//      Graph.d3Force('center').x(10).y(10).z(10);
+//      Graph.cameraPosition(5000,5000,5000);
+//      Graph.d3Force('charge').strength(0);
+    Graph.d3Force('center').strength(0);
+      Graph.d3Force('charge').strength((node,i,nodes)=>{
+      console.log(node.index);
+      console.log(nodes[i].index);
+      console.log(i);
+      console.log(parseInt(node.name)*-1===parseInt(nodes[i].name));
+      /*
+      if(parseInt(node.name)*-1===parseInt(nodes[i].name)){
+        return 0;
+      }
+      else return -30;
+      */
+      if(parseInt(node.name)<0){
+      return 0;
+      }
+      else return -30;
+      });
+//      Graph.d3Force('charge').distanceMin(50);
+      
+/*      const link_force = Graph.d3Force('link').distance(link=>{
+      console.log(link.source.name);
+      console.log(link.target.name);
+      console.log(parseInt(link.source.name)*-1===parseInt(link.target.name));
+      if(parseInt(link.source.name)*-1===parseInt(link.target.name)){
+        console.log('hello');
+        return 0;
+      }
+      else return 30;
+      }).iterations(1);
+*/
+      function keepCloning(objectpassed) {
   if (objectpassed === null || typeof objectpassed !== 'object') {
      return objectpassed;
   }
@@ -758,8 +826,10 @@ document.addEventListener('keydown',
         else if (event.key === 'ArrowUp'){
         visible_nodes.clear();
         gData.nodes.forEach((node)=>{
+            if (node.__threeObj.children[1] !== null){
             node.__threeObj.children[1].element.style.visibility = "visible";
             visible_nodes.add(node);
+            }
         });
         }
         else if (event.key === 'ArrowDown'){
@@ -817,8 +887,11 @@ document.addEventListener('keydown',
         let field = event.target;
         let temp_id = field.parentElement.children[0].textContent;
         let target_node = gData.nodes.at(temp_id-1);
+        console.log(target_node)
+        if(target_node.__threeObj.children[1]!==null){
         target_node.__threeObj.children[1].removeFromParent();
-        
+        }
+
         if(is_image(field.value)){
         const nodeEl = document.createElement('img');
         nodeEl.src = field.value;
@@ -848,7 +921,7 @@ document.addEventListener('keydown',
         //console.log(target_node);
         //console.log(gData);
         Graph.graphData(gData);
-        
+
     }
     document.getElementById("download_file").onclick = function () {
       var pom = document.createElement('a');
@@ -947,7 +1020,7 @@ const distance = 40;
       drop_area.style.display = "none";
     }
     document.getElementById("load_file").onclick = function () {
-      
+
       const drop_area = document.getElementById("drop_area")
       drop_area.style.display = "block";
       drop_area.addEventListener('dragover', (event) => {
@@ -1019,7 +1092,7 @@ const distance = 40;
       });
     }
 
-        </script>
+                        </script>
     </body>
 
 </html>
