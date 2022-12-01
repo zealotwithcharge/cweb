@@ -480,9 +480,14 @@
           [...selectedNodes]
             .filter(selNode => selNode !== node) // don't touch node being dragged
             .forEach(node => ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = node[coord] + translate[coord])); // translate other nodes by same amount
+            console.log(node.split);
         }
-            let split_node = Graph.graphData().nodes[parseInt(node.split)-1];
-        ['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = node[coord]);
+        if (node.split!==""){
+           let pair = Graph.graphData().nodes[node.split-1];
+           ['x', 'y', 'z'].forEach(coord => pair[`f${coord}`] = node[coord]); 
+        }
+       // let split_node = Graph.graphData().nodes[parseInt(node.split)-1];
+        //['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = node[coord]);
         /*
         console.log(node.__threeObj.children[0]);
         let temp_three = node.__threeObj.children[0];
@@ -497,8 +502,8 @@
             .filter(selNode => selNode !== node) // don't touch node being dragged
             .forEach(node => ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = undefined)); // unfix controlled nodes
         }
-            let split_node = Graph.graphData().nodes[parseInt(node.split)-1];
-        ['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = node[coord]);
+//            let split_node = Graph.graphData().nodes[parseInt(node.split)-1];
+//        ['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = node[coord]);
 //        ['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = undefined);
         /*
         let temp_three = node.__threeObj.children[0];
@@ -663,12 +668,19 @@
       if(parseInt(link.target.name)<0){
         let target=link.target;
         let source=link.source;
+        if(link_three){
         link_three.visible = false;
         link.__arrowObj.visible = false;
         link.__lineObj.visible = false;
         if (target.name<0){
         ['x', 'y', 'z'].forEach(coord => target[`f${coord}`] = source[coord]);
         }
+        }
+       if(link.target.split!==""){
+       if(parseInt(link.target.split)>0){
+       //
+       }
+       }
       }
       
       })
@@ -684,9 +696,9 @@
       //newMaterial.color = {'isColor':true,'r':1,'g':0,'b':0};
 
       //link.__lineObj.material.color = newMaterial; 
-      link.__arrowObj.material.color = {'isColor':true,'r':1,'g':0,'b':0};
+      link.__arrowObj.material.color = new THREE.Color(1,0,0);
       link.__photonsObj.children.forEach(mesh=>{
-      mesh.material.color = {'isColor':true,'r':1,'g':0,'b':0};
+      mesh.material.color = new THREE.Color(1,0,0);
       });
       link.color = "red";
       }
@@ -696,9 +708,9 @@
       //newMaterial.color = {'isColor':true,'r':1,'g':0,'b':0};
 
       //link.__lineObj.material.color = newMaterial; 
-      link.__arrowObj.material.color = {'isColor':true,'r':0,'g':0,'b':1};
+      link.__arrowObj.material.color = new THREE.Color(0,0,1);
       link.__photonsObj.children.forEach(mesh=>{
-      mesh.material.color = {'isColor':true,'r':0,'g':0,'b':1};
+      mesh.material.color = new THREE.Color(0,0,1);
       });
       link.color = "blue";
       }
@@ -730,31 +742,32 @@
 //      .forceEngine(Graph.graphData().nodes).force('link',d3.forceLink(Graph.graphData().links).iterations(0))
 //      .d3Force('link',d3.forceLink(Graph.graphData().links).iterations(0))
       .postProcessingComposer().addPass(bloomPass);
-      Graph.d3Force('link').distance(link=>{
-      if(link.split){
-        return 0;
-      }
-      else{
-      return 10;
-      }
-      });
-      Graph.d3Force('link').strength(link=>{
-      if(link.split){
-        return 0;
-      }
-      else{
-      return 10;
-      }
-      });
+//      Graph.d3Force('link').distance(link=>{
+//      if(link.split){
+//        return 0;
+//      }
+//      else{
+//      return 10;
+//      }
+//      });
+        Graph.d3Force('link').strength(0);
+       // link=>{
+        //if(link.split){
+        //  return 0;
+        //}
+        //else{
+        //return 0;
+        //}
+        //});
 //      Graph.d3Force('center').x(10).y(10).z(10);
 //      Graph.cameraPosition(5000,5000,5000);
 //      Graph.d3Force('charge').strength(0);
-    Graph.d3Force('center').strength(0);
+        Graph.d3Force('center').strength(0);
       Graph.d3Force('charge').strength((node,i,nodes)=>{
-      console.log(node.index);
-      console.log(nodes[i].index);
-      console.log(i);
-      console.log(parseInt(node.name)*-1===parseInt(nodes[i].name));
+//      console.log(node.index);
+//      console.log(nodes[i].index);
+//      console.log(i);
+//      console.log(parseInt(node.name)*-1===parseInt(nodes[i].name));
       /*
       if(parseInt(node.name)*-1===parseInt(nodes[i].name)){
         return 0;
@@ -784,7 +797,7 @@
      return objectpassed;
   }
 // give temporary-storage the original obj's constructor
-var temporary_storage = new THREE.MeshLambertMaterial();
+var temporary_storage = new THREE.MeshBasicMaterial();
 for (var key in objectpassed) {
     temporary_storage[key] = keepCloning(objectpassed[key]);
   }
