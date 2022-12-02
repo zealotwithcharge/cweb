@@ -906,7 +906,8 @@ document.addEventListener('keydown',
     }
     function text_change(event){
         let field = event.target;
-        let temp_id = field.parentElement.children[0].textContent;
+        let temp_id = field.parentElement.graph_id;
+        console.log(temp_id);
         let target_node = gData.nodes.at(temp_id-1);
         console.log(target_node)
         if(target_node.__threeObj.children[1]!==null){
@@ -939,6 +940,8 @@ document.addEventListener('keydown',
         field.parentElement.children[1].children[0].checked=false;
         }
 
+        gData.nodes[temp_id-1].text = field.value; 
+
         //console.log(target_node);
         //console.log(gData);
         Graph.graphData(gData);
@@ -949,7 +952,7 @@ document.addEventListener('keydown',
       //console.log(gData);
       let db_string = '{"nodes":[';
       gData.nodes.forEach(node => {
-        db_string += '{"id": "' + node.id + '","name": "' + node.name + '","split": ' + node.split +',"val": ' + node.val + ',"text": "' + node.text + '"},';
+        db_string += '{"id": "' + node.id + '","name": "' + node.name + '","split": "' + node.split +'","val": ' + node.val + ',"text": "' + node.text + '","label": "' + node.label + '"},';
       }
       )
       db_string = db_string.slice(0, -1);
@@ -986,6 +989,7 @@ document.addEventListener('keydown',
     if(node.label!==0){
     let new_container = document.createElement("div");
     new_container.className = "content_container";
+    new_container.graph_id = node.id;
     let new_switch = document.createElement("label");
     new_switch.className = "switch";
 
