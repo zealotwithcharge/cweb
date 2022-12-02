@@ -482,10 +482,23 @@
             .forEach(node => ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = node[coord] + translate[coord])); // translate other nodes by same amount
             console.log(node.split);
         }
-        if (node.split!==""){
-           let pair = Graph.graphData().nodes[node.split-1];
-           ['x', 'y', 'z'].forEach(coord => pair[`f${coord}`] = node[coord]); 
+          if (node.split!==""){
+        if(parseInt(node.name)<0){
+        let main = Graph.graphData().nodes[node.split-1];
+        ['x', 'y', 'z'].forEach(coord => {if(coord!=='x'){main[`f${coord}`] = node[coord];}
+        else{
+        main[`f${coord}`] = node[coord]-Graph.nodeRelSize()*3;
+        }})
         }
+        else{
+        let neg = Graph.graphData().nodes[node.split-1];
+        ['x', 'y', 'z'].forEach(coord => {if(coord!=='x'){neg[`f${coord}`] = node[coord];}
+        else{
+        neg[`f${coord}`] = node[coord]+Graph.nodeRelSize()*3;
+        }})
+        }
+             }
+        
        // let split_node = Graph.graphData().nodes[parseInt(node.split)-1];
         //['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = node[coord]);
         /*
@@ -668,7 +681,10 @@
         Graph.graphData().nodes.forEach((node)=>{
         if(parseInt(node.name)<0){
         let main = Graph.graphData().nodes[node.split-1];
-        ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = main[coord]);
+        ['x', 'y', 'z'].forEach(coord => {if(coord!=='x'){node[`f${coord}`] = main[coord];}
+        else{
+        node[`f${coord}`] = main[coord]+Graph.nodeRelSize()*3;
+        }})
         }
         });
       })
@@ -678,33 +694,39 @@
       }
       else return true;
       })
-      .linkPositionUpdate((link_three,{start,end},link)=>{
-      if(parseInt(link.target.name)<0 || parseInt(link.source.name)<0){
-        let target=link.target;
-        let source=link.source;
-        if(link_three){
-        link_three.visible = false;
-        link.__arrowObj.visible = false;
-        link.__lineObj.visible = false;
-        if (parseInt(target.name)<0){
-        let target_node = Graph.graphData().nodes[target.id-1];
-        ['x', 'y', 'z'].forEach(coord => target_node[`f${coord}`] = source[coord]);
-        ['x', 'y', 'z'].forEach(coord => {console.log(target_node[coord]);console.log('what');console.log(target[`f${coord}`]);console.log('hey'); console.log(source[coord])});
-        }
-        else if (source.name<0){
-        ['x', 'y', 'z'].forEach(coord => source[`f${coord}`] = target[coord]);
-        }
-
-        }
-       if(link.target.split!==""){
-       if(parseInt(link.target.split)>0){
-
-       }
-       return true;
-       }
-      }
-      
-      })
+        .linkPositionUpdate((line,{start,end},link)=>{
+//          const startR = Graph.nodeRelSize();
+//          const endR = Graph.nodeRelSize();
+//          const startR = 5;
+//          const endR = 4;
+//          const lineLen = Math.sqrt(['x', 'y', 'z'].map(dim => Math.pow((end[dim] || 0) - (start[dim] || 0), 2)).reduce((acc, v) => acc + v, 0));
+//
+//          const linePos = line.geometry.getAttribute('position');
+//
+//          // calculate coordinate on the node's surface instead of center
+////          linePos.set([startR / lineLen, 1 - endR / lineLen].map(t =>
+////            ['x', 'y', 'z'].map(dim => start[dim] + (end[dim] - start[dim]) * t)
+////          ).flat());
+//            linePos.set([start['x']+5,start['y'],start['z']],[end['x']+5,end['y'],end['z']]);
+//          linePos.needsUpdate = true;
+//          return true;
+//          console.log(link_three);
+//              console.log(start);
+//              console.log(end);
+//              console.log(link);
+//        if(parseInt(link.target.name)<0 || parseInt(link.source.name)<0){
+//          let target=link.target;
+//          let source=link.source;
+//          if(link_three){
+//          link_three.visible = false;
+//          link.__arrowObj.visible = false;
+//          link.__lineObj.visible = false;
+//          }
+//          ['x', 'y', 'z'].forEach(coord => start[`f${coord}`] = 0); 
+//          ['x', 'y', 'z'].forEach(coord => end[`f${coord}`] = 0); 
+//          return true;
+//         
+        })
       .onLinkClick((link,event)=>{
       if(event.altKey){
         remove_item(gData.links,link);
@@ -742,23 +764,23 @@
       .linkDirectionalParticleWidth(1)
       .linkDirectionalParticleColor(link =>link.color)
       .linkDirectionalArrowColor(link=>link.color)
-      .linkThreeObject(link=>{
-
-      if(link.split){
-        const mesh = new THREE.LineSegments(new THREE.SphereGeometry(0.1),
-          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0, 0) }));
-          return mesh;
-          }
-      })
-      .linkThreeObjectExtend(link=>{
-      if(link.split){
-      //console.log('hello');
-      return false;
-      }
-      else{
-      return true;
-      }
-      })
+//      .linkThreeObject(link=>{
+//
+//      if(link.split){
+//        const mesh = new THREE.LineSegments(new THREE.SphereGeometry(0.1),
+//          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0, 0) }));
+//          return mesh;
+//          }
+//      })
+//      .linkThreeObjectExtend(link=>{
+//      if(link.split){
+//      //console.log('hello');
+//      return false;
+//      }
+//      else{
+//      return true;
+//      }
+//      })
       .linkWidth(0)
 //      .forceEngine(Graph.graphData().nodes).force('link',d3.forceLink(Graph.graphData().links).iterations(0))
 //      .d3Force('link',d3.forceLink(Graph.graphData().links).iterations(0))
@@ -800,6 +822,8 @@
       }
       else return -30;
       });
+      console.log('pos');
+      console.log(Graph.linkPositionUpdate());
 //      Graph.d3Force('charge').distanceMin(50);
       
 /*      const link_force = Graph.d3Force('link').distance(link=>{
