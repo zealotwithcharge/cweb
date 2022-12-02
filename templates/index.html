@@ -8,208 +8,208 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
 
-.node-label {
-    font-size: 12px;
-    padding: 1px 4px;
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.5);
-    user-select: none;
-}
-    .slider_overlay{
-        position:absolute;
-        top:0;
-        left:0;
-        height:100%;
-        width:100%;
-        background-color:grey;
-    }
-    body {
-        height: 100vh;
-        width: 100vw;
-    }
+        .node-label {
+            font-size: 12px;
+            padding: 1px 4px;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.5);
+            user-select: none;
+        }
+        .slider_overlay{
+            position:absolute;
+            top:0;
+            left:0;
+            height:100%;
+            width:100%;
+            background-color:grey;
+        }
+        body {
+            height: 100vh;
+            width: 100vw;
+        }
 
-    body {
-        margin: 0;
-        display: flex;
-        flex-direction: row;
-        overflow: hidden !important;
-    }
-    h1 {
-        font-size:1em;
-        padding-right:1vw;
-    }
-    #interface {
-        height: 100%;
-        width: 33.3333%;
-        display: flex;
-        flex-direction: column;
-        padding: 1%;
-    }
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden !important;
+        }
+        h1 {
+            font-size:1em;
+            padding-right:1vw;
+        }
+        #interface {
+            height: 100%;
+            width: 33.3333%;
+            display: flex;
+            flex-direction: column;
+            padding: 1%;
+        }
 
-    #add_node {
-        height: 20%;
-        width: 100%;
-        resize: none;
-    }
+        #add_node {
+            height: 20%;
+            width: 100%;
+            resize: none;
+        }
 
-    #add_submit {
-        height: min-content;
-        width: 100%;
+        #add_submit {
+            height: min-content;
+            width: 100%;
 
-    }
+        }
 
-    #load_file,
-    #download_file {
-        height: 100%;
-        width: 50%;
-    }
+        #load_file,
+        #download_file {
+            height: 100%;
+            width: 50%;
+        }
 
-    #db_buttons,
-    #submit_button {
-        display: flex;
-        flex-direction: row;
-        height: 7.5%;
-        width: 100%;
-    }
+        #db_buttons,
+        #submit_button {
+            display: flex;
+            flex-direction: row;
+            height: 7.5%;
+            width: 100%;
+        }
 
-    #submit_button {
-        flex-direction: row-reverse !important;
-    }
+        #submit_button {
+            flex-direction: row-reverse !important;
+        }
 
-    #drop_area {
-        position: fixed;
-        top: 20%;
-        bottom: 20%;
-        right: 20%;
-        display: none;
-        left: 20%;
-        text-align: center;
-        color: rgb(180, 180, 180);
-        background: white;
-        height: 60%;
-        line-height: 100%;
-        width: 60%;
-        z-index: 10;
-        border: 2px solid grey;
-        border-radius: 5px;
-        vertical-align: middle;
-    }
+        #drop_area {
+            position: fixed;
+            top: 20%;
+            bottom: 20%;
+            right: 20%;
+            display: none;
+            left: 20%;
+            text-align: center;
+            color: rgb(180, 180, 180);
+            background: white;
+            height: 60%;
+            line-height: 100%;
+            width: 60%;
+            z-index: 10;
+            border: 2px solid grey;
+            border-radius: 5px;
+            vertical-align: middle;
+        }
 
-    .dummy {
-        height: auto;
-        width: auto;
-    }
+        .dummy {
+            height: auto;
+            width: auto;
+        }
 
-    #drag_text {
-        position: absolute;
-        top: 50%;
-        bottom: 50%;
-        right: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: min-content;
-        white-space: nowrap;
-    }
+        #drag_text {
+            position: absolute;
+            top: 50%;
+            bottom: 50%;
+            right: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min-content;
+            white-space: nowrap;
+        }
 
-    .close {
-        color: grey;
-        position: absolute;
-        top: 5%;
-        right: 2.5%;
-        font-size: 3vw;
+        .close {
+            color: grey;
+            position: absolute;
+            top: 5%;
+            right: 2.5%;
+            font-size: 3vw;
 
-    }
+        }
 
-    #node_lister {
-        display:flex;
-        flex-direction:column;
-        overflow-y:scroll;
-        height:80%;
+        #node_lister {
+            display:flex;
+            flex-direction:column;
+            overflow-y:scroll;
+            height:80%;
 
-    }
-    .close:hover {
-        cursor: pointer;
-    }
+        }
+        .close:hover {
+            cursor: pointer;
+        }
 
-    .switch {
-        font-size:1vw;
-        position: relative;
-        display: inline-block;
-        width: 3.6em;
-        height: 4em;
-        font-family: Arial, Helvetica, sans-serif;
-        border-radius:5px;
-    }
-    .slider_text{
-        font-size:1vw;
-        position:absolute;
-    }
+        .switch {
+            font-size:1vw;
+            position: relative;
+            display: inline-block;
+            width: 3.6em;
+            height: 4em;
+            font-family: Arial, Helvetica, sans-serif;
+            border-radius:5px;
+        }
+        .slider_text{
+            font-size:1vw;
+            position:absolute;
+        }
 
-    .switch input { 
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
 
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #000066;
-        -webkit-transition: .4s;
-        transition: .4s;
-        border-radius:5px;
-    }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000066;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius:5px;
+        }
 
-    .slider:before {
-        position: absolute;
-        height: 1.4em;
-        content:"TXT";
-        color:#000066;
-        width: 2.8em; 
-        vertical-align:sub;
-        display: flex;
-        justify-content: center;
-        align-content: center;
-        flex-direction: column;
-        text-align:center;
-        background-color: white;
-        -webkit-transition: .4s;
-        transition: .4s;
-        top:.1em;
-        left:1%;
-        right:1%;
-        border-radius:5px;
-    }
+        .slider:before {
+            position: absolute;
+            height: 1.4em;
+            content:"TXT";
+            color:#000066;
+            width: 2.8em; 
+            vertical-align:sub;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            flex-direction: column;
+            text-align:center;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            top:.1em;
+            left:1%;
+            right:1%;
+            border-radius:5px;
+        }
 
-    input:checked + .slider {
-        background-color: maroon;
-        color:maroon;
-    }
+        input:checked + .slider {
+            background-color: maroon;
+            color:maroon;
+        }
 
-    input:focus + .slider {
-        box-shadow: 0 0 1px maroon;
-    }
+        input:focus + .slider {
+            box-shadow: 0 0 1px maroon;
+        }
 
-    input:checked + .slider:before {
-        content:"IMG";
-        color:maroon;
-        -webkit-transform: translateY(2.4em);
-        -ms-transform: translateY(2.4em);
-        transform: translateY(2.4em);
-    }
+        input:checked + .slider:before {
+            content:"IMG";
+            color:maroon;
+            -webkit-transform: translateY(2.4em);
+            -ms-transform: translateY(2.4em);
+            transform: translateY(2.4em);
+        }
 
-    .node_content{
-        resize:none;
-        overflow-y:scroll;
-    }
-    .content_container{
-        display:flex;
-        flex-direction:row;
-    }
+        .node_content{
+            resize:none;
+            overflow-y:scroll;
+        }
+        .content_container{
+            display:flex;
+            flex-direction:row;
+        }
         </style>
         <script src="//unpkg.com/d3-dsv"></script>
         <script src="//unpkg.com/dat.gui"></script>
@@ -223,950 +223,886 @@
     </head>
 
     <body>
-        <div id="drop_area"><span class="close" id="close_drop">&times;</span><span id="drag_text">Drag and drop file
-                here</span></div>
+        <div id="drop_area">
+            <span class="close" id="close_drop">&times;</span>
+            <span id="drag_text">Drag and drop file here</span>
+        </div>
         <div id="interface">
-
-            <div id="node_lister">
-                <!-- content_container template
-                    <div class ="content_container">
-                    <label class="switch">
-                    <input type="checkbox">
-                    <span class="slider"></span>
-                    </label>
-
-                    <textarea class="node_content" rows="2" cols="40"></textarea>
-                    </div>
-                    --!>
-                    </div>
-
-                    <!--
-                        <label for="add_node">Add Node</label>
-                        <textarea id="add_node" name="add_node" rows="3" cols="50"></textarea>
-                        --!>
-                        <div id="submit_button">
-                        <div class="dummy"></div>
-                        <button type="button" id="add_submit">Add Node</button>
-                        <div class="dummy"></div>
-                        </div>
-
-                        <div id="db_buttons">
-                        <div class="dummy"></div>
-                        <button type="button" id="load_file">load database</button>
-                        <button type="button" id="download_file">download database</button>
-                        </div>
-
-                        </div>
-                        <div id="3d-graph"></div>
-                        <script>
-                            class _Node{
-                                                            constructor(id,text,name,val,links,neighbors,split){
-                                                                                            this.id = id;
-                                                                                            this.text = text;
-                                                                                            this.name = name;
-                                                                                            this.val = val;
-                                                                                            this.links = links;
-                                                                                            this.neighbors = neighbors;
-                                                                                            this.split = split;
-                                                                                        }
-                                                        }
-                        </script>
-                        <script type="module">
-
-                            import { UnrealBloomPass } from '//cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js';
-
-    const ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
-    const bloomLayer = new THREE.Layers();
-    bloomLayer.set(BLOOM_SCENE);
-
-    const materials = {};
-    // controls
-    const controls = { 'DAG Orientation': 'td' };
-    const gui = new dat.GUI();
-    gui.add(controls, 'DAG Orientation', ['td', 'bu', 'lr', 'rl', 'zout', 'zin', 'radialout', 'radialin', null])
-      .onChange(orientation => graph && graph.dagMode(orientation));
-
-    // graph config
-    const NODE_REL_SIZE = 6;
-    const graph = ForceGraph3D()
-      .dagMode('td')
-      .dagLevelDistance(200)
-      .backgroundColor('#101020')
-      .linkColor(() => 'rgba(255,255,255,0.2)')
-      .nodeRelSize(NODE_REL_SIZE)
-      .nodeId('path')
-      .nodeVal('size')
-      .nodeOpacity(0.9)
-      .linkDirectionalParticles(2)
-      .linkDirectionalParticleWidth(0.8)
-      .linkDirectionalParticleSpeed(0.006)
-      .d3Force('collision', d3.forceCollide(node => Math.cbrt(node.size) * NODE_REL_SIZE))
-      .d3VelocityDecay(0.3);
-
-    // Decrease repel intensity
-    graph.d3Force('charge').strength(-15);
-
-    // Graph Data 
-    const nodes = [{ id: 1, name: "1", val: 10, text: "" ,neighbors: [],links:[],split:"2",index:0,label:1},
-    {id:2,name:"-1",val:10,text:"",neighbors:[],links:[],split:"1",index:1,label:0}];
-    const links = [{source:1,target:2,targetNode:nodes.at(1),split:"1"}];
-//    const links = [{source:0,target:0,targetNode:null,split:"0"}];
-//    const links = [];
-    var gData = {
-      nodes, links
-    };
-    const node_container = document.getElementById("node_lister");
-    gData.nodes.forEach(node =>{
-    if(parseInt(node.name)>0){
-    create_node(node);
-    }
-    });
-
-    //create neighbors for animation
-    gData.links.forEach(link => {
-      const a = gData.nodes[link.source-1];
-      const b = gData.nodes[link.target-1];
-            if(a.neighbors === null){
-            a.neighbors = [];
+            <div id="node_lister"></div>
+            <div id="submit_button">
+                <div class="dummy"></div>
+                <button type="button" id="add_submit">Add Node</button>
+                <div class="dummy"></div>
+            </div>
+            <div id="db_buttons">
+                <div class="dummy"></div>
+                <button type="button" id="load_file">load database</button>
+                <button type="button" id="download_file">download database</button>
+            </div>
+        </div>
+        <div id="3d-graph"></div>
+        <script>
+            class _Node {
+              constructor(id, text, name, val, links, neighbors, split) {
+                this.id = id;
+                this.text = text;
+                this.name = name;
+                this.val = val;
+                this.links = links;
+                this.neighbors = neighbors;
+                this.split = split;
+              }
             }
-            if(b.neighbors === null){
-            b.neighbors = [];
-            }
-            !a.neighbors && (a.neighbors = []);
-            !b.neighbors && (b.neighbors = []);
-            a.neighbors.push(b);
-            b.neighbors.push(a);
-
-            if(a.links === null){
-            a.links = [];
-            }
-            if(b.links === null){
-            b.links = [];
-            }
-            !a.links && (a.links = []);
-            !b.links && (b.links = []);
-            a.links.push(link);
-            b.links.push(link);
-
-    });
-    gData.nodes.forEach(node=>{
-    if(Object.keys(node).indexOf('neighbors') === -1){
-    node.neighbors = [];
-    }
-    if(Object.keys(node).indexOf('links') === -1){
-    node.links = [];
-    }
-    });
-    // bloom config
-    const bloomPass = new UnrealBloomPass();
-    bloomPass.strength = 1;
-    bloomPass.radius = 1;
-    bloomPass.threshold = 0.5;
-    const darkMaterial = new THREE.MeshBasicMaterial({ color: 'black' });
-    let selectedNodes = new Set();
-    let visible_node;
-    let visible_nodes = new Set();
-    let highlightLinks = new Set();
-    // graph definition
-    var Graph = ForceGraph3D({
-      extraRenderers: [new THREE.CSS2DRenderer()]
-    })(document.getElementById('3d-graph'));
-    Graph.graphData(gData)
-      .width(document.defaultView.innerWidth * 2 / 3)
-      .nodeLabel((node)=>{return node.label})
-      .nodeColor((node) => {
-      if(node.split != "" && parseInt(node.name)<0){
-        return 'red'; 
-      }
-      else{
-        return 'blue';
-      }
-      })
-      .nodeVisibility((node) => node.text === "dummy" ? false : true)
-      .linkDirectionalArrowLength(3.5)
-      .d3VelocityDecay(0.75)
-      .linkDirectionalArrowRelPos(0.5)
-      .linkColor(link=>link.color)
-      .nodeThreeObject(node => {
-      let mesh;
-      const group = new THREE.Group();
-      //console.log(Graph.graphData());
-      if(node.split != ""){
-      if(parseInt(node.name)<0){
-      //negation
-        mesh = new THREE.Mesh(
-          new THREE.SphereGeometry(NODE_REL_SIZE,32,16,Math.PI*1.5,Math.PI,0,Math.PI),
-          new THREE.MeshBasicMaterial({ color: new THREE.Color(0.5, 0, 0) }));
-
-          if(Graph.graphData().nodes.at(parseInt(node.split)-1).hasOwnProperty('__threeObj')){
-          console.log(Graph.graphData());
-            let sibling_mesh = Graph.graphData().nodes[parseInt(node.split)-1];
-//            mesh.position.set(sibling_mesh.position.x,sibling_mesh.position.y,sibling_mesh.position.z);
-            ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = sibling_mesh[coord]);
-            }
-
-          }
-          else{
-          //non-negated
-          mesh = new THREE.Mesh(
-          new THREE.SphereGeometry(NODE_REL_SIZE,32,16,Math.PI*0.5,Math.PI,0,Math.PI),
-          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
-          }
-      }
-      else{
-        mesh = new THREE.Mesh(
-          new THREE.SphereGeometry(NODE_REL_SIZE),
-          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) }));
-          }
-        group.add(mesh);
-        if(node.text==="dummy"){
-        group.visible = false;
-
-        return group;
-        }
-        let css_obj;
-    if(!is_image(node.text)){
-        const nodeEl = document.createElement('div');
-        nodeEl.textContent = node.text;
-        nodeEl.className = 'node-label';
-        nodeEl.id = 'node_'+node.id; 
-        nodeEl.style.visibility = "hidden";
-        nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
-        css_obj = new THREE.CSS2DObject(nodeEl);
-        }
-        else{
-        const nodeEl = document.createElement('img');
-        nodeEl.src = node.text;
-        nodeEl.className = 'node-label';
-        nodeEl.id = 'node_'+node.id; 
-        nodeEl.style.visibility = "hidden";
-        nodeEl.style.objectFit = "contain";
-        nodeEl.style.maxWidth = "100px";
-    nodeEl.style.maxHeight = "100px";
-
-        nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
-        css_obj = new THREE.CSS2DObject(nodeEl);
-        }
-      if(node.split != ""){
-      if(parseInt(node.name)<0){
- //     mesh.position.set(-1*node.val,0,0);
-
-      }else{
-
-//      mesh.position.set(1*node.val,0,0);
-      }}
-      group.add(css_obj);
-        return group;
-
-      }
-      )
-      .onNodeHover((node, prev_node) => {
-        if (node) {
-        if(node.text != "dummy" && node.__threeObj.size > 1){
-          node.__threeObj.children[1].element.style.visibility = "visible";
-          visible_node = node;
-        }
-        }
-        else if (visible_node != null) {
-        //console.log(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node));
-        if(!selectedNodes.has(visible_node)&&!visible_nodes.has(visible_node)){
-          visible_node.__threeObj.children[1].element.style.visibility = "hidden";
-          }
-          visible_node = null;
-        }
-      })
-      .onNodeDrag((node, translate) => {
-        if (selectedNodes.has(node)) { // moving a selected node
-          [...selectedNodes]
-            .filter(selNode => selNode !== node) // don't touch node being dragged
-            .forEach(node => ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = node[coord] + translate[coord])); // translate other nodes by same amount
-            console.log(node.split);
-        }
-          if (node.split!==""){
-        if(parseInt(node.name)<0){
-        let main = Graph.graphData().nodes[node.split-1];
-        ['x', 'y', 'z'].forEach(coord => {if(coord!=='x'){main[`f${coord}`] = node[coord];}
-        else{
-        main[`f${coord}`] = node[coord]-Graph.nodeRelSize()*3;
-        }})
-        }
-        else{
-        let neg = Graph.graphData().nodes[node.split-1];
-        ['x', 'y', 'z'].forEach(coord => {if(coord!=='x'){neg[`f${coord}`] = node[coord];}
-        else{
-        neg[`f${coord}`] = node[coord]+Graph.nodeRelSize()*3;
-        }})
-        }
+        </script>
+        <script type="module">
+             import { UnrealBloomPass } from "//cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js";
+             const ENTIRE_SCENE = 0;
+             const BLOOM_SCENE = 1;
+             const bloomLayer = new THREE.Layers();
+             bloomLayer.set(BLOOM_SCENE);
+ 
+             const materials = {};
+             // controls
+             const controls = { "DAG Orientation": "td" };
+             const gui = new dat.GUI();
+             gui
+             .add(controls, "DAG Orientation", [
+             "td",
+             "bu",
+             "lr",
+             "rl",
+             "zout",
+             "zin",
+             "radialout",
+             "radialin",
+             null,
+             ])
+               .onChange((orientation) => graph && graph.dagMode(orientation));
+ 
+             // graph config
+             const NODE_REL_SIZE = 6;
+ 
+             // Graph Data starter
+             const nodes = [
+               {
+                 id: 1,
+                 name: "1",
+                 val: 10,
+                 text: "",
+                 neighbors: [],
+                 links: [],
+                 split: "2",
+                 index: 0,
+                 label: 1,
+               },
+                   {
+                 id: 2,
+                 name: "-1",
+                 val: 10,
+                 text: "",
+                 neighbors: [],
+                 links: [],
+                 split: "1",
+                 index: 1,
+                 label: 0,
+               },
+             ];
+             const links = [{ source: 1, target: 2, targetNode: nodes.at(1), split: "1" }];
+             let gData = {
+                   nodes,
+               links,
+             };
+             // node_container creator for start
+             const node_container = document.getElementById("node_lister");
+             gData.nodes.forEach((node) => {
+               if (parseInt(node.name) > 0) {
+             create_node(node);
              }
-        
-       // let split_node = Graph.graphData().nodes[parseInt(node.split)-1];
-        //['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = node[coord]);
-        /*
-        console.log(node.__threeObj.children[0]);
-        let temp_three = node.__threeObj.children[0];
-      Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0].position.set(temp_three.position.x,temp_three.position.y,temp_three.position.z);
-      Graph.refresh();
-      console.log(Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0].position);
-      */
-      })
-      .onNodeDragEnd(node => {
-        if (selectedNodes.has(node)) { // finished moving a selected node
-          [...selectedNodes]
-            .filter(selNode => selNode !== node) // don't touch node being dragged
-            .forEach(node => ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = undefined)); // unfix controlled nodes
-        }
-//            let split_node = Graph.graphData().nodes[parseInt(node.split)-1];
-//        ['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = node[coord]);
-//        ['x', 'y', 'z'].forEach(coord => split_node[`f${coord}`] = undefined);
-        /*
-        let temp_three = node.__threeObj.children[0];
-      Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0].position.set(temp_three.position.x,temp_three.position.y,temp_three.position.z);
-      Graph.refresh();
-      console.log(Graph.graphData().nodes[parseInt(node.split)-1].__threeObj.children[0].position);
-      */
-      })
-      .onNodeClick((node, event) => {
-
-        if (event.shiftKey) { // multi-selection
-          selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
-          if (selectedNodes.has(node)) {
-            node.__threeObj.children[0].material.color.r *= 2;
-            node.__threeObj.children[0].material.color.g *= 2;
-            node.__threeObj.children[0].material.color.b *= 2;
-            node.__threeObj.children[1].element.style.visibility = "visible";
-            visible_nodes.add(node);
-            visible_node = null;
-            if (selectedNodes.size === 1) {
-              if (node.links != null) {
-                node.links.forEach(link => highlightLinks.add(link));
-                updateHighlight();
-              }
-            }
-            else {
-              highlightLinks.clear();
-              selectedNodes.forEach(from_node => {
-                selectedNodes.forEach(to_node => {
-                  if (from_node.links != null) {
-                    from_node.links.forEach(link => {
-                      //console.log(link);
-                      if (link.source === from_node && link.target === to_node) {
-                        highlightLinks.add(link);
-                      }
-                      updateHighlight();
-                    });
-                  }
-                });
-              });
-            }
-          }
-          else {
-            node.__threeObj.children[1].element.style.visibility = "hidden";
-            visible_nodes.delete(node);
-            node.__threeObj.children[0].material.color.r /= 2;
-            node.__threeObj.children[0].material.color.g /= 2;
-            node.__threeObj.children[0].material.color.b /= 2;
-            highlightLinks.forEach(link => {
-              if (link.source === node || link.target === node) {
-                highlightLinks.delete(link);
-              }
-              updateHighlight();
-            });
-          }
-        }
-        //create link
-        else if (event.ctrlKey) {
-        if(selectedNodes.size === 0){
-        return;
-        }
-          //cosole.log(selectedNodes);
-          let target_value;
-          let targetNode_value;
-          if (selectedNodes.size !== 1){
-            let dummy_node = {id:"",text:"dummy",name:'-'+node.id,val:0,neighbors:[],links:[]};
-            //dummy_node.__threeObj.visible = 'false';
-          let temp_id = '_';
-            selectedNodes.forEach(small_node => {
-            temp_id += small_node.id+'-';
-            });
-            dummy_node.id = temp_id;
-            let mult_temp_link = {source:dummy_node.id,target:node.id,targetNode:node,color:"blue"};
-            gData.links.push(mult_temp_link);
-            dummy_node.neighbors.push(node);
-            dummy_node.links.push(mult_temp_link);
-            node.neighbors.push(dummy_node);
-            node.links.push(mult_temp_link);
-            target_value = temp_id;
-            targetNode_value = dummy_node;
-            gData.nodes.push(dummy_node);
-            Graph.graphData(gData);
-            }
-          else{
-          target_value = node.id;
-          targetNode_value = node;
-          }
-          selectedNodes.forEach(small_node => {
-            //console.log(small_node.links);
-            //console.log(node.id);
-            const temp_link = { source: small_node.id, target: target_value,targetNode: targetNode_value,color:"blue" }
-            let flag = true;
-            small_node.links.forEach(link=>{
-            if(link.source===small_node && link.target===node){
-            flag = false;
-            }
-            })
-            if(small_node.id != node.id && flag){
-            gData.links.push(temp_link);
-            small_node.neighbors.push(targetNode_value);
-            small_node.links.push(temp_link);
-            targetNode_value.neighbors.push(small_node);
-            targetNode_value.links.push(temp_link);
-            }
-          });
-            Graph.graphData(gData);
-            selectedNodes.forEach(selected => {
-            selected.__threeObj.children[0].material.color.r *= 1;
-            selected.__threeObj.children[0].material.color.g *= 1;
-            selected.__threeObj.children[0].material.color.b *= 1;
-
-
-              if (selected.links != null) {
-                selected.links.forEach(link => highlightLinks.add(link));
-                updateHighlight();
-              }
-              else {
-                highlightLinks.clear();
-                selectedNodes.forEach(from_selected => {
-                  selectedNodes.forEach(to_selected => {
-                    if (from_selected.links != null) {
-                      from_selected.links.forEach(link => {
-                        //console.log(link);
-                        if (link.source === from_selected && link.target === to_selected) {
-                          highlightLinks.add(link);
-                        }
-                        updateHighlight();
-                      });
-                    }
-                  });
-                });
-              }
-            });
-            Graph.refresh();
-            if(selectedNodes.size !== 1){
-            const event = document.createEvent('Event');
-            event.initEvent('build',true,true);
-            document.dispatchEvent(event);
-            }
-            selectedNodes.clear();
-            }
-        else if (event.altKey) {
-            visible_node = null;
-            if (visible_nodes.has(node)) {
-              node.__threeObj.children[1].element.style.visibility = "hidden";
-              visible_nodes.delete(node);
-            }
-            else {
-              node.__threeObj.children[1].element.style.visibility = "visible";
-              visible_nodes.add(node);
-
-            }
-          }
-          else { // single-selection
-            const untoggle = selectedNodes.has(node) && selectedNodes.size === 1;
-            selectedNodes.clear();
-            !untoggle && selectedNodes.add(node);
-          }
-        })
-      .linkWidth(link => highlightLinks.has(link) ? 3 : 1)
-      .onEngineTick(()=>{
-        Graph.graphData().nodes.forEach((node)=>{
-        if(parseInt(node.name)<0){
-        let main = Graph.graphData().nodes[node.split-1];
-        ['x', 'y', 'z'].forEach(coord => {if(coord!=='x'){node[`f${coord}`] = main[coord];}
-        else{
-        node[`f${coord}`] = main[coord]+Graph.nodeRelSize()*3;
-        }})
-        }
-        });
-      })
-      .linkVisibility((link)=>{
-      console.log(link);
-      console.log(link.source.name);
-      console.log(link.target.name);
-      if(parseInt(Graph.graphData().nodes[link.source-1].name)*-1===parseInt(Graph.graphData().nodes[link.target-1].name)){
-        return false;
-      }
-      else return true;
-      })
-        .linkPositionUpdate((line,{start,end},link)=>{
-//          const startR = Graph.nodeRelSize();
-//          const endR = Graph.nodeRelSize();
-//          const startR = 5;
-//          const endR = 4;
-//          const lineLen = Math.sqrt(['x', 'y', 'z'].map(dim => Math.pow((end[dim] || 0) - (start[dim] || 0), 2)).reduce((acc, v) => acc + v, 0));
-//
-//          const linePos = line.geometry.getAttribute('position');
-//
-//          // calculate coordinate on the node's surface instead of center
-////          linePos.set([startR / lineLen, 1 - endR / lineLen].map(t =>
-////            ['x', 'y', 'z'].map(dim => start[dim] + (end[dim] - start[dim]) * t)
-////          ).flat());
-//            linePos.set([start['x']+5,start['y'],start['z']],[end['x']+5,end['y'],end['z']]);
-//          linePos.needsUpdate = true;
-//          return true;
-//          console.log(link_three);
-//              console.log(start);
-//              console.log(end);
-//              console.log(link);
-//        if(parseInt(link.target.name)<0 || parseInt(link.source.name)<0){
-//          let target=link.target;
-//          let source=link.source;
-//          if(link_three){
-//          link_three.visible = false;
-//          link.__arrowObj.visible = false;
-//          link.__lineObj.visible = false;
-//          }
-//          ['x', 'y', 'z'].forEach(coord => start[`f${coord}`] = 0); 
-//          ['x', 'y', 'z'].forEach(coord => end[`f${coord}`] = 0); 
-//          return true;
-//         
-        })
-      .onLinkClick((link,event)=>{
-      if(event.altKey){
-        remove_item(gData.links,link);
-        Graph.graphData(gData);
-      }
-      else{
-      console.log(link);
-      if(link.color === "blue"){
-      //var newMaterial = (keepCloning(link.__lineObj.material));
-      //newMaterial.color = {'isColor':true,'r':1,'g':0,'b':0};
-
-      //link.__lineObj.material.color = newMaterial; 
-      link.__arrowObj.material.color = new THREE.Color(1,0,0);
-      link.__photonsObj.children.forEach(mesh=>{
-      mesh.material.color = new THREE.Color(1,0,0);
-      });
-      link.color = "red";
-      }
-      else{
-      //link.__lineObj.material.color = {'isColor':true,'r':0,'g':0,'b':1};
-      //var newMaterial = (keepCloning(link.__lineObj.material));
-      //newMaterial.color = {'isColor':true,'r':1,'g':0,'b':0};
-
-      //link.__lineObj.material.color = newMaterial; 
-      link.__arrowObj.material.color = new THREE.Color(0,0,1);
-      link.__photonsObj.children.forEach(mesh=>{
-      mesh.material.color = new THREE.Color(0,0,1);
-      });
-      link.color = "blue";
-      }
-      console.log(Graph.graphData());
-      }
-      })
-      .linkDirectionalParticles(link => highlightLinks.has(link) ? 4 : 0)
-      .linkDirectionalParticleWidth(1)
-      .linkDirectionalParticleColor(link =>link.color)
-      .linkDirectionalArrowColor(link=>link.color)
-//      .linkThreeObject(link=>{
-//
-//      if(link.split){
-//        const mesh = new THREE.LineSegments(new THREE.SphereGeometry(0.1),
-//          new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0, 0) }));
-//          return mesh;
-//          }
-//      })
-//      .linkThreeObjectExtend(link=>{
-//      if(link.split){
-//      //console.log('hello');
-//      return false;
-//      }
-//      else{
-//      return true;
-//      }
-//      })
-      .linkWidth(0)
-//      .forceEngine(Graph.graphData().nodes).force('link',d3.forceLink(Graph.graphData().links).iterations(0))
-//      .d3Force('link',d3.forceLink(Graph.graphData().links).iterations(0))
-      .postProcessingComposer().addPass(bloomPass);
-//      Graph.d3Force('link').distance(link=>{
-//      if(link.split){
-//        return 0;
-//      }
-//      else{
-//      return 10;
-//      }
-//      });
-        Graph.d3Force('link').strength(0);
-       // link=>{
-        //if(link.split){
-        //  return 0;
-        //}
-        //else{
-        //return 0;
-        //}
-        //});
-//      Graph.d3Force('center').x(10).y(10).z(10);
-//      Graph.cameraPosition(5000,5000,5000);
-//      Graph.d3Force('charge').strength(0);
-        Graph.d3Force('center').strength(0);
-      Graph.d3Force('charge').strength((node,i,nodes)=>{
-//      console.log(node.index);
-//      console.log(nodes[i].index);
-//      console.log(i);
-//      console.log(parseInt(node.name)*-1===parseInt(nodes[i].name));
-      /*
-      if(parseInt(node.name)*-1===parseInt(nodes[i].name)){
-        return 0;
-      }
-      else return -30;
-      */
-      if(parseInt(node.name)<0){
-      return 0;
-      }
-      else return -30;
-      });
-      console.log('pos');
-      console.log(Graph.linkPositionUpdate());
-//      Graph.d3Force('charge').distanceMin(50);
-      
-/*      const link_force = Graph.d3Force('link').distance(link=>{
-      console.log(link.source.name);
-      console.log(link.target.name);
-      console.log(parseInt(link.source.name)*-1===parseInt(link.target.name));
-      if(parseInt(link.source.name)*-1===parseInt(link.target.name)){
-        console.log('hello');
-        return 0;
-      }
-      else return 30;
-      }).iterations(1);
-*/
-      function keepCloning(objectpassed) {
-  if (objectpassed === null || typeof objectpassed !== 'object') {
-     return objectpassed;
-  }
-// give temporary-storage the original obj's constructor
-var temporary_storage = new THREE.MeshBasicMaterial();
-for (var key in objectpassed) {
-    temporary_storage[key] = keepCloning(objectpassed[key]);
-  }
-  return temporary_storage;
-}
-function remove_item(arr, value) {
-  var i = 0;
-  while (i < arr.length) {
-    if (arr[i] === value) {
-      arr.splice(i, 1);
-    } else {
-      ++i;
-    }
-  }
-  return arr;
-}
-//show and hide text
-document.addEventListener('keydown',
-        (event) => {
-        //console.log(event);
-        if (event.key === 'Escape'){
-        selectedNodes.forEach((node)=>{
-            node.__threeObj.children[0].material.color.r /= 2;
-            node.__threeObj.children[0].material.color.g /= 2;
-            node.__threeObj.children[0].material.color.b /= 2;
-            node.__threeObj.children[1].element.style.visibility = "hidden";
-        });
-
-        visible_nodes.forEach((node)=>{
-            node.__threeObj.children[1].element.style.visibility = "hidden";
-        });
-        selectedNodes.clear();
-        highlightLinks.clear();
-        visible_nodes.clear();
-        updateHighlight();
-        //console.log(selectedNodes);
-        //console.log(highlightLinks);
-        }
-        else if (event.key === 'ArrowUp'){
-        visible_nodes.clear();
-        gData.nodes.forEach((node)=>{
-            if (node.__threeObj.children[1] !== null){
-            node.__threeObj.children[1].element.style.visibility = "visible";
-            visible_nodes.add(node);
-            }
-        });
-        }
-        else if (event.key === 'ArrowDown'){
-        gData.nodes.forEach((node)=>{
-            node.__threeObj.children[1].element.style.visibility = "hidden";
-        });
-
-        visible_nodes.clear();
-        }
-        else if (event.key === '-'){
-        let current_size_px = gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
-        let desired_size = parseInt(current_size_px.slice(0,-2))-10;
-        let desired_size_px = desired_size+'px';
-        gData.nodes.forEach((node)=>{
-            node.__threeObj.children[1].element.style.maxWidth = desired_size_px;
-            node.__threeObj.children[1].element.style.maxHeight = desired_size_px;
-        });
-
-        }
-        else if (event.key === '+'){
-        let current_size_px = gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
-        let desired_size = parseInt(current_size_px.slice(0,-2))+10;
-        let desired_size_px = desired_size+'px';
-        gData.nodes.forEach((node)=>{
-            node.__threeObj.children[1].element.style.maxWidth = desired_size_px;
-            node.__threeObj.children[1].element.style.maxHeight = desired_size_px;
-        });
-
-        }
-        }
-    );
-    document.getElementById("add_submit").onclick = function () {
-    let highest = 0;
-    let i = gData.nodes.length-1;
-    while (highest===0){
-       if(Graph.graphData().nodes[i].label !== 0){
-        highest = Graph.graphData().nodes[i].label+1;
-       }
-       else i--;
-    }
-      gData.nodes.push({ id: gData.nodes.length + 1, text: "", name:gData.nodes.length+1,val:10, neighbors: [], links: [],split:"",label:highest });
-      //console.log(gData);
-      //console.log(gData.nodes.at(-1));
-      create_node(gData.nodes.at(-1));
-      Graph.graphData(gData);
-    };
-    document.addEventListener('hide_dummy',function(e){
-            let check = gData.nodes.at(-1);
-            //console.log(check);
-                gData.nodes.at(-1).__threeObj.visible = false;
-                gData.nodes.at(-1).__threeObj.visible = false;
-    },false);
-    function updateHighlight() {
-      // trigger update of highlighted objects in scene
-      Graph
-        .linkWidth(Graph.linkWidth())
-        .linkDirectionalParticles(Graph.linkDirectionalParticles());
-    }
-    function is_image(url){
-  return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
-    }
-    function text_change(event){
-        let field = event.target;
-        let temp_id = field.parentElement.graph_id;
-        console.log(temp_id);
-        let target_node = gData.nodes.at(temp_id-1);
-        console.log(target_node)
-        if(target_node.__threeObj.children[1]!==null){
-        target_node.__threeObj.children[1].removeFromParent();
-        }
-
-        if(is_image(field.value)){
-        const nodeEl = document.createElement('img');
-        nodeEl.src = field.value;
-        nodeEl.className = 'node-label';
-        nodeEl.id = 'node_'+temp_id;
-        nodeEl.style.visibility = "hidden";
-        nodeEl.style.objectFit = "contain";
-        nodeEl.style.maxWidth = "100px";
-    nodeEl.style.maxHeight = "100px";
-        const css_obj = new THREE.CSS2DObject(nodeEl);
-        target_node.__threeObj.add(css_obj); 
-        field.parentElement.children[1].children[0].checked=true;
-        }
-        else{
-        let mesh = target_node.__threeObj.children[0];
-        const nodeEl = document.createElement('div');
-        nodeEl.textContent =field.value;
-        nodeEl.className = 'node-label';
-        nodeEl.id = 'node_'+temp_id;
-        nodeEl.style.visibility = "hidden";
-        nodeEl.style.color = `rgb(${mesh.material.color.r*2*255},${mesh.material.color.g*2*255},${mesh.material.color.b*2*255})`;
-        const css_obj = new THREE.CSS2DObject(nodeEl);
-        target_node.__threeObj.add(css_obj); 
-        field.parentElement.children[1].children[0].checked=false;
-        }
-
-        gData.nodes[temp_id-1].text = field.value; 
-
-        //console.log(target_node);
-        //console.log(gData);
-        Graph.graphData(gData);
-
-    }
-    document.getElementById("download_file").onclick = function () {
-      var pom = document.createElement('a');
-      //console.log(gData);
-      let db_string = '{"nodes":[';
-      gData.nodes.forEach(node => {
-        db_string += '{"id": "' + node.id + '","name": "' + node.name + '","split": "' + node.split +'","val": ' + node.val + ',"text": "' + node.text + '","label": ' + node.label + '},';
-      }
-      )
-      db_string = db_string.slice(0, -1);
-      db_string += '],"links":[';
-      gData.links.forEach(link => {
-        db_string += '{"source": "' + link.source.id + '","color": "' + link.color +'","target": "' + link.target.id + '"},';
-      })
-      if (gData.links.length>0){
-
-      db_string = db_string.slice(0, -1);
-      }
-      db_string += ']}';
-
-      pom.setAttribute('href', 'data:text/plain;charset=utf-8,' +
-        encodeURIComponent(db_string));
-      var currentdate = new Date();
-      var datetime = currentdate.getDate() + "-"
-        + (currentdate.getMonth() + 1) + "-"
-        + currentdate.getFullYear() + "_"
-        + currentdate.getHours() + "-"
-        + currentdate.getMinutes() + "-"
-        + currentdate.getSeconds() + ".json";
-
-      pom.setAttribute('download', datetime);
-
-      pom.style.display = 'none';
-      document.body.appendChild(pom);
-
-      pom.click();
-
-      document.body.removeChild(pom);
-    }
-    function create_node(node){
-    if(node.label!==0){
-    let new_container = document.createElement("div");
-    new_container.className = "content_container";
-    new_container.graph_id = node.id;
-    let new_switch = document.createElement("label");
-    new_switch.className = "switch";
-
-    let new_checkbox = document.createElement("input");
-    new_checkbox.type = "checkbox";
-    let new_slider = document.createElement("span");
-    new_slider.className = "slider";
-
-    let new_num = document.createElement("h1");
-    new_num.textContent = node.label;
-    let new_textarea = document.createElement("textarea");
-    new_textarea.className = "node_content";
-    new_textarea.textContent = node.text;
-    new_textarea.rows = "2";
-    new_textarea.cols = "40";
-    new_textarea.onchange = (event)=>{text_change(event);};
-
-    let new_focus = document.createElement("button");
-    new_focus.type ="button";
-    new_focus.onclick = (event)=>{
-        let temp_id = event.target.parentElement.children[0].textContent;
-        let node = gData.nodes.at(temp_id-1);
-const distance = 40;
-          const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
-
-          const newPos = node.x || node.y || node.z
-            ? { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }
-            : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
-
-          Graph.cameraPosition(
-            newPos, // new position
-            node, // lookAt ({ x, y, z })
-            3000  // ms transition duration
-          );
-    };
-    if(node.split==""){
-    let new_overlay = document.createElement("span");
-    new_overlay.className = "slider_overlay";
-    new_overlay.onclick = (event)=>{
-    event.target.remove();
-    };
-    }
-    new_switch.appendChild(new_checkbox);
-    new_switch.appendChild(new_slider);
-    new_container.appendChild(new_num);
-    new_container.appendChild(new_switch);
-    new_container.appendChild(new_textarea);
-    new_container.appendChild(new_focus);
-    node_container.appendChild(new_container);
-    }
-    }
-    document.getElementById("close_drop").onclick = function () {
-      const drop_area = document.getElementById("drop_area")
-      drop_area.style.display = "none";
-    }
-    document.getElementById("load_file").onclick = function () {
-
-      const drop_area = document.getElementById("drop_area")
-      drop_area.style.display = "block";
-      drop_area.addEventListener('dragover', (event) => {
-        event.stopPropagation();
-        event.preventDefault();
-        // Style the drag-and-drop as a "copy file" operation.
-        event.dataTransfer.dropEffect = 'copy';
-      });
-
-      drop_area.addEventListener('drop', (event) => {
-        event.stopPropagation();
-        event.preventDefault();
-        const fileList = event.dataTransfer.files;
-        const reader = new FileReader();
-        var json_string = ""
-        reader.addEventListener("load", () => { // this will then display a text file
-          json_string = reader.result;
-          gData = JSON.parse(json_string);
-          gData.links.forEach(link => {
-            const a = gData.nodes[link.source - 1];
-            const b = gData.nodes[link.target - 1];
-            //console.log(b);
-            if(a.neighbors === null){
-            a.neighbors = [];
-            }
-            if(b.neighbors === null){
-            b.neighbors = [];
-            }
-            !a.neighbors && (a.neighbors = []);
-            !b.neighbors && (b.neighbors = []);
-            a.neighbors.push(b);
-            b.neighbors.push(a);
-
-            if(a.links === null){
-            a.links = [];
-            }
-            if(b.links === null){
-            b.links = [];
-            }
-            !a.links && (a.links = []);
-            !b.links && (b.links = []);
-            a.links.push(link);
-            b.links.push(link);
-          });
-          let old_containers = document.getElementsByClassName("content_container");
-          //console.log(old_containers);
-          for(let i = old_containers.length-1; i>=0;i--){
-          //console.log(i);
-          //console.log(old_containers[i]);
-          old_containers[i].remove();
-          }
-    gData.nodes.forEach(node =>{
-    if(Object.keys(node).indexOf('neighbors') === -1){
-    node.neighbors = [];
-    }
-    if(Object.keys(node).indexOf('links') === -1){
-    node.links = [];
-    }
-    create_node(node);
-    });
-          Graph.graphData(gData);
-        }, false);
-        if (fileList[0]) {
-          reader.readAsText(fileList[0]);
-        }
-
-
-        drop_area.style.display = "none";
-      });
-    }
-
-                        </script>
+             });
+ 
+             // create neighbors for animation
+             gData.links.forEach((link) => {
+               const a = gData.nodes[link.source - 1];
+               const b = gData.nodes[link.target - 1];
+               if (a.neighbors === null) {
+                 a.neighbors = [];
+               }
+               if (b.neighbors === null) {
+                 b.neighbors = [];
+               }
+               !a.neighbors && (a.neighbors = []);
+               !b.neighbors && (b.neighbors = []);
+               a.neighbors.push(b);
+               b.neighbors.push(a);
+ 
+               if (a.links === null) {
+                 a.links = [];
+               }
+               if (b.links === null) {
+                 b.links = [];
+               }
+               !a.links && (a.links = []);
+               !b.links && (b.links = []);
+               a.links.push(link);
+               b.links.push(link);
+             });
+             gData.nodes.forEach((node) => {
+               if (Object.keys(node).indexOf("neighbors") === -1) {
+             node.neighbors = [];
+             }
+               if (Object.keys(node).indexOf("links") === -1) {
+             node.links = [];
+             }
+             });
+ 
+             // bloom config
+             const bloomPass = new UnrealBloomPass();
+             bloomPass.strength = 1;
+             bloomPass.radius = 1;
+             bloomPass.threshold = 0.5;
+             const darkMaterial = new THREE.MeshBasicMaterial({ color: "black" });
+             const selectedNodes = new Set();
+             let visible_node;
+             const visible_nodes = new Set();
+             const highlightLinks = new Set();
+ 
+             // graph definition
+             const Graph = ForceGraph3D({
+               extraRenderers: [new THREE.CSS2DRenderer()],
+             })(document.getElementById("3d-graph"));
+             Graph.graphData(gData)
+                 .width((document.defaultView.innerWidth * 2) / 3)
+                 // node settings
+                 .nodeLabel((node) => node.label)
+                 .nodeColor((node) => {
+                 if (node.split != "" && parseInt(node.name) < 0) {
+                     return "red";
+                   }
+               
+                   return "blue";
+                 })
+                 .nodeVisibility((node) => node.text !== "dummy")
+                 .nodeThreeObject((node) => {
+                   let mesh;
+                   const group = new THREE.Group();
+                   if (node.split != "") {
+                     if (parseInt(node.name) < 0) {
+                       // negation
+                       mesh = new THREE.Mesh(
+                         new THREE.SphereGeometry(
+                           NODE_REL_SIZE,
+                           32,
+                           16,
+                           Math.PI * 1.5,
+                           Math.PI,
+                           0,
+                           Math.PI
+                         ),
+                         new THREE.MeshBasicMaterial({ color: new THREE.Color(0.5, 0, 0) })
+                       );
+           
+                       if (
+                         Graph.graphData()
+                           .nodes.at(parseInt(node.split) - 1)
+                           .hasOwnProperty("__threeObj")
+                       ) {
+                         console.log(Graph.graphData());
+                         const sibling_mesh =
+                           Graph.graphData().nodes[parseInt(node.split) - 1];
+                         ["x", "y", "z"].forEach(
+                           (coord) => (node[`f${coord}`] = sibling_mesh[coord])
+                         );
+                       }
+                     } else {
+                       // non-negated
+                       mesh = new THREE.Mesh(
+                         new THREE.SphereGeometry(
+                           NODE_REL_SIZE,
+                           32,
+                           16,
+                           Math.PI * 0.5,
+                           Math.PI,
+                           0,
+                           Math.PI
+                         ),
+                         new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) })
+                       );
+                     }
+                   } else {
+                     // if not split, create full sphere
+                     mesh = new THREE.Mesh(
+                       new THREE.SphereGeometry(NODE_REL_SIZE),
+                       new THREE.MeshBasicMaterial({ color: new THREE.Color(0, 0.5, 0.5) })
+                     );
+                   }
+                   group.add(mesh);
+                   // TODO check what this does
+                   if (node.text === "dummy") {
+                     group.visible = false;
+                     return group;
+                   }
+             
+                   // css object creator; creates div and add it as three.obj
+                   let css_obj;
+                   // if text is text
+                   if (!is_image(node.text)) {
+                     const nodeEl = document.createElement("div");
+                     nodeEl.textContent = node.text;
+                     nodeEl.className = "node-label";
+                     nodeEl.id = `node_${node.id}`;
+                     nodeEl.style.visibility = "hidden";
+                     nodeEl.style.color = `rgb(${mesh.material.color.r * 2 * 255},${
+                       mesh.material.color.g * 2 * 255
+                     },${mesh.material.color.b * 2 * 255})`;
+                     css_obj = new THREE.CSS2DObject(nodeEl);
+                   }
+                   // if text is image link
+                   else {
+                     const nodeEl = document.createElement("img");
+                     nodeEl.src = node.text;
+                     nodeEl.className = "node-label";
+                     nodeEl.id = `node_${node.id}`;
+                     nodeEl.style.visibility = "hidden";
+                     nodeEl.style.objectFit = "contain";
+                     nodeEl.style.maxWidth = "100px";
+                     nodeEl.style.maxHeight = "100px";
+           
+                     nodeEl.style.color = `rgb(${mesh.material.color.r * 2 * 255},${
+                       mesh.material.color.g * 2 * 255
+                     },${mesh.material.color.b * 2 * 255})`;
+                     css_obj = new THREE.CSS2DObject(nodeEl);
+                   }
+                   // TODO check what this does
+                   if (node.split != "") {
+                     if (parseInt(node.name) < 0) {
+                       //     mesh.position.set(-1*node.val,0,0);
+                     } else {
+                       //      mesh.position.set(1*node.val,0,0);
+                     }
+                   }
+                   group.add(css_obj);
+                   return group;
+                 })
+                 .onNodeHover((node, prev_node) => {
+                     if (node) {
+                       if (node.text != "dummy" && node.__threeObj.size > 1) {
+                         node.__threeObj.children[1].element.style.visibility = "visible";
+                         visible_node = node;
+                       }
+                     } else if (visible_node != null) {
+                           if (
+                                 !selectedNodes.has(visible_node) &&
+                                 !visible_nodes.has(visible_node)
+                               ) {
+                                   visible_node.__threeObj.children[1].element.style.visibility = "hidden";
+                                   }
+                           visible_node = null;
+                     }
+                 })
+                 .onNodeDrag((node, translate) => {
+                     if (selectedNodes.has(node)) {
+                       // moving a selected node
+                       [...selectedNodes]
+                             .filter((selNode) => selNode !== node) // don't touch node being dragged
+                             .forEach((node) =>
+                               ["x", "y", "z"].forEach(
+                                 (coord) => (node[`f${coord}`] = node[coord] + translate[coord])
+                               )
+                             ); // translate other nodes by same amount
+                       console.log(node.split);
+                     }
+                     if (node.split !== "") {
+                       if (parseInt(node.name) < 0) {
+                         const main = Graph.graphData().nodes[node.split - 1];
+                         ["x", "y", "z"].forEach((coord) => {
+                           if (coord !== "x") {
+                             main[`f${coord}`] = node[coord];
+                           } else {
+                             main[`f${coord}`] = node[coord] - Graph.nodeRelSize() * 3;
+                           }
+                         });
+                       } else {
+                         const neg = Graph.graphData().nodes[node.split - 1];
+                         ["x", "y", "z"].forEach((coord) => {
+                           if (coord !== "x") {
+                             neg[`f${coord}`] = node[coord];
+                           } else {
+                             neg[`f${coord}`] = node[coord] + Graph.nodeRelSize() * 3;
+                           }
+                         });
+                       }
+                     }
+                   })
+                 .onNodeDragEnd((node) => {
+                     if (selectedNodes.has(node)) {
+                       // finished moving a selected node
+                       [...selectedNodes]
+                         .filter((selNode) => selNode !== node) // don't touch node being dragged
+                         .forEach((node) =>
+                           ["x", "y", "z"].forEach((coord) => (node[`f${coord}`] = undefined))
+                         ); // unfix controlled nodes
+                     }
+                 })
+                 .onNodeClick((node, event) => {
+                     if (event.shiftKey) {
+                       // multi-selection
+                           selectedNodes.has(node)
+                             ? selectedNodes.delete(node)
+                             : selectedNodes.add(node);
+                           if (selectedNodes.has(node)) {
+                             node.__threeObj.children[0].material.color.r *= 2;
+                             node.__threeObj.children[0].material.color.g *= 2;
+                             node.__threeObj.children[0].material.color.b *= 2;
+                             node.__threeObj.children[1].element.style.visibility = "visible";
+                             visible_nodes.add(node);
+                             visible_node = null;
+                             if (selectedNodes.size === 1) {
+                               if (node.links != null) {
+                                 node.links.forEach((link) => highlightLinks.add(link));
+                                 updateHighlight();
+                               }
+                             } else {
+                               highlightLinks.clear();
+                               selectedNodes.forEach((from_node) => {
+                                 selectedNodes.forEach((to_node) => {
+                                   if (from_node.links != null) {
+                                     from_node.links.forEach((link) => {
+                                       // console.log(link);
+                                       if (link.source === from_node && link.target === to_node) {
+                                         highlightLinks.add(link);
+                                       }
+                                       updateHighlight();
+                                     });
+                                   }
+                                 });
+                               });
+                             }
+                           } else {
+                             node.__threeObj.children[1].element.style.visibility = "hidden";
+                             visible_nodes.delete(node);
+                             node.__threeObj.children[0].material.color.r /= 2;
+                             node.__threeObj.children[0].material.color.g /= 2;
+                             node.__threeObj.children[0].material.color.b /= 2;
+                             highlightLinks.forEach((link) => {
+                               if (link.source === node || link.target === node) {
+                                 highlightLinks.delete(link);
+                               }
+                               updateHighlight();
+                             });
+                           }
+                         }
+                         // create link
+                         else if (event.ctrlKey) {
+                           if (selectedNodes.size === 0) {
+                             return;
+                           }
+                           // cosole.log(selectedNodes);
+                           let target_value;
+                           let targetNode_value;
+                           if (selectedNodes.size !== 1) {
+                             const dummy_node = {
+                               id: "",
+                               text: "dummy",
+                               name: `-${node.id}`,
+                               val: 0,
+                               neighbors: [],
+                               links: [],
+                             };
+                             // dummy_node.__threeObj.visible = 'false';
+                             let temp_id = "_";
+                             selectedNodes.forEach((small_node) => {
+                               temp_id += `${small_node.id}-`;
+                             });
+                             dummy_node.id = temp_id;
+                             const mult_temp_link = {
+                               source: dummy_node.id,
+                               target: node.id,
+                               targetNode: node,
+                               color: "blue",
+                             };
+                             gData.links.push(mult_temp_link);
+                             dummy_node.neighbors.push(node);
+                             dummy_node.links.push(mult_temp_link);
+                             node.neighbors.push(dummy_node);
+                             node.links.push(mult_temp_link);
+                             target_value = temp_id;
+                             targetNode_value = dummy_node;
+                             gData.nodes.push(dummy_node);
+                             Graph.graphData(gData);
+                           } else {
+                             target_value = node.id;
+                             targetNode_value = node;
+                           }
+                           selectedNodes.forEach((small_node) => {
+                             const temp_link = {
+                               source: small_node.id,
+                               target: target_value,
+                               targetNode: targetNode_value,
+                               color: "blue",
+                             };
+                             let flag = true;
+                             small_node.links.forEach((link) => {
+                               if (link.source === small_node && link.target === node) {
+                                 flag = false;
+                               }
+                             });
+                             if (small_node.id != node.id && flag) {
+                               gData.links.push(temp_link);
+                               small_node.neighbors.push(targetNode_value);
+                               small_node.links.push(temp_link);
+                               targetNode_value.neighbors.push(small_node);
+                               targetNode_value.links.push(temp_link);
+                             }
+                           });
+                           Graph.graphData(gData);
+                           selectedNodes.forEach((selected) => {
+                             selected.__threeObj.children[0].material.color.r *= 1;
+                             selected.__threeObj.children[0].material.color.g *= 1;
+                             selected.__threeObj.children[0].material.color.b *= 1;
+                 
+                             if (selected.links != null) {
+                               selected.links.forEach((link) => highlightLinks.add(link));
+                               updateHighlight();
+                             } else {
+                               highlightLinks.clear();
+                               selectedNodes.forEach((from_selected) => {
+                                 selectedNodes.forEach((to_selected) => {
+                                   if (from_selected.links != null) {
+                                     from_selected.links.forEach((link) => {
+                                       if (
+                                         link.source === from_selected &&
+                                         link.target === to_selected
+                                       ) {
+                                         highlightLinks.add(link);
+                                       }
+                                       updateHighlight();
+                                     });
+                                   }
+                                 });
+                               });
+                             }
+                           });
+                           Graph.refresh();
+                           if (selectedNodes.size !== 1) {
+                             const event = document.createEvent("Event");
+                             event.initEvent("build", true, true);
+                             document.dispatchEvent(event);
+                           }
+                           selectedNodes.clear();
+                         } else if (event.altKey) {
+                           visible_node = null;
+                           if (visible_nodes.has(node)) {
+                             node.__threeObj.children[1].element.style.visibility = "hidden";
+                             visible_nodes.delete(node);
+                           } else {
+                             node.__threeObj.children[1].element.style.visibility = "visible";
+                             visible_nodes.add(node);
+                           }
+                         } else {
+                           // single-selection
+                           const untoggle = selectedNodes.has(node) && selectedNodes.size === 1;
+                           selectedNodes.clear();
+                           !untoggle && selectedNodes.add(node);
+                         }
+                 })
+                 // link settings
+                 .linkDirectionalArrowLength(3.5)
+                 .linkDirectionalArrowRelPos(0.5)
+                 .linkColor((link) => link.color)
+                 .linkWidth((link) => (highlightLinks.has(link) ? 3 : 1))
+                 .linkVisibility((link) => {
+                     console.log(link);
+                     console.log(link.source.name);
+                     console.log(link.target.name);
+                     if (
+                           parseInt(Graph.graphData().nodes[link.source - 1].name) * -1 ===
+                           parseInt(Graph.graphData().nodes[link.target - 1].name)
+                     ) {
+                     return false;
+                     }
+                     return true;
+                 })
+                 .onLinkClick((link, event) => {
+                     if (event.altKey) {
+                       remove_item(gData.links, link);
+                       Graph.graphData(gData);
+                     } else {
+                       console.log(link);
+                       if (link.color === "blue") {
+                         link.__arrowObj.material.color = new THREE.Color(1, 0, 0);
+                         link.__photonsObj.children.forEach((mesh) => {
+                           mesh.material.color = new THREE.Color(1, 0, 0);
+                         });
+                         link.color = "red";
+                       } else {
+                         link.__arrowObj.material.color = new THREE.Color(0, 0, 1);
+                         link.__photonsObj.children.forEach((mesh) => {
+                           mesh.material.color = new THREE.Color(0, 0, 1);
+                         });
+                         link.color = "blue";
+                       }
+                       console.log(Graph.graphData());
+                   }
+                 })
+                 .linkDirectionalParticles((link) => (highlightLinks.has(link) ? 4 : 0))
+                 .linkDirectionalParticleWidth(1)
+                 .linkDirectionalParticleColor((link) => link.color)
+                 .linkDirectionalArrowColor((link) => link.color)
+                 .linkWidth(0)
+                 .onEngineTick(() => {
+                     Graph.graphData().nodes.forEach((node) => {
+                       if (parseInt(node.name) < 0) {
+                         const main = Graph.graphData().nodes[node.split - 1];
+                         ["x", "y", "z"].forEach((coord) => {
+                           if (coord !== "x") {
+                             node[`f${coord}`] = main[coord];
+                           } else {
+                             node[`f${coord}`] = main[coord] + Graph.nodeRelSize() * 3;
+                           }
+                         });
+                       }
+                     });
+                 })
+                 // misc settings
+                 .d3VelocityDecay(0.75)
+                 .postProcessingComposer()
+                 .addPass(bloomPass);
+           
+             Graph.d3Force("link").strength(0);
+             Graph.d3Force("center").strength(0);
+             Graph.d3Force("charge").strength((node, i, nodes) => {
+                 if (parseInt(node.name) < 0) {
+                     return 0;
+                 }
+                     return -30;
+             });
+             
+             function keepCloning(objectpassed) {
+                 if (objectpassed === null || typeof objectpassed !== "object") {
+                       return objectpassed;
+                 }
+                 // give temporary-storage the original obj's constructor
+                 const temporary_storage = new THREE.MeshBasicMaterial();
+                 for (const key in objectpassed) {
+                   temporary_storage[key] = keepCloning(objectpassed[key]);
+                 }
+                 return temporary_storage;
+             }
+             function remove_item(arr, value) {
+               let i = 0;
+               while (i < arr.length) {
+                 if (arr[i] === value) {
+                       arr.splice(i, 1);
+                 } else {
+                       ++i;
+                 }
+               }
+               return arr;
+             }
+             // show and hide text
+             document.addEventListener("keydown", (event) => {
+             // console.log(event);
+                 if (event.key === "Escape") {
+                     selectedNodes.forEach((node) => {
+                       node.__threeObj.children[0].material.color.r /= 2;
+                       node.__threeObj.children[0].material.color.g /= 2;
+                       node.__threeObj.children[0].material.color.b /= 2;
+                       node.__threeObj.children[1].element.style.visibility = "hidden";
+                     });
+ 
+                     visible_nodes.forEach((node) => {
+                       node.__threeObj.children[1].element.style.visibility = "hidden";
+                     });
+                     selectedNodes.clear();
+                     highlightLinks.clear();
+                     visible_nodes.clear();
+                     updateHighlight();
+                 } else if (event.key === "ArrowUp") {
+                     visible_nodes.clear();
+                     gData.nodes.forEach((node) => {
+                       if (node.__threeObj.children[1] !== null) {
+                         node.__threeObj.children[1].element.style.visibility = "visible";
+                         visible_nodes.add(node);
+                       }
+                     });
+                 } else if (event.key === "ArrowDown") {
+                     gData.nodes.forEach((node) => {
+                       node.__threeObj.children[1].element.style.visibility = "hidden";
+                     });
+ 
+                     visible_nodes.clear();
+                 } else if (event.key === "-") {
+                     const current_size_px =
+                       gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
+                     const desired_size = parseInt(current_size_px.slice(0, -2)) - 10;
+                     const desired_size_px = `${desired_size}px`;
+                     gData.nodes.forEach((node) => {
+                       node.__threeObj.children[1].element.style.maxWidth = desired_size_px;
+                       node.__threeObj.children[1].element.style.maxHeight = desired_size_px;
+                     });
+                 } else if (event.key === "+") {
+                     const current_size_px =
+                       gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
+                     const desired_size = parseInt(current_size_px.slice(0, -2)) + 10;
+                     const desired_size_px = `${desired_size}px`;
+                     gData.nodes.forEach((node) => {
+                       node.__threeObj.children[1].element.style.maxWidth = desired_size_px;
+                       node.__threeObj.children[1].element.style.maxHeight = desired_size_px;
+                     });
+                 }
+             });
+             document.getElementById("add_submit").onclick = function () {
+                 let highest = 0;
+                 let i = gData.nodes.length - 1;
+                 while (highest === 0) {
+                     if (Graph.graphData().nodes[i].label !== 0) {
+                         highest = Graph.graphData().nodes[i].label + 1;
+                     } else i--;
+                 }
+                 gData.nodes.push({
+                     id: gData.nodes.length + 1,
+                     text: "",
+                     name: gData.nodes.length + 1,
+                     val: 10,
+                     neighbors: [],
+                     links: [],
+                     split: "",
+                     label: highest,
+                 });
+ 
+                 create_node(gData.nodes.at(-1));
+                 Graph.graphData(gData);
+                 };
+ 
+             document.addEventListener(
+               "hide_dummy",
+               (e) => {
+                     const check = gData.nodes.at(-1);
+                     gData.nodes.at(-1).__threeObj.visible = false;
+                     gData.nodes.at(-1).__threeObj.visible = false;
+                   },
+               false
+             );
+             function updateHighlight() {
+                 // trigger update of highlighted objects in scene
+                 Graph.linkWidth(Graph.linkWidth()).linkDirectionalParticles(
+                     Graph.linkDirectionalParticles()
+                 );
+             }
+             function is_image(url) {
+                 return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
+             }
+             function text_change(event) {
+                 const field = event.target;
+                 const temp_id = field.parentElement.graph_id;
+                 console.log(temp_id);
+                 const target_node = gData.nodes.at(temp_id - 1);
+                 console.log(target_node);
+                 if (target_node.__threeObj.children[1] !== null) {
+                   target_node.__threeObj.children[1].removeFromParent();
+                 }
+           
+                 if (is_image(field.value)) {
+                   const nodeEl = document.createElement("img");
+                   nodeEl.src = field.value;
+                   nodeEl.className = "node-label";
+                   nodeEl.id = `node_${temp_id}`;
+                   nodeEl.style.visibility = "hidden";
+                   nodeEl.style.objectFit = "contain";
+                   nodeEl.style.maxWidth = "100px";
+                   nodeEl.style.maxHeight = "100px";
+                   const css_obj = new THREE.CSS2DObject(nodeEl);
+                   target_node.__threeObj.add(css_obj);
+                   field.parentElement.children[1].children[0].checked = true;
+                 } else {
+                   const mesh = target_node.__threeObj.children[0];
+                   const nodeEl = document.createElement("div");
+                   nodeEl.textContent = field.value;
+                   nodeEl.className = "node-label";
+                   nodeEl.id = `node_${temp_id}`;
+                   nodeEl.style.visibility = "hidden";
+                   nodeEl.style.color = `rgb(${mesh.material.color.r * 2 * 255},${
+                     mesh.material.color.g * 2 * 255
+                 },${mesh.material.color.b * 2 * 255})`;
+                   const css_obj = new THREE.CSS2DObject(nodeEl);
+                   target_node.__threeObj.add(css_obj);
+                   field.parentElement.children[1].children[0].checked = false;
+                 }
+ 
+                 gData.nodes[temp_id - 1].text = field.value;
+                 Graph.graphData(gData);
+             }
+             document.getElementById("download_file").onclick = function () {
+                 const pom = document.createElement("a");
+                 let db_string = '{"nodes":[';
+                 gData.nodes.forEach((node) => {
+                     db_string += `{"id": "${node.id}","name": "${node.name}","split": "${node.split}","val": ${node.val},"text": "${node.text}","label": ${node.label}},`;
+                 });
+                 db_string = db_string.slice(0, -1);
+                 db_string += '],"links":[';
+                 gData.links.forEach((link) => {
+                     db_string += `{"source": "${link.source.id}","color": "${link.color}","target": "${link.target.id}"},`;
+                 });
+                 if (gData.links.length > 0) {
+                     db_string = db_string.slice(0, -1);
+                 }
+                 db_string += "]}";
+           
+                 pom.setAttribute(
+                   "href",
+                       `data:text/plain;charset=utf-8,${encodeURIComponent(db_string)}`
+                 );
+                 const currentdate = new Date();
+                 const datetime = `${currentdate.getDate()}-${
+                 currentdate.getMonth() + 1
+                 }-${currentdate.getFullYear()}_${currentdate.getHours()}-${currentdate.getMinutes()}-${currentdate.getSeconds()}.json`;
+           
+                 pom.setAttribute("download", datetime);
+           
+                 pom.style.display = "none";
+                 document.body.appendChild(pom);
+           
+                 pom.click();
+           
+                 document.body.removeChild(pom);
+                 };
+             function create_node(node) {
+                 if (node.label !== 0) {
+                     const new_container = document.createElement("div");
+                     new_container.className = "content_container";
+                     new_container.graph_id = node.id;
+                     const new_switch = document.createElement("label");
+                     new_switch.className = "switch";
+ 
+                     const new_checkbox = document.createElement("input");
+                     new_checkbox.type = "checkbox";
+                     const new_slider = document.createElement("span");
+                     new_slider.className = "slider";
+ 
+                     const new_num = document.createElement("h1");
+                     new_num.textContent = node.label;
+                     const new_textarea = document.createElement("textarea");
+                     new_textarea.className = "node_content";
+                     new_textarea.textContent = node.text;
+                     new_textarea.rows = "2";
+                     new_textarea.cols = "40";
+                         new_textarea.onchange = (event) => {
+                           text_change(event);
+                 };
+ 
+                 const new_focus = document.createElement("button");
+                 new_focus.type = "button";
+                 new_focus.onclick = (event) => {
+                     const temp_id = event.target.parentElement.children[0].textContent;
+                     const node = gData.nodes.at(temp_id - 1);
+                     const distance = 40;
+                     const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+ 
+                     const newPos =
+                       node.x || node.y || node.z
+                         ? {
+                             x: node.x * distRatio,
+                             y: node.y * distRatio,
+                             z: node.z * distRatio,
+                           }
+                         : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
+ 
+                     Graph.cameraPosition(
+                       newPos, // new position
+                       node, // lookAt ({ x, y, z })
+                       3000 // ms transition duration
+                     );
+                 };
+                 if (node.split == "") {
+                     const new_overlay = document.createElement("span");
+                     new_overlay.className = "slider_overlay";
+                     new_overlay.onclick = (event) => {
+                         event.target.remove();
+                     };
+                 }
+                 new_switch.appendChild(new_checkbox);
+                 new_switch.appendChild(new_slider);
+                 new_container.appendChild(new_num);
+                 new_container.appendChild(new_switch);
+                 new_container.appendChild(new_textarea);
+                 new_container.appendChild(new_focus);
+                 node_container.appendChild(new_container);
+                 }
+             }
+             document.getElementById("close_drop").onclick = function () {
+                 const drop_area = document.getElementById("drop_area");
+                 drop_area.style.display = "none";
+             };
+             document.getElementById("load_file").onclick = function () {
+                 const drop_area = document.getElementById("drop_area");
+                 drop_area.style.display = "block";
+                 drop_area.addEventListener("dragover", (event) => {
+                   event.stopPropagation();
+                   event.preventDefault();
+                   // Style the drag-and-drop as a "copy file" operation.
+                   event.dataTransfer.dropEffect = "copy";
+                 });
+                 
+                 drop_area.addEventListener("drop", (event) => {
+                     event.stopPropagation();
+                     event.preventDefault();
+                     const fileList = event.dataTransfer.files;
+                     const reader = new FileReader();
+                     let json_string = "";
+                     reader.addEventListener(
+                         "load",
+                         () => {
+                         // this will then display a text file
+                         json_string = reader.result;
+                         gData = JSON.parse(json_string);
+                         gData.links.forEach((link) => {
+                             const a = gData.nodes[link.source - 1];
+                             const b = gData.nodes[link.target - 1];
+                             if (a.neighbors === null) {
+                                 a.neighbors = [];
+                             }
+                             if (b.neighbors === null) {
+                                 b.neighbors = [];
+                             }
+                             !a.neighbors && (a.neighbors = []);
+                             !b.neighbors && (b.neighbors = []);
+                             a.neighbors.push(b);
+                             b.neighbors.push(a);
+                   
+                             if (a.links === null) {
+                                 a.links = [];
+                             }
+                             if (b.links === null) {
+                                 b.links = [];
+                             }
+                             !a.links && (a.links = []);
+                             !b.links && (b.links = []);
+                             a.links.push(link);
+                             b.links.push(link);
+                         });
+                         const old_containers = document.getElementsByClassName("content_container");
+                         for (let i = old_containers.length - 1; i >= 0; i--) {
+                             old_containers[i].remove();
+                         }
+                         gData.nodes.forEach((node) => {
+                             if (Object.keys(node).indexOf("neighbors") === -1) {
+                                 node.neighbors = [];
+                             }
+                             if (Object.keys(node).indexOf("links") === -1) {
+                                 node.links = [];
+                             }
+                             create_node(node);
+                         });
+                         Graph.graphData(gData);
+                         },
+                         false
+                     );
+                     if (fileList[0]) {
+                       reader.readAsText(fileList[0]);
+                     }
+                     drop_area.style.display = "none";
+                 });
+             };
+        </script>
     </body>
-
 </html>
