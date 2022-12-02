@@ -664,22 +664,43 @@
           }
         })
       .linkWidth(link => highlightLinks.has(link) ? 3 : 1)
+      .onEngineTick(()=>{
+        Graph.graphData().nodes.forEach((node)=>{
+        if(parseInt(node.name)<0){
+        let main = Graph.graphData().nodes[node.split-1];
+        ['x', 'y', 'z'].forEach(coord => node[`f${coord}`] = main[coord]);
+        }
+        });
+      })
+      .linkVisibility((link)=>{
+      if(parseInt(link.source.split)*-1===parseInt(link.target.split)){
+        return false;
+      }
+      else return true;
+      })
       .linkPositionUpdate((link_three,{start,end},link)=>{
-      if(parseInt(link.target.name)<0){
+      if(parseInt(link.target.name)<0 || parseInt(link.source.name)<0){
         let target=link.target;
         let source=link.source;
         if(link_three){
         link_three.visible = false;
         link.__arrowObj.visible = false;
         link.__lineObj.visible = false;
-        if (target.name<0){
-        ['x', 'y', 'z'].forEach(coord => target[`f${coord}`] = source[coord]);
+        if (parseInt(target.name)<0){
+        let target_node = Graph.graphData().nodes[target.id-1];
+        ['x', 'y', 'z'].forEach(coord => target_node[`f${coord}`] = source[coord]);
+        ['x', 'y', 'z'].forEach(coord => {console.log(target_node[coord]);console.log('what');console.log(target[`f${coord}`]);console.log('hey'); console.log(source[coord])});
         }
+        else if (source.name<0){
+        ['x', 'y', 'z'].forEach(coord => source[`f${coord}`] = target[coord]);
+        }
+
         }
        if(link.target.split!==""){
        if(parseInt(link.target.split)>0){
 
        }
+       return true;
        }
       }
       
@@ -952,7 +973,7 @@ document.addEventListener('keydown',
       //console.log(gData);
       let db_string = '{"nodes":[';
       gData.nodes.forEach(node => {
-        db_string += '{"id": "' + node.id + '","name": "' + node.name + '","split": "' + node.split +'","val": ' + node.val + ',"text": "' + node.text + '","label": "' + node.label + '"},';
+        db_string += '{"id": "' + node.id + '","name": "' + node.name + '","split": "' + node.split +'","val": ' + node.val + ',"text": "' + node.text + '","label": ' + node.label + '},';
       }
       )
       db_string = db_string.slice(0, -1);
