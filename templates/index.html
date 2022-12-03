@@ -367,7 +367,7 @@
       // graph definition
       const Graph = ForceGraph3D({
         extraRenderers: [new THREE.CSS2DRenderer()],
-rendererConfig:{logarithmicDepthBuffer:true}
+        rendererConfig: { logarithmicDepthBuffer: true },
       })(document.getElementById("3d-graph"));
       Graph.graphData(gData)
         .width((document.defaultView.innerWidth * 2) / 3)
@@ -388,58 +388,57 @@ rendererConfig:{logarithmicDepthBuffer:true}
             if (parseInt(node.name) < 0) {
               // negation
 
-                let geom =new THREE.SphereGeometry(
-                  NODE_REL_SIZE,
-                  32,
-                  16,
-                  Math.PI * 1.5,
-                  Math.PI,
-                  Math.PI,
-                  Math.PI
-                );
-//                geom.scale(-1,1,1);
+              let geom = new THREE.SphereGeometry(
+                NODE_REL_SIZE,
+                32,
+                16,
+                Math.PI * 1.5,
+                Math.PI,
+                Math.PI,
+                Math.PI
+              );
+              //                geom.scale(-1,1,1);
               mesh = new THREE.Mesh(
-              geom,
+                geom,
                 new THREE.MeshBasicMaterial({
                   color: new THREE.Color(0.5, 0, 0),
                   side: THREE.DoubleSide,
-//                  shadowSide: THREE.BackSide
-                    depthFunc:THREE.LessDepth
+                  //                  shadowSide: THREE.BackSide
+                  depthFunc: THREE.LessDepth,
                 })
               );
 
-                mesh.updateMatrix();
-//              if (
-//                Graph.graphData()
-//                  .nodes.at(parseInt(node.split) - 1)
-//                  .hasOwnProperty("__threeObj")
-//              ) {
-//                console.log(Graph.graphData());
-//                const sibling_mesh =
-//                  Graph.graphData().nodes[parseInt(node.split) - 1];
-//                ["x", "y", "z"].forEach(
-//                  (coord) => (node[`f${coord}`] = sibling_mesh[coord])
-//                );
-//              }
+              mesh.updateMatrix();
+              //              if (
+              //                Graph.graphData()
+              //                  .nodes.at(parseInt(node.split) - 1)
+              //                  .hasOwnProperty("__threeObj")
+              //              ) {
+              //                console.log(Graph.graphData());
+              //                const sibling_mesh =
+              //                  Graph.graphData().nodes[parseInt(node.split) - 1];
+              //                ["x", "y", "z"].forEach(
+              //                  (coord) => (node[`f${coord}`] = sibling_mesh[coord])
+              //                );
+              //              }
             } else {
               // non-negated
-              let geom = 
-                new THREE.SphereGeometry(
-                  NODE_REL_SIZE,
-                  64,
-                  32,
-                  Math.PI * 0.5,
-                  Math.PI,
-                  Math.PI,
-                  Math.PI
-                );
-                geom.scale(1,1,1);
+              let geom = new THREE.SphereGeometry(
+                NODE_REL_SIZE,
+                64,
+                32,
+                Math.PI * 0.5,
+                Math.PI,
+                Math.PI,
+                Math.PI
+              );
+              geom.scale(1, 1, 1);
               mesh = new THREE.Mesh(
-              geom,
+                geom,
                 new THREE.MeshBasicMaterial({
                   color: new THREE.Color(0, 0.5, 0.5),
                   side: THREE.DoubleSide,
-//                    depthFunc:THREE.GreaterDepth
+                  //                    depthFunc:THREE.GreaterDepth
                 })
               );
               mesh.updateMatrix();
@@ -454,7 +453,6 @@ rendererConfig:{logarithmicDepthBuffer:true}
             );
           }
           group.add(mesh);
-          return group;
           // TODO check what this does
           if (node.text === "dummy") {
             group.visible = false;
@@ -524,12 +522,21 @@ rendererConfig:{logarithmicDepthBuffer:true}
             // moving a selected node
             [...selectedNodes]
               .filter((selNode) => selNode !== node) // don't touch node being dragged
-              .forEach((node) =>
+              .forEach((node) => {
                 ["x", "y", "z"].forEach(
                   (coord) =>
                     (node[`f${coord}`] = node[coord] + translate[coord])
-                )
-              ); // translate other nodes by same amount
+                );
+                node.neighbors.forEach((neighbor) => {
+                  if (!Number.isInteger(parseInt(neighbor.name))) {
+                    ["x", "y", "z"].forEach(
+                      (coord) =>
+                        (neighbor[`f${coord}`] =
+                          neighbor[coord] + translate[coord])
+                    );
+                  }
+                });
+              }); // translate other nodes by same amount
             console.log(node.split);
           }
           if (node.split !== "") {
@@ -560,12 +567,74 @@ rendererConfig:{logarithmicDepthBuffer:true}
             [...selectedNodes]
               .filter((selNode) => selNode !== node) // don't touch node being dragged
               .forEach((node) =>
-                ["x", "y", "z"].forEach(
-                  (coord) => (node[`f${coord}`] = undefined)
-                )
+                {
+//                ["x", "y", "z"].forEach(
+//                  (coord) => (node[`f${coord}`] = undefined)
+//                );
+
+            node.neighbors.forEach((neighbor) => {
+              if (!Number.isInteger(parseInt(neighbor.name))) {
+                console.log(neighbor.links.length);
+                let avg_pos = { x: 0, y: 0, z: 0 };
+                let targeter;
+                neighbor.links.forEach((link) => {
+                  if (link.target === neighbor) {
+                    ["x", "y", "z"].forEach((coord) => {
+                      avg_pos[coord] += link.source[coord];
+                    });
+                  } else {
+                    targeter = link.target;
+                  }
+                });
+
+                ["x", "y", "z"].forEach((coord) => {
+                  avg_pos[coord] /= (neighbor.links.length - 1);
+                });
+
+                let fin_pos = { x: 0, y: 0, z: 0 };
+                ["x", "y", "z"].forEach((coord) => {
+                  fin_pos[coord] = (avg_pos[coord] + targeter[coord]) / 2;
+                });
+
+                ["x", "y", "z"].forEach((coord) => {
+                  neighbor[`f${coord}`] = fin_pos[coord];
+                });
+              }
+            });
+                }
               ); // unfix controlled nodes
+          } 
+            node.neighbors.forEach((neighbor) => {
+              if (!Number.isInteger(parseInt(neighbor.name))) {
+                console.log(neighbor.links.length);
+                let avg_pos = { x: 0, y: 0, z: 0 };
+                let targeter;
+                neighbor.links.forEach((link) => {
+                  if (link.target === neighbor) {
+                    ["x", "y", "z"].forEach((coord) => {
+                      avg_pos[coord] += link.source[coord];
+                    });
+                  } else {
+                    targeter = link.target;
+                  }
+                });
+
+                ["x", "y", "z"].forEach((coord) => {
+                  avg_pos[coord] /= neighbor.links.length - 1;
+                });
+
+                let fin_pos = { x: 0, y: 0, z: 0 };
+                ["x", "y", "z"].forEach((coord) => {
+                  fin_pos[coord] = (avg_pos[coord] + targeter[coord]) / 2;
+                });
+
+                ["x", "y", "z"].forEach((coord) => {
+                  neighbor[`f${coord}`] = fin_pos[coord];
+                });
+              }
+            });
           }
-        })
+        )
         .onNodeClick((node, event) => {
           if (event.shiftKey) {
             // multi-selection
@@ -627,19 +696,22 @@ rendererConfig:{logarithmicDepthBuffer:true}
             let targetNode_value;
             if (selectedNodes.size !== 1) {
               const dummy_node = {
-                id: "",
+                id: Graph.graphData().nodes.length + 1,
                 text: "dummy",
-                name: `-${node.id}`,
+                //                name: `-${node.id}`,
+                name: "0",
                 val: 0,
                 neighbors: [],
                 links: [],
+                split: "",
+                label: 0,
               };
               // dummy_node.__threeObj.visible = 'false';
               let temp_id = "_";
               selectedNodes.forEach((small_node) => {
                 temp_id += `${small_node.id}-`;
               });
-              dummy_node.id = temp_id;
+              dummy_node.name = temp_id;
               const mult_temp_link = {
                 source: dummy_node.id,
                 target: node.id,
@@ -651,15 +723,36 @@ rendererConfig:{logarithmicDepthBuffer:true}
               dummy_node.links.push(mult_temp_link);
               node.neighbors.push(dummy_node);
               node.links.push(mult_temp_link);
-              target_value = temp_id;
+              target_value = dummy_node.id;
               targetNode_value = dummy_node;
               gData.nodes.push(dummy_node);
               Graph.graphData(gData);
+
+              let avg_pos = { x: 0, y: 0, z: 0 };
+              selectedNodes.forEach((small_node) => {
+                ["x", "y", "z"].forEach((coord) => {
+                  avg_pos[coord] += small_node[coord];
+                });
+              });
+
+              ["x", "y", "z"].forEach((coord) => {
+                avg_pos[coord] /= selectedNodes.size;
+              });
+
+              let fin_pos = { x: 0, y: 0, z: 0 };
+              ["x", "y", "z"].forEach((coord) => {
+                fin_pos[coord] = (avg_pos[coord] + node[coord]) / 2;
+              });
+
+              ["x", "y", "z"].forEach((coord) => {
+                dummy_node[`f${coord}`] = fin_pos[coord];
+              });
             } else {
               target_value = node.id;
               targetNode_value = node;
             }
             selectedNodes.forEach((small_node) => {
+              console.log(small_node);
               const temp_link = {
                 source: small_node.id,
                 target: target_value,
@@ -672,7 +765,7 @@ rendererConfig:{logarithmicDepthBuffer:true}
                   flag = false;
                 }
               });
-              if (small_node.id != node.id && flag) {
+              if (small_node.id !== node.id && flag) {
                 gData.links.push(temp_link);
                 small_node.neighbors.push(targetNode_value);
                 small_node.links.push(temp_link);
@@ -680,6 +773,7 @@ rendererConfig:{logarithmicDepthBuffer:true}
                 targetNode_value.links.push(temp_link);
               }
             });
+
             Graph.graphData(gData);
             selectedNodes.forEach((selected) => {
               selected.__threeObj.children[0].material.color.r *= 1;
@@ -739,20 +833,23 @@ rendererConfig:{logarithmicDepthBuffer:true}
         .linkWidth((link) => (highlightLinks.has(link) ? 3 : 1))
         .linkVisibility((link) => {
           let source;
-          let target
+          let target;
+          console.log(Graph.graphData());
           if (link.source.hasOwnProperty("name")) {
-             source = link.source.name;
-             target = link.target.name;
-          } else {
-             source = Graph.graphData().nodes[link.source - 1].name;
-             target = Graph.graphData().nodes[link.target - 1].name;
+            source = link.source.name;
+            target = link.target.name;
+          } else if (
+            Number.isInteger(link.source) &&
+            Number.isInteger(link.target)
+          ) {
+            source = Graph.graphData().nodes[link.source - 1].name;
+            target = Graph.graphData().nodes[link.target - 1].name;
           }
           if (parseInt(source) * -1 === parseInt(target)) {
             return false;
           } else {
             return true;
           }
-
         })
         .onLinkClick((link, event) => {
           if (event.altKey) {
@@ -785,20 +882,38 @@ rendererConfig:{logarithmicDepthBuffer:true}
           Graph.graphData().nodes.forEach((node) => {
             if (parseInt(node.name) < 0) {
               const main = Graph.graphData().nodes[node.split - 1];
-                ["x", "y", "z"].forEach((coord) => {
-                  if (coord !== "x") {
-                    node[`f${coord}`] = main[coord];
-                    main[`f${coord}`] = main[coord];
-                  } else {
-                    node[`f${coord}`] = main[coord]-Graph.nodeRelSize()*3.01;
-                    main[`f${coord}`] = main[coord];
-                  }
-                });
-                node.__threeObj.children[0].position.x = main.__threeObj.children[0].position.x;
-                let mat = new THREE.Matrix4();
-                mat.set(1,0,0,0,0,1,0,0,0,0,1,0,main['x']+Graph.nodeRelSize(),main['y'],main['z'],1);
-                node.__threeObj.children[0].applyMatrix4(mat);
-                node.__threeObj.children[0].matrixWorldNeedsUpdate=true;
+              ["x", "y", "z"].forEach((coord) => {
+                if (coord !== "x") {
+                  node[`f${coord}`] = main[coord];
+                  main[`f${coord}`] = main[coord];
+                } else {
+                  node[`f${coord}`] = main[coord] - Graph.nodeRelSize() * 3.01;
+                  main[`f${coord}`] = main[coord];
+                }
+              });
+              node.__threeObj.children[0].position.x =
+                main.__threeObj.children[0].position.x;
+              let mat = new THREE.Matrix4();
+              mat.set(
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                main["x"] + Graph.nodeRelSize(),
+                main["y"],
+                main["z"],
+                1
+              );
+              node.__threeObj.children[0].applyMatrix4(mat);
+              node.__threeObj.children[0].matrixWorldNeedsUpdate = true;
             }
           });
         })
@@ -1101,10 +1216,10 @@ rendererConfig:{logarithmicDepthBuffer:true}
               gData.links.forEach((link) => {
                 const a = gData.nodes[link.source - 1];
                 const b = gData.nodes[link.target - 1];
-                if (a.neighbors === null) {
+                if (!a.hasOwnProperty("neighbors")) {
                   a.neighbors = [];
                 }
-                if (b.neighbors === null) {
+                if (!b.hasOwnProperty("neighbors")) {
                   b.neighbors = [];
                 }
                 !a.neighbors && (a.neighbors = []);
