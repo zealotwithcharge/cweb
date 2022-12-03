@@ -36,7 +36,7 @@
         padding-right: 1vw;
       }
       #interface {
-        height: 100%;
+        height: 90%;
         width: 33.3333%;
         display: flex;
         flex-direction: column;
@@ -187,7 +187,12 @@
       input:focus + .slider {
         box-shadow: 0 0 1px maroon;
       }
-
+      #search_bar{
+          height:1.5em;
+        width:100%;
+            resize:none;
+        
+      }
       input:checked + .slider:before {
         content: "IMG";
         color: maroon;
@@ -222,6 +227,7 @@
       <span id="drag_text">Drag and drop file here</span>
     </div>
     <div id="interface">
+        <div id="search_bar_div"><textarea id = "search_bar" rows = 1 column = 120></textarea> </div>
       <div id="node_lister"></div>
       <div id="submit_button">
         <div class="dummy"></div>
@@ -953,6 +959,24 @@
         }
         return arr;
       }
+      //onchange for search bar
+      document.getElementById("search_bar").addEventListener("change",(event)=>{
+        let text = document.getElementById("search_bar").value.trim();
+        Graph.graphData().nodes.forEach((node)=>{
+        if(node.label!==0){
+        let container = document.getElementById("node_container"+node.id.toString());      
+        console.log(text);
+        console.log(node.text);
+        if(node.text.includes(text)){
+            container.style.display = "flex";
+        }
+        else{
+            container.style.display = "none";
+            console.log(container);
+        }
+        }
+        });
+      });
       // show and hide text
       document.addEventListener("keydown", (event) => {
         // console.log(event);
@@ -1129,6 +1153,7 @@
           const new_container = document.createElement("div");
           new_container.className = "content_container";
           new_container.graph_id = node.id;
+          new_container.id = "node_container"+node.id.toString();
           const new_switch = document.createElement("label");
           new_switch.className = "switch";
 
