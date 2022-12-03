@@ -367,6 +367,7 @@
       // graph definition
       const Graph = ForceGraph3D({
         extraRenderers: [new THREE.CSS2DRenderer()],
+rendererConfig:{logarithmicDepthBuffer:true}
       })(document.getElementById("3d-graph"));
       Graph.graphData(gData)
         .width((document.defaultView.innerWidth * 2) / 3)
@@ -386,49 +387,62 @@
           if (node.split != "") {
             if (parseInt(node.name) < 0) {
               // negation
-              mesh = new THREE.Mesh(
-                new THREE.SphereGeometry(
+
+                let geom =new THREE.SphereGeometry(
                   NODE_REL_SIZE,
                   32,
                   16,
                   Math.PI * 1.5,
                   Math.PI,
-                  0,
+                  Math.PI,
                   Math.PI
-                ),
+                );
+//                geom.scale(-1,1,1);
+              mesh = new THREE.Mesh(
+              geom,
                 new THREE.MeshBasicMaterial({
                   color: new THREE.Color(0.5, 0, 0),
+                  side: THREE.DoubleSide,
+//                  shadowSide: THREE.BackSide
+                    depthFunc:THREE.LessDepth
                 })
               );
 
-              if (
-                Graph.graphData()
-                  .nodes.at(parseInt(node.split) - 1)
-                  .hasOwnProperty("__threeObj")
-              ) {
-                console.log(Graph.graphData());
-                const sibling_mesh =
-                  Graph.graphData().nodes[parseInt(node.split) - 1];
-                ["x", "y", "z"].forEach(
-                  (coord) => (node[`f${coord}`] = sibling_mesh[coord])
-                );
-              }
+                mesh.updateMatrix();
+//              if (
+//                Graph.graphData()
+//                  .nodes.at(parseInt(node.split) - 1)
+//                  .hasOwnProperty("__threeObj")
+//              ) {
+//                console.log(Graph.graphData());
+//                const sibling_mesh =
+//                  Graph.graphData().nodes[parseInt(node.split) - 1];
+//                ["x", "y", "z"].forEach(
+//                  (coord) => (node[`f${coord}`] = sibling_mesh[coord])
+//                );
+//              }
             } else {
               // non-negated
-              mesh = new THREE.Mesh(
+              let geom = 
                 new THREE.SphereGeometry(
                   NODE_REL_SIZE,
+                  64,
                   32,
-                  16,
                   Math.PI * 0.5,
                   Math.PI,
-                  0,
+                  Math.PI,
                   Math.PI
-                ),
+                );
+                geom.scale(1,1,1);
+              mesh = new THREE.Mesh(
+              geom,
                 new THREE.MeshBasicMaterial({
                   color: new THREE.Color(0, 0.5, 0.5),
+                  side: THREE.DoubleSide,
+//                    depthFunc:THREE.GreaterDepth
                 })
               );
+              mesh.updateMatrix();
             }
           } else {
             // if not split, create full sphere
@@ -440,6 +454,7 @@
             );
           }
           group.add(mesh);
+          return group;
           // TODO check what this does
           if (node.text === "dummy") {
             group.visible = false;
@@ -524,7 +539,7 @@
                 if (coord !== "x") {
                   main[`f${coord}`] = node[coord];
                 } else {
-                  main[`f${coord}`] = node[coord] - Graph.nodeRelSize() * 3;
+                  main[`f${coord}`] = node[coord] + Graph.nodeRelSize() * 3.01;
                 }
               });
             } else {
@@ -533,7 +548,7 @@
                 if (coord !== "x") {
                   neg[`f${coord}`] = node[coord];
                 } else {
-                  neg[`f${coord}`] = node[coord] + Graph.nodeRelSize() * 3;
+                  neg[`f${coord}`] = node[coord] - Graph.nodeRelSize() * 3.01;
                 }
               });
             }
@@ -770,13 +785,20 @@
           Graph.graphData().nodes.forEach((node) => {
             if (parseInt(node.name) < 0) {
               const main = Graph.graphData().nodes[node.split - 1];
-              ["x", "y", "z"].forEach((coord) => {
-                if (coord !== "x") {
-                  node[`f${coord}`] = main[coord];
-                } else {
-                  node[`f${coord}`] = main[coord] + Graph.nodeRelSize() * 3;
-                }
-              });
+                ["x", "y", "z"].forEach((coord) => {
+                  if (coord !== "x") {
+                    node[`f${coord}`] = main[coord];
+                    main[`f${coord}`] = main[coord];
+                  } else {
+                    node[`f${coord}`] = main[coord]-Graph.nodeRelSize()*3.01;
+                    main[`f${coord}`] = main[coord];
+                  }
+                });
+                node.__threeObj.children[0].position.x = main.__threeObj.children[0].position.x;
+                let mat = new THREE.Matrix4();
+                mat.set(1,0,0,0,0,1,0,0,0,0,1,0,main['x']+Graph.nodeRelSize(),main['y'],main['z'],1);
+                node.__threeObj.children[0].applyMatrix4(mat);
+                node.__threeObj.children[0].matrixWorldNeedsUpdate=true;
             }
           });
         })
