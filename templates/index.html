@@ -227,6 +227,7 @@
       <span id="drag_text">Drag and drop file here</span>
     </div>
     <div id="interface">
+        <div id="title_bar_div" data-editing="false"><h1 style="display:block">Title</h1><textarea id = "title_bar_textarea" rows = 1 column = 120 style="display:none"></textarea></div>
         <div id="search_bar_div"><textarea id = "search_bar" rows = 1 column = 120></textarea> </div>
       <div id="node_lister"></div>
       <div id="submit_button">
@@ -1138,8 +1139,12 @@
         const datetime = `${currentdate.getDate()}-${
           currentdate.getMonth() + 1
         }-${currentdate.getFullYear()}_${currentdate.getHours()}-${currentdate.getMinutes()}-${currentdate.getSeconds()}.json`;
-
+        if(document.getElementById("title_bar_div").firstChild.innerText==="Title"){
         pom.setAttribute("download", datetime);
+        }
+        else{
+            pom.setAttribute("download", document.getElementById("title_bar_div").firstChild.innerText);
+        }
 
         pom.style.display = "none";
         document.body.appendChild(pom);
@@ -1148,6 +1153,29 @@
 
         document.body.removeChild(pom);
       };
+
+      document.getElementById("title_bar_div").firstChild.onclick = function(){
+       let bar_div = document.getElementById("title_bar_div");
+       let first = bar_div.firstChild;
+       let last = bar_div.lastChild;
+       console.log();
+        if(bar_div.getAttribute("data-editing") === "false"){
+           first.style.display = "none"; 
+           last.style.display = "block"; 
+            last.value = first.innerText;
+            bar_div.setAttribute("data-editing","true")
+        }
+      }
+
+      document.getElementById("title_bar_textarea").onblur = function(){
+        let text_area = document.getElementById("title_bar_textarea");
+        let parent = text_area.parentElement;
+        parent.firstChild.innerText = text_area.value;
+        parent.setAttribute("data-editing","false");
+        parent.firstChild.style.display="block";
+        text_area.style.display="none";
+      }
+
       function create_node(node) {
         if (node.label !== 0) {
           const new_container = document.createElement("div");
