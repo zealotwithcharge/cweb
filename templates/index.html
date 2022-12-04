@@ -241,7 +241,7 @@
     </div>
     <div id="node_actions">
         <button type="button" class="action_buttons" id="focus_button">F</button>
-        <button type="button" class="action_buttons"id="select_button">Se</button>
+        <button type="button" class="action_buttons" id="select_button">Se</button>
         <button type="button" class="action_buttons" id="split_button">Sp</button>
     </div>
     <div id="interface">
@@ -1226,12 +1226,32 @@
 
             for(const child of actions_cont.children){
                 child.style.display="block";
+                child.setAttribute("data-graphid",node.id);
             }
             console.log(event.target.getBoundingClientRect().top);
             actions_cont.style.top = event.target.getBoundingClientRect().top+"px";
             actions_cont.style.left = (event.target.getBoundingClientRect().left-actions_cont.offsetWidth/2)+"px";
-            
-            const temp_id = event.target.parentElement.children[0].textContent;
+                        
+          };
+          if (node.split == "") {
+            const new_overlay = document.createElement("span");
+            new_overlay.className = "slider_overlay";
+            new_overlay.onclick = (event) => {
+              event.target.remove();
+            };
+          }
+          new_switch.appendChild(new_checkbox);
+          new_switch.appendChild(new_slider);
+          new_container.appendChild(new_num);
+          new_container.appendChild(new_switch);
+          new_container.appendChild(new_textarea);
+          new_container.appendChild(new_focus);
+          node_container.appendChild(new_container);
+        }
+      }
+      document.getElementById("focus_button").onclick = function(){
+
+            const temp_id = event.target.getAttribute("data-graphid");
             const node = gData.nodes.at(temp_id - 1);
             const distance = 40;
             const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
@@ -1250,22 +1270,6 @@
               node, // lookAt ({ x, y, z })
               3000 // ms transition duration
             );
-          };
-          if (node.split == "") {
-            const new_overlay = document.createElement("span");
-            new_overlay.className = "slider_overlay";
-            new_overlay.onclick = (event) => {
-              event.target.remove();
-            };
-          }
-          new_switch.appendChild(new_checkbox);
-          new_switch.appendChild(new_slider);
-          new_container.appendChild(new_num);
-          new_container.appendChild(new_switch);
-          new_container.appendChild(new_textarea);
-          new_container.appendChild(new_focus);
-          node_container.appendChild(new_container);
-        }
       }
       document.getElementById("close_drop").onclick = function () {
         const drop_area = document.getElementById("drop_area");
