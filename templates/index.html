@@ -575,6 +575,7 @@
                 }
               });
             } else {
+            console.log(node.split);
               const neg = Graph.graphData().nodes[node.split - 1];
               ["x", "y", "z"].forEach((coord) => {
                 if (coord !== "x") {
@@ -1324,6 +1325,56 @@
             }
       }
 
+      document.getElementById("split_button").onclick = function(){
+            const temp_id = event.target.getAttribute("data-graphid");
+            const node = Graph.graphData().nodes.at(temp_id - 1);
+            let temp_node = 
+        {
+          id: Graph.graphData().nodes.length+1,
+          name: "-"+node.id.toString(),
+          val: 10,
+          text: "",
+          neighbors: [],
+          links: [],
+          split: node.id.toString(),
+          index: Graph.graphData().nodes.length-1,
+          label: 0,
+        };
+        console.log(temp_node);
+          node.split = temp_node.id.toString(); 
+            Graph.graphData().nodes.push(temp_node);
+      let temp_link = 
+        { source: node.id, target: temp_node.id, targetNode: temp_node, split: "1" };
+        Graph.graphData().links.push(temp_link);
+            Graph.graphData(Graph.graphData());
+            node.__threeObj.remove(node.__threeObj.children[0]);
+              let geom = new THREE.SphereGeometry(
+                NODE_REL_SIZE,
+                64,
+                32,
+                Math.PI * 0.5,
+                Math.PI,
+                Math.PI,
+                Math.PI
+              );
+              geom.scale(1, 1, 1);
+            let  mesh = new THREE.Mesh(
+                geom,
+                new THREE.MeshBasicMaterial({
+                  color: new THREE.Color(0, 0.5, 0.5),
+                  side: THREE.DoubleSide,
+                  //                    depthFunc:THREE.GreaterDepth
+                })
+              );
+              mesh.updateMatrix();
+          const group = new THREE.Group();
+          group.add(mesh);
+          console.log(node.__threeObj);
+          const css_obj = node.__threeObj.children[0];
+
+          node.__threeObj.add(mesh);
+          node.__threeObj.add(css_obj);
+          }
       document.getElementById("close_drop").onclick = function () {
         const drop_area = document.getElementById("drop_area");
         drop_area.style.display = "none";
