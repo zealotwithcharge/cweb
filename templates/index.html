@@ -1252,7 +1252,7 @@
       document.getElementById("focus_button").onclick = function(){
 
             const temp_id = event.target.getAttribute("data-graphid");
-            const node = gData.nodes.at(temp_id - 1);
+            const node = Graph.graphData().nodes.at(temp_id - 1);
             const distance = 40;
             const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
 
@@ -1271,6 +1271,59 @@
               3000 // ms transition duration
             );
       }
+
+      document.getElementById("select_button").onclick = function(){
+            const temp_id = event.target.getAttribute("data-graphid");
+            const node = Graph.graphData().nodes.at(temp_id - 1);
+            selectedNodes.has(node)
+              ? selectedNodes.delete(node)
+              : selectedNodes.add(node);
+            if (selectedNodes.has(node)) {
+              node.__threeObj.children[0].material.color.r *= 2;
+              node.__threeObj.children[0].material.color.g *= 2;
+              node.__threeObj.children[0].material.color.b *= 2;
+              node.__threeObj.children[1].element.style.visibility = "visible";
+              visible_nodes.add(node);
+              visible_node = null;
+              if (selectedNodes.size === 1) {
+                if (node.links != null) {
+                  node.links.forEach((link) => highlightLinks.add(link));
+                  updateHighlight();
+                }
+              } else {
+                highlightLinks.clear();
+                selectedNodes.forEach((from_node) => {
+                  selectedNodes.forEach((to_node) => {
+                    if (from_node.links != null) {
+                      from_node.links.forEach((link) => {
+                        // console.log(link);
+                        if (
+                          link.source === from_node &&
+                          link.target === to_node
+                        ) {
+                          highlightLinks.add(link);
+                        }
+                        updateHighlight();
+                      });
+                    }
+                  });
+                });
+              }
+            } else {
+              node.__threeObj.children[1].element.style.visibility = "hidden";
+              visible_nodes.delete(node);
+              node.__threeObj.children[0].material.color.r /= 2;
+              node.__threeObj.children[0].material.color.g /= 2;
+              node.__threeObj.children[0].material.color.b /= 2;
+              highlightLinks.forEach((link) => {
+                if (link.source === node || link.target === node) {
+                  highlightLinks.delete(link);
+                }
+                updateHighlight();
+              });
+            }
+      }
+
       document.getElementById("close_drop").onclick = function () {
         const drop_area = document.getElementById("drop_area");
         drop_area.style.display = "none";
