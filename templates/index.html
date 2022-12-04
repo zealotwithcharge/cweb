@@ -239,7 +239,7 @@
       <span class="close" id="close_drop">&times;</span>
       <span id="drag_text">Drag and drop file here</span>
     </div>
-    <div id="node_actions">
+    <div id="node_actions" >
         <button type="button" class="action_buttons" id="focus_button">F</button>
         <button type="button" class="action_buttons" id="select_button">Se</button>
         <button type="button" class="action_buttons" id="split_button">Sp</button>
@@ -1194,7 +1194,35 @@
         parent.firstChild.style.display="block";
         text_area.style.display="none";
       }
-
+      document.onclick = (event)=> {
+        let actions_cont = document.getElementById("node_actions");
+        if(actions_cont.children[0].style.display==="block" && event.target.className !== "action_creator"){
+            for(const child of actions_cont.children){
+                child.style.display="none";
+            }
+            actions_cont.style.top = "0px";
+            actions_cont.style.left = "0px";
+            }
+    
+      }
+    document.getElementById("focus_button").onblur = function(){
+        let actions_cont = document.getElementById("node_actions");
+            for(const child of actions_cont.children){
+                child.style.display="none";
+            }
+    }
+    document.getElementById("select_button").onblur = function(){
+        let actions_cont = document.getElementById("node_actions");
+            for(const child of actions_cont.children){
+                child.style.display="none";
+            }
+    }
+    document.getElementById("split_button").onblur = function(){
+        let actions_cont = document.getElementById("node_actions");
+            for(const child of actions_cont.children){
+                child.style.display="none";
+            }
+    }
       function create_node(node) {
         if (node.label !== 0) {
           const new_container = document.createElement("div");
@@ -1222,6 +1250,8 @@
 
           const new_focus = document.createElement("button");
           new_focus.type = "button";
+          new_focus.className = "action_creator";
+            new_focus.tabindex="0"
           new_focus.onclick = (event) => {
             let actions_cont = document.getElementById("node_actions");
 
@@ -1229,7 +1259,6 @@
                 child.style.display="block";
                 child.setAttribute("data-graphid",node.id);
             }
-            console.log(event.target.getBoundingClientRect().top);
             actions_cont.style.top = event.target.getBoundingClientRect().top+"px";
             actions_cont.style.left = (event.target.getBoundingClientRect().left-actions_cont.offsetWidth/2)+"px";
                         
@@ -1324,7 +1353,6 @@
               });
             }
       }
-
       document.getElementById("split_button").onclick = function(){
             const temp_id = event.target.getAttribute("data-graphid");
             const node = Graph.graphData().nodes.at(temp_id - 1);
