@@ -187,11 +187,10 @@
       input:focus + .slider {
         box-shadow: 0 0 1px maroon;
       }
-      #search_bar{
-          height:1.5em;
-        width:100%;
-            resize:none;
-        
+      #search_bar {
+        height: 1.5em;
+        width: 100%;
+        resize: none;
       }
       input:checked + .slider:before {
         content: "IMG";
@@ -209,17 +208,17 @@
         display: flex;
         flex-direction: row;
       }
-      .action_buttons{
-          width:20%;
-        height:100%;
-            display:none;
+      .action_buttons {
+        width: 20%;
+        height: 100%;
+        display: none;
       }
-      #node_actions{
-          width:7%;
-          height:5%;
-        position:absolute;
-            display:flex;
-                flex-flow:row nowrap;
+      #node_actions {
+        width: 7%;
+        height: 5%;
+        position: absolute;
+        display: flex;
+        flex-flow: row nowrap;
       }
     </style>
     <script src="//unpkg.com/d3-dsv"></script>
@@ -231,7 +230,6 @@
     <script src="//unpkg.com/3d-force-graph"></script>
     <!--<script src="../../dist/3d-force-graph.js"></script>-->
     <title>Charlette's Web</title>
-
   </head>
 
   <body>
@@ -240,15 +238,29 @@
       <span id="drag_text">Drag and drop file here</span>
     </div>
     <div id="node_actions">
-        <button type="button" class="action_buttons" id="focus_button">F</button>
-        <button type="button" class="action_buttons" id="select_button">Se</button>
-        <button type="button" class="action_buttons" id="split_button">Sp</button>
-        <button type="button" class="action_buttons" id="prune_button">P</button>
-        <button type="button" class="action_buttons" id="unprune_button">UP</button>
+      <button type="button" class="action_buttons" id="focus_button">F</button>
+      <button type="button" class="action_buttons" id="select_button">
+        Se
+      </button>
+      <button type="button" class="action_buttons" id="split_button">Sp</button>
+      <button type="button" class="action_buttons" id="prune_button">P</button>
+      <button type="button" class="action_buttons" id="unprune_button">
+        UP
+      </button>
     </div>
     <div id="interface">
-        <div id="title_bar_div" data-editing="false"><h1 style="display:block">Title</h1><textarea id = "title_bar_textarea" rows = 1 column = 120 style="display:none"></textarea></div>
-        <div id="search_bar_div"><textarea id = "search_bar" rows = 1 column = 120></textarea> </div>
+      <div id="title_bar_div" data-editing="false">
+        <h1 style="display: block">Title</h1>
+        <textarea
+          id="title_bar_textarea"
+          rows="1"
+          column="120"
+          style="display: none"
+        ></textarea>
+      </div>
+      <div id="search_bar_div">
+        <textarea id="search_bar" rows="1" column="120"></textarea>
+      </div>
       <div id="node_lister"></div>
       <div id="submit_button">
         <div class="dummy"></div>
@@ -390,43 +402,40 @@
       let visible_node;
       const visible_nodes = new Set();
       const highlightLinks = new Set();
-    //prune tree
+      //prune tree
       const prune_keys = new Set();
-const getPrunedTree = () => {
-      const pruned_nodes = [];
-      const pruned_links = [];
-//      (function traverseTree(node = nodesById[rootId]) {
-//        visibleNodes.push(node);
-//        if (node.collapsed) return;
-//        visibleLinks.push(...node.childLinks);
-//        node.childLinks
-//          .map(link => ((typeof link.target) === 'object') ? link.target : nodesById[link.target]) // get child node
-//          .forEach(traverseTree);
-//      })(); // IIFE
-        if(prune_keys.size === 0){
-        return gData;
-        }
-        else{
-            prune_keys.forEach((node)=>{
-            if(node.split!==""){
-                prune_keys.add(gData.nodes[node.split-1]);
+      const getPrunedTree = () => {
+        const pruned_nodes = [];
+        const pruned_links = [];
+        if (prune_keys.size === 0) {
+          return gData;
+        } else {
+          prune_keys.forEach((node) => {
+            if (node.split !== "" && !prune_keys.has(gData.nodes[node.split - 1])) {
+              prune_keys.add(gData.nodes[node.split - 1]);
             }
-                node.neighbors.forEach((neighbor)=>{
-                    pruned_nodes.push(neighbor);
-                });
-                    pruned_nodes.push(node);
-            console.log('hi1');
-                node.links.forEach((link)=>{
-                    pruned_links.push(link);
-                });
-            console.log('hi2');
+            node.neighbors.forEach((neighbor) => {
+            if(!pruned_nodes.includes(neighbor)){
+              pruned_nodes.push(neighbor);
+              }
             });
-            console.log(pruned_nodes);
-            console.log(pruned_links);
-            return { nodes: pruned_nodes, links: pruned_links };
+            if(!pruned_nodes.includes(node)){
+            pruned_nodes.push(node);
+            }
+            console.log("hi1");
+            node.links.forEach((link) => {
+            if(!pruned_links.includes(link)){
+              pruned_links.push(link);
+              }
+            });
+            console.log("hi2");
+          });
+          console.log(pruned_nodes);
+          console.log(pruned_links);
+          console.log(prune_keys);
+          return { nodes: pruned_nodes, links: pruned_links };
         }
-
-    };
+      };
       // graph definition
       const Graph = ForceGraph3D({
         extraRenderers: [new THREE.CSS2DRenderer()],
@@ -613,7 +622,7 @@ const getPrunedTree = () => {
                 }
               });
             } else {
-            console.log(node.split);
+              console.log(node.split);
               const neg = gData.nodes[node.split - 1];
               ["x", "y", "z"].forEach((coord) => {
                 if (coord !== "x") {
@@ -630,75 +639,68 @@ const getPrunedTree = () => {
             // finished moving a selected node
             [...selectedNodes]
               .filter((selNode) => selNode !== node) // don't touch node being dragged
-              .forEach((node) =>
-                {
-//                ["x", "y", "z"].forEach(
-//                  (coord) => (node[`f${coord}`] = undefined)
-//                );
-
-            node.neighbors.forEach((neighbor) => {
-              if (!Number.isInteger(parseInt(neighbor.name))) {
-                console.log(neighbor.links.length);
-                let avg_pos = { x: 0, y: 0, z: 0 };
-                let targeter;
-                neighbor.links.forEach((link) => {
-                  if (link.target === neighbor) {
-                    ["x", "y", "z"].forEach((coord) => {
-                      avg_pos[coord] += link.source[coord];
+              .forEach((node) => {
+                node.neighbors.forEach((neighbor) => {
+                  if (!Number.isInteger(parseInt(neighbor.name))) {
+                    console.log(neighbor.links.length);
+                    let avg_pos = { x: 0, y: 0, z: 0 };
+                    let targeter;
+                    neighbor.links.forEach((link) => {
+                      if (link.target === neighbor) {
+                        ["x", "y", "z"].forEach((coord) => {
+                          avg_pos[coord] += link.source[coord];
+                        });
+                      } else {
+                        targeter = link.target;
+                      }
                     });
-                  } else {
-                    targeter = link.target;
+
+                    ["x", "y", "z"].forEach((coord) => {
+                      avg_pos[coord] /= neighbor.links.length - 1;
+                    });
+
+                    let fin_pos = { x: 0, y: 0, z: 0 };
+                    ["x", "y", "z"].forEach((coord) => {
+                      fin_pos[coord] = (avg_pos[coord] + targeter[coord]) / 2;
+                    });
+
+                    ["x", "y", "z"].forEach((coord) => {
+                      neighbor[`f${coord}`] = fin_pos[coord];
+                    });
                   }
                 });
-
-                ["x", "y", "z"].forEach((coord) => {
-                  avg_pos[coord] /= (neighbor.links.length - 1);
-                });
-
-                let fin_pos = { x: 0, y: 0, z: 0 };
-                ["x", "y", "z"].forEach((coord) => {
-                  fin_pos[coord] = (avg_pos[coord] + targeter[coord]) / 2;
-                });
-
-                ["x", "y", "z"].forEach((coord) => {
-                  neighbor[`f${coord}`] = fin_pos[coord];
-                });
-              }
-            });
-                }
-              ); // unfix controlled nodes
-          } 
-            node.neighbors.forEach((neighbor) => {
-              if (!Number.isInteger(parseInt(neighbor.name))) {
-                console.log(neighbor.links.length);
-                let avg_pos = { x: 0, y: 0, z: 0 };
-                let targeter;
-                neighbor.links.forEach((link) => {
-                  if (link.target === neighbor) {
-                    ["x", "y", "z"].forEach((coord) => {
-                      avg_pos[coord] += link.source[coord];
-                    });
-                  } else {
-                    targeter = link.target;
-                  }
-                });
-
-                ["x", "y", "z"].forEach((coord) => {
-                  avg_pos[coord] /= neighbor.links.length - 1;
-                });
-
-                let fin_pos = { x: 0, y: 0, z: 0 };
-                ["x", "y", "z"].forEach((coord) => {
-                  fin_pos[coord] = (avg_pos[coord] + targeter[coord]) / 2;
-                });
-
-                ["x", "y", "z"].forEach((coord) => {
-                  neighbor[`f${coord}`] = fin_pos[coord];
-                });
-              }
-            });
+              }); // unfix controlled nodes
           }
-        )
+          node.neighbors.forEach((neighbor) => {
+            if (!Number.isInteger(parseInt(neighbor.name))) {
+              console.log(neighbor.links.length);
+              let avg_pos = { x: 0, y: 0, z: 0 };
+              let targeter;
+              neighbor.links.forEach((link) => {
+                if (link.target === neighbor) {
+                  ["x", "y", "z"].forEach((coord) => {
+                    avg_pos[coord] += link.source[coord];
+                  });
+                } else {
+                  targeter = link.target;
+                }
+              });
+
+              ["x", "y", "z"].forEach((coord) => {
+                avg_pos[coord] /= neighbor.links.length - 1;
+              });
+
+              let fin_pos = { x: 0, y: 0, z: 0 };
+              ["x", "y", "z"].forEach((coord) => {
+                fin_pos[coord] = (avg_pos[coord] + targeter[coord]) / 2;
+              });
+
+              ["x", "y", "z"].forEach((coord) => {
+                neighbor[`f${coord}`] = fin_pos[coord];
+              });
+            }
+          });
+        })
         .onNodeClick((node, event) => {
           if (event.shiftKey) {
             // multi-selection
@@ -838,7 +840,6 @@ const getPrunedTree = () => {
               }
             });
 
-            Graph.graphData(getPrunedTree());
             selectedNodes.forEach((selected) => {
               selected.__threeObj.children[0].material.color.r *= 1;
               selected.__threeObj.children[0].material.color.g *= 1;
@@ -866,6 +867,7 @@ const getPrunedTree = () => {
                 });
               }
             });
+            Graph.graphData(getPrunedTree());
             Graph.refresh();
             if (selectedNodes.size !== 1) {
               const event = document.createEvent("Event");
@@ -955,31 +957,31 @@ const getPrunedTree = () => {
                   main[`f${coord}`] = main[coord];
                 }
               });
-              if(node.hasOwnProperty("__threeObj")){
-              node.__threeObj.children[0].position.x =
-                main.__threeObj.children[0].position.x;
-              let mat = new THREE.Matrix4();
-              mat.set(
-                1,
-                0,
-                0,
-                0,
-                0,
-                1,
-                0,
-                0,
-                0,
-                0,
-                1,
-                0,
-                main["x"] + Graph.nodeRelSize(),
-                main["y"],
-                main["z"],
-                1
-              );
-              node.__threeObj.children[0].applyMatrix4(mat);
-              node.__threeObj.children[0].matrixWorldNeedsUpdate = true;
-                }
+              if (node.hasOwnProperty("__threeObj")) {
+                node.__threeObj.children[0].position.x =
+                  main.__threeObj.children[0].position.x;
+                let mat = new THREE.Matrix4();
+                mat.set(
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  main["x"] + Graph.nodeRelSize(),
+                  main["y"],
+                  main["z"],
+                  1
+                );
+                node.__threeObj.children[0].applyMatrix4(mat);
+                node.__threeObj.children[0].matrixWorldNeedsUpdate = true;
+              }
             }
           });
         })
@@ -1020,23 +1022,26 @@ const getPrunedTree = () => {
         return arr;
       }
       //onchange for search bar
-      document.getElementById("search_bar").addEventListener("change",(event)=>{
-        let text = document.getElementById("search_bar").value.trim();
-        Graph.graphData().nodes.forEach((node)=>{
-        if(node.label!==0){
-        let container = document.getElementById("node_container"+node.id.toString());      
-        console.log(text);
-        console.log(node.text);
-        if(node.text.includes(text)){
-            container.style.display = "flex";
-        }
-        else{
-            container.style.display = "none";
-            console.log(container);
-        }
-        }
+      document
+        .getElementById("search_bar")
+        .addEventListener("change", (event) => {
+          let text = document.getElementById("search_bar").value.trim();
+          Graph.graphData().nodes.forEach((node) => {
+            if (node.label !== 0) {
+              let container = document.getElementById(
+                "node_container" + node.id.toString()
+              );
+              console.log(text);
+              console.log(node.text);
+              if (node.text.includes(text)) {
+                container.style.display = "flex";
+              } else {
+                container.style.display = "none";
+                console.log(container);
+              }
+            }
+          });
         });
-      });
       // show and hide text
       document.addEventListener("keydown", (event) => {
         // console.log(event);
@@ -1198,11 +1203,16 @@ const getPrunedTree = () => {
         const datetime = `${currentdate.getDate()}-${
           currentdate.getMonth() + 1
         }-${currentdate.getFullYear()}_${currentdate.getHours()}-${currentdate.getMinutes()}-${currentdate.getSeconds()}.json`;
-        if(document.getElementById("title_bar_div").firstChild.innerText==="Title"){
-        pom.setAttribute("download", datetime);
-        }
-        else{
-            pom.setAttribute("download", document.getElementById("title_bar_div").firstChild.innerText);
+        if (
+          document.getElementById("title_bar_div").firstChild.innerText ===
+          "Title"
+        ) {
+          pom.setAttribute("download", datetime);
+        } else {
+          pom.setAttribute(
+            "download",
+            document.getElementById("title_bar_div").firstChild.innerText
+          );
         }
 
         pom.style.display = "none";
@@ -1213,62 +1223,65 @@ const getPrunedTree = () => {
         document.body.removeChild(pom);
       };
 
-      document.getElementById("title_bar_div").firstChild.onclick = function(){
-       let bar_div = document.getElementById("title_bar_div");
-       let first = bar_div.firstChild;
-       let last = bar_div.lastChild;
-        if(bar_div.getAttribute("data-editing") === "false"){
-           first.style.display = "none"; 
-           last.style.display = "block"; 
+      document.getElementById("title_bar_div").firstChild.onclick =
+        function () {
+          let bar_div = document.getElementById("title_bar_div");
+          let first = bar_div.firstChild;
+          let last = bar_div.lastChild;
+          if (bar_div.getAttribute("data-editing") === "false") {
+            first.style.display = "none";
+            last.style.display = "block";
             last.value = first.innerText;
-            bar_div.setAttribute("data-editing","true")
+            bar_div.setAttribute("data-editing", "true");
             last.focus();
-        }
-      }
+          }
+        };
 
-      document.getElementById("title_bar_textarea").onblur = function(){
+      document.getElementById("title_bar_textarea").onblur = function () {
         let text_area = document.getElementById("title_bar_textarea");
         let parent = text_area.parentElement;
         parent.firstChild.innerText = text_area.value;
-        parent.setAttribute("data-editing","false");
-        parent.firstChild.style.display="block";
-        text_area.style.display="none";
-      }
-      document.onclick = (event)=> {
+        parent.setAttribute("data-editing", "false");
+        parent.firstChild.style.display = "block";
+        text_area.style.display = "none";
+      };
+      document.onclick = (event) => {
         let actions_cont = document.getElementById("node_actions");
-        if(actions_cont.children[0].style.display==="block" && event.target.className !== "action_creator"){
-            for(const child of actions_cont.children){
-                child.style.display="none";
-            }
-            actions_cont.style.top = "0px";
-            actions_cont.style.right = "0px";
-            }
-    
-      }
-    document.getElementById("focus_button").onblur = function(){
+        if (
+          actions_cont.children[0].style.display === "block" &&
+          event.target.className !== "action_creator"
+        ) {
+          for (const child of actions_cont.children) {
+            child.style.display = "none";
+          }
+          actions_cont.style.top = "0px";
+          actions_cont.style.right = "0px";
+        }
+      };
+      document.getElementById("focus_button").onblur = function () {
         let actions_cont = document.getElementById("node_actions");
-            for(const child of actions_cont.children){
-                child.style.display="none";
-            }
-    }
-    document.getElementById("select_button").onblur = function(){
+        for (const child of actions_cont.children) {
+          child.style.display = "none";
+        }
+      };
+      document.getElementById("select_button").onblur = function () {
         let actions_cont = document.getElementById("node_actions");
-            for(const child of actions_cont.children){
-                child.style.display="none";
-            }
-    }
-    document.getElementById("split_button").onblur = function(){
+        for (const child of actions_cont.children) {
+          child.style.display = "none";
+        }
+      };
+      document.getElementById("split_button").onblur = function () {
         let actions_cont = document.getElementById("node_actions");
-            for(const child of actions_cont.children){
-                child.style.display="none";
-            }
-    }
+        for (const child of actions_cont.children) {
+          child.style.display = "none";
+        }
+      };
       function create_node(node) {
         if (node.label !== 0) {
           const new_container = document.createElement("div");
           new_container.className = "content_container";
           new_container.graph_id = node.id;
-          new_container.id = "node_container"+node.id.toString();
+          new_container.id = "node_container" + node.id.toString();
           const new_switch = document.createElement("label");
           new_switch.className = "switch";
 
@@ -1291,18 +1304,22 @@ const getPrunedTree = () => {
           const new_focus = document.createElement("button");
           new_focus.type = "button";
           new_focus.className = "action_creator";
-            new_focus.tabindex="0"
+          new_focus.tabindex = "0";
           new_focus.onclick = (event) => {
             let actions_cont = document.getElementById("node_actions");
 
-            for(const child of actions_cont.children){
-                child.style.display="block";
-                child.setAttribute("data-graphid",node.id);
+            for (const child of actions_cont.children) {
+              child.style.display = "block";
+              child.setAttribute("data-graphid", node.id);
             }
-            actions_cont.style.top = event.target.getBoundingClientRect().top+"px";
-            actions_cont.style.left = (event.target.getBoundingClientRect().left+event.target.offsetWidth-actions_cont.offsetWidth)+"px";
+            actions_cont.style.top =
+              event.target.getBoundingClientRect().top + "px";
+            actions_cont.style.left =
+              event.target.getBoundingClientRect().left +
+              event.target.offsetWidth -
+              actions_cont.offsetWidth +
+              "px";
             //actions_cont.style.right = event.target.getBoundingClientRect().right+"px";
-                        
           };
           if (node.split == "") {
             const new_overlay = document.createElement("span");
@@ -1320,146 +1337,145 @@ const getPrunedTree = () => {
           node_container.appendChild(new_container);
         }
       }
-      document.getElementById("focus_button").onclick = function(){
+      document.getElementById("focus_button").onclick = function () {
+        const temp_id = event.target.getAttribute("data-graphid");
+        const node = gData.nodes.at(temp_id - 1);
+        const distance = 40;
+        const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
 
-            const temp_id = event.target.getAttribute("data-graphid");
-            const node = gData.nodes.at(temp_id - 1);
-            const distance = 40;
-            const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
-
-            const newPos =
-              node.x || node.y || node.z
-                ? {
-                    x: node.x * distRatio,
-                    y: node.y * distRatio,
-                    z: node.z * distRatio,
-                  }
-                : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
-
-            Graph.cameraPosition(
-              newPos, // new position
-              node, // lookAt ({ x, y, z })
-              3000 // ms transition duration
-            );
-      }
-
-      document.getElementById("prune_button").onclick = function(){
-            const temp_id = event.target.getAttribute("data-graphid");
-            const node = gData.nodes.at(temp_id - 1);
-            prune_keys.add(node);
-            Graph.graphData(getPrunedTree());
-            }
-
-      document.getElementById("unprune_button").onclick = function(){
-            const temp_id = event.target.getAttribute("data-graphid");
-            const node = gData.nodes.at(temp_id - 1);
-            prune_keys.delete(node);
-            if(node.split!==""){
-            prune_keys.delete(gData.nodes[node.split-1]);
-            }
-            Graph.graphData(getPrunedTree());
-            }
-      document.getElementById("select_button").onclick = function(){
-            const temp_id = event.target.getAttribute("data-graphid");
-            const node = gData.nodes.at(temp_id - 1);
-            selectedNodes.has(node)
-              ? selectedNodes.delete(node)
-              : selectedNodes.add(node);
-            if (selectedNodes.has(node)) {
-              node.__threeObj.children[0].material.color.r *= 2;
-              node.__threeObj.children[0].material.color.g *= 2;
-              node.__threeObj.children[0].material.color.b *= 2;
-              node.__threeObj.children[1].element.style.visibility = "visible";
-              visible_nodes.add(node);
-              visible_node = null;
-              if (selectedNodes.size === 1) {
-                if (node.links != null) {
-                  node.links.forEach((link) => highlightLinks.add(link));
-                  updateHighlight();
-                }
-              } else {
-                highlightLinks.clear();
-                selectedNodes.forEach((from_node) => {
-                  selectedNodes.forEach((to_node) => {
-                    if (from_node.links != null) {
-                      from_node.links.forEach((link) => {
-                        // console.log(link);
-                        if (
-                          link.source === from_node &&
-                          link.target === to_node
-                        ) {
-                          highlightLinks.add(link);
-                        }
-                        updateHighlight();
-                      });
-                    }
-                  });
-                });
+        const newPos =
+          node.x || node.y || node.z
+            ? {
+                x: node.x * distRatio,
+                y: node.y * distRatio,
+                z: node.z * distRatio,
               }
-            } else {
-              node.__threeObj.children[1].element.style.visibility = "hidden";
-              visible_nodes.delete(node);
-              node.__threeObj.children[0].material.color.r /= 2;
-              node.__threeObj.children[0].material.color.g /= 2;
-              node.__threeObj.children[0].material.color.b /= 2;
-              highlightLinks.forEach((link) => {
-                if (link.source === node || link.target === node) {
-                  highlightLinks.delete(link);
-                }
-                updateHighlight();
-              });
+            : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
+
+        Graph.cameraPosition(
+          newPos, // new position
+          node, // lookAt ({ x, y, z })
+          3000 // ms transition duration
+        );
+      };
+
+      document.getElementById("prune_button").onclick = function () {
+        const temp_id = event.target.getAttribute("data-graphid");
+        const node = gData.nodes.at(temp_id - 1);
+        prune_keys.add(node);
+        Graph.graphData(getPrunedTree());
+      };
+
+      document.getElementById("unprune_button").onclick = function () {
+        const temp_id = event.target.getAttribute("data-graphid");
+        const node = gData.nodes.at(temp_id - 1);
+        prune_keys.delete(node);
+        if (node.split !== "") {
+          prune_keys.delete(gData.nodes[node.split - 1]);
+        }
+        Graph.graphData(getPrunedTree());
+      };
+      document.getElementById("select_button").onclick = function () {
+        const temp_id = event.target.getAttribute("data-graphid");
+        const node = gData.nodes.at(temp_id - 1);
+        selectedNodes.has(node)
+          ? selectedNodes.delete(node)
+          : selectedNodes.add(node);
+        if (selectedNodes.has(node)) {
+          node.__threeObj.children[0].material.color.r *= 2;
+          node.__threeObj.children[0].material.color.g *= 2;
+          node.__threeObj.children[0].material.color.b *= 2;
+          node.__threeObj.children[1].element.style.visibility = "visible";
+          visible_nodes.add(node);
+          visible_node = null;
+          if (selectedNodes.size === 1) {
+            if (node.links != null) {
+              node.links.forEach((link) => highlightLinks.add(link));
+              updateHighlight();
             }
-      }
-      document.getElementById("split_button").onclick = function(){
-            const temp_id = event.target.getAttribute("data-graphid");
-            const node = gData.nodes.at(temp_id - 1);
-            let temp_node = 
-        {
-          id: gData.nodes.length+1,
-          name: "-"+node.id.toString(),
+          } else {
+            highlightLinks.clear();
+            selectedNodes.forEach((from_node) => {
+              selectedNodes.forEach((to_node) => {
+                if (from_node.links != null) {
+                  from_node.links.forEach((link) => {
+                    // console.log(link);
+                    if (link.source === from_node && link.target === to_node) {
+                      highlightLinks.add(link);
+                    }
+                    updateHighlight();
+                  });
+                }
+              });
+            });
+          }
+        } else {
+          node.__threeObj.children[1].element.style.visibility = "hidden";
+          visible_nodes.delete(node);
+          node.__threeObj.children[0].material.color.r /= 2;
+          node.__threeObj.children[0].material.color.g /= 2;
+          node.__threeObj.children[0].material.color.b /= 2;
+          highlightLinks.forEach((link) => {
+            if (link.source === node || link.target === node) {
+              highlightLinks.delete(link);
+            }
+            updateHighlight();
+          });
+        }
+      };
+      document.getElementById("split_button").onclick = function () {
+        const temp_id = event.target.getAttribute("data-graphid");
+        const node = gData.nodes.at(temp_id - 1);
+        let temp_node = {
+          id: gData.nodes.length + 1,
+          name: "-" + node.id.toString(),
           val: 10,
           text: "",
           neighbors: [],
           links: [],
           split: node.id.toString(),
-          index: gData.nodes.length-1,
+          index: gData.nodes.length - 1,
           label: 0,
         };
         console.log(temp_node);
-          node.split = temp_node.id.toString(); 
-            gData.nodes.push(temp_node);
-      let temp_link = 
-        { source: node.id, target: temp_node.id, targetNode: temp_node, split: "1" };
+        node.split = temp_node.id.toString();
+        gData.nodes.push(temp_node);
+        let temp_link = {
+          source: node.id,
+          target: temp_node.id,
+          targetNode: temp_node,
+          split: "1",
+        };
         gData.links.push(temp_link);
-            Graph.graphData(Graph.graphData());
-            node.__threeObj.remove(node.__threeObj.children[0]);
-              let geom = new THREE.SphereGeometry(
-                NODE_REL_SIZE,
-                64,
-                32,
-                Math.PI * 0.5,
-                Math.PI,
-                Math.PI,
-                Math.PI
-              );
-              geom.scale(1, 1, 1);
-            let  mesh = new THREE.Mesh(
-                geom,
-                new THREE.MeshBasicMaterial({
-                  color: new THREE.Color(0, 0.5, 0.5),
-                  side: THREE.DoubleSide,
-                  //                    depthFunc:THREE.GreaterDepth
-                })
-              );
-              mesh.updateMatrix();
-          const group = new THREE.Group();
-          group.add(mesh);
-          console.log(node.__threeObj);
-          const css_obj = node.__threeObj.children[0];
+        Graph.graphData(Graph.graphData());
+        node.__threeObj.remove(node.__threeObj.children[0]);
+        let geom = new THREE.SphereGeometry(
+          NODE_REL_SIZE,
+          64,
+          32,
+          Math.PI * 0.5,
+          Math.PI,
+          Math.PI,
+          Math.PI
+        );
+        geom.scale(1, 1, 1);
+        let mesh = new THREE.Mesh(
+          geom,
+          new THREE.MeshBasicMaterial({
+            color: new THREE.Color(0, 0.5, 0.5),
+            side: THREE.DoubleSide,
+            //                    depthFunc:THREE.GreaterDepth
+          })
+        );
+        mesh.updateMatrix();
+        const group = new THREE.Group();
+        group.add(mesh);
+        console.log(node.__threeObj);
+        const css_obj = node.__threeObj.children[0];
 
-          node.__threeObj.add(mesh);
-          node.__threeObj.add(css_obj);
-          }
+        node.__threeObj.add(mesh);
+        node.__threeObj.add(css_obj);
+      };
       document.getElementById("close_drop").onclick = function () {
         const drop_area = document.getElementById("drop_area");
         drop_area.style.display = "none";
