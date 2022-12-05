@@ -210,7 +210,7 @@
         flex-direction: row;
       }
       .action_buttons{
-          width:33.3333%;
+          width:20%;
         height:100%;
             display:none;
       }
@@ -239,10 +239,12 @@
       <span class="close" id="close_drop">&times;</span>
       <span id="drag_text">Drag and drop file here</span>
     </div>
-    <div id="node_actions" >
+    <div id="node_actions">
         <button type="button" class="action_buttons" id="focus_button">F</button>
         <button type="button" class="action_buttons" id="select_button">Se</button>
         <button type="button" class="action_buttons" id="split_button">Sp</button>
+        <button type="button" class="action_buttons" id="prune_button">P</button>
+        <button type="button" class="action_buttons" id="unprune_button">UP</button>
     </div>
     <div id="interface">
         <div id="title_bar_div" data-editing="false"><h1 style="display:block">Title</h1><textarea id = "title_bar_textarea" rows = 1 column = 120 style="display:none"></textarea></div>
@@ -388,13 +390,49 @@
       let visible_node;
       const visible_nodes = new Set();
       const highlightLinks = new Set();
+    //prune tree
+      const prune_keys = new Set();
+const getPrunedTree = () => {
+      const pruned_nodes = [];
+      const pruned_links = [];
+//      (function traverseTree(node = nodesById[rootId]) {
+//        visibleNodes.push(node);
+//        if (node.collapsed) return;
+//        visibleLinks.push(...node.childLinks);
+//        node.childLinks
+//          .map(link => ((typeof link.target) === 'object') ? link.target : nodesById[link.target]) // get child node
+//          .forEach(traverseTree);
+//      })(); // IIFE
+        if(prune_keys.size === 0){
+        return gData;
+        }
+        else{
+            prune_keys.forEach((node)=>{
+            if(node.split!==""){
+                prune_keys.add(gData.nodes[node.split-1]);
+            }
+                node.neighbors.forEach((neighbor)=>{
+                    pruned_nodes.push(neighbor);
+                });
+                    pruned_nodes.push(node);
+            console.log('hi1');
+                node.links.forEach((link)=>{
+                    pruned_links.push(link);
+                });
+            console.log('hi2');
+            });
+            console.log(pruned_nodes);
+            console.log(pruned_links);
+            return { nodes: pruned_nodes, links: pruned_links };
+        }
 
+    };
       // graph definition
       const Graph = ForceGraph3D({
         extraRenderers: [new THREE.CSS2DRenderer()],
         rendererConfig: { logarithmicDepthBuffer: true },
       })(document.getElementById("3d-graph"));
-      Graph.graphData(gData)
+      Graph.graphData(getPrunedTree())
         .width((document.defaultView.innerWidth * 2) / 3)
         // node settings
         .nodeLabel((node) => node.label)
@@ -566,7 +604,7 @@
           }
           if (node.split !== "") {
             if (parseInt(node.name) < 0) {
-              const main = Graph.graphData().nodes[node.split - 1];
+              const main = gData.nodes[node.split - 1];
               ["x", "y", "z"].forEach((coord) => {
                 if (coord !== "x") {
                   main[`f${coord}`] = node[coord];
@@ -576,7 +614,7 @@
               });
             } else {
             console.log(node.split);
-              const neg = Graph.graphData().nodes[node.split - 1];
+              const neg = gData.nodes[node.split - 1];
               ["x", "y", "z"].forEach((coord) => {
                 if (coord !== "x") {
                   neg[`f${coord}`] = node[coord];
@@ -722,7 +760,7 @@
             let targetNode_value;
             if (selectedNodes.size !== 1) {
               const dummy_node = {
-                id: Graph.graphData().nodes.length + 1,
+                id: gData.nodes.length + 1,
                 text: "dummy",
                 //                name: `-${node.id}`,
                 name: "0",
@@ -752,7 +790,7 @@
               target_value = dummy_node.id;
               targetNode_value = dummy_node;
               gData.nodes.push(dummy_node);
-              Graph.graphData(gData);
+              Graph.graphData(getPrunedTree());
 
               let avg_pos = { x: 0, y: 0, z: 0 };
               selectedNodes.forEach((small_node) => {
@@ -800,7 +838,7 @@
               }
             });
 
-            Graph.graphData(gData);
+            Graph.graphData(getPrunedTree());
             selectedNodes.forEach((selected) => {
               selected.__threeObj.children[0].material.color.r *= 1;
               selected.__threeObj.children[0].material.color.g *= 1;
@@ -868,8 +906,8 @@
             Number.isInteger(link.source) &&
             Number.isInteger(link.target)
           ) {
-            source = Graph.graphData().nodes[link.source - 1].name;
-            target = Graph.graphData().nodes[link.target - 1].name;
+            source = gData.nodes[link.source - 1].name;
+            target = gData.nodes[link.target - 1].name;
           }
           if (parseInt(source) * -1 === parseInt(target)) {
             return false;
@@ -880,7 +918,7 @@
         .onLinkClick((link, event) => {
           if (event.altKey) {
             remove_item(gData.links, link);
-            Graph.graphData(gData);
+            Graph.graphData(getPrunedTree());
           } else {
             console.log(link);
             if (link.color === "blue") {
@@ -905,9 +943,9 @@
         .linkDirectionalArrowColor((link) => link.color)
         .linkWidth(0)
         .onEngineTick(() => {
-          Graph.graphData().nodes.forEach((node) => {
+          gData.nodes.forEach((node) => {
             if (parseInt(node.name) < 0) {
-              const main = Graph.graphData().nodes[node.split - 1];
+              const main = gData.nodes[node.split - 1];
               ["x", "y", "z"].forEach((coord) => {
                 if (coord !== "x") {
                   node[`f${coord}`] = main[coord];
@@ -917,6 +955,7 @@
                   main[`f${coord}`] = main[coord];
                 }
               });
+              if(node.hasOwnProperty("__threeObj")){
               node.__threeObj.children[0].position.x =
                 main.__threeObj.children[0].position.x;
               let mat = new THREE.Matrix4();
@@ -940,6 +979,7 @@
               );
               node.__threeObj.children[0].applyMatrix4(mat);
               node.__threeObj.children[0].matrixWorldNeedsUpdate = true;
+                }
             }
           });
         })
@@ -1057,8 +1097,8 @@
         let highest = 0;
         let i = gData.nodes.length - 1;
         while (highest === 0) {
-          if (Graph.graphData().nodes[i].label !== 0) {
-            highest = Graph.graphData().nodes[i].label + 1;
+          if (gData.nodes[i].label !== 0) {
+            highest = gData.nodes[i].label + 1;
           } else i--;
         }
         gData.nodes.push({
@@ -1073,7 +1113,7 @@
         });
 
         create_node(gData.nodes.at(-1));
-        Graph.graphData(gData);
+        Graph.graphData(getPrunedTree());
       };
 
       document.addEventListener(
@@ -1132,7 +1172,7 @@
         }
 
         gData.nodes[temp_id - 1].text = field.value;
-        Graph.graphData(gData);
+        Graph.graphData(getPrunedTree());
       }
       document.getElementById("download_file").onclick = function () {
         const pom = document.createElement("a");
@@ -1201,7 +1241,7 @@
                 child.style.display="none";
             }
             actions_cont.style.top = "0px";
-            actions_cont.style.left = "0px";
+            actions_cont.style.right = "0px";
             }
     
       }
@@ -1260,7 +1300,8 @@
                 child.setAttribute("data-graphid",node.id);
             }
             actions_cont.style.top = event.target.getBoundingClientRect().top+"px";
-            actions_cont.style.left = (event.target.getBoundingClientRect().left-actions_cont.offsetWidth/2)+"px";
+            actions_cont.style.left = (event.target.getBoundingClientRect().left+event.target.offsetWidth-actions_cont.offsetWidth)+"px";
+            //actions_cont.style.right = event.target.getBoundingClientRect().right+"px";
                         
           };
           if (node.split == "") {
@@ -1282,7 +1323,7 @@
       document.getElementById("focus_button").onclick = function(){
 
             const temp_id = event.target.getAttribute("data-graphid");
-            const node = Graph.graphData().nodes.at(temp_id - 1);
+            const node = gData.nodes.at(temp_id - 1);
             const distance = 40;
             const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
 
@@ -1302,9 +1343,25 @@
             );
       }
 
+      document.getElementById("prune_button").onclick = function(){
+            const temp_id = event.target.getAttribute("data-graphid");
+            const node = gData.nodes.at(temp_id - 1);
+            prune_keys.add(node);
+            Graph.graphData(getPrunedTree());
+            }
+
+      document.getElementById("unprune_button").onclick = function(){
+            const temp_id = event.target.getAttribute("data-graphid");
+            const node = gData.nodes.at(temp_id - 1);
+            prune_keys.delete(node);
+            if(node.split!==""){
+            prune_keys.delete(gData.nodes[node.split-1]);
+            }
+            Graph.graphData(getPrunedTree());
+            }
       document.getElementById("select_button").onclick = function(){
             const temp_id = event.target.getAttribute("data-graphid");
-            const node = Graph.graphData().nodes.at(temp_id - 1);
+            const node = gData.nodes.at(temp_id - 1);
             selectedNodes.has(node)
               ? selectedNodes.delete(node)
               : selectedNodes.add(node);
@@ -1355,25 +1412,25 @@
       }
       document.getElementById("split_button").onclick = function(){
             const temp_id = event.target.getAttribute("data-graphid");
-            const node = Graph.graphData().nodes.at(temp_id - 1);
+            const node = gData.nodes.at(temp_id - 1);
             let temp_node = 
         {
-          id: Graph.graphData().nodes.length+1,
+          id: gData.nodes.length+1,
           name: "-"+node.id.toString(),
           val: 10,
           text: "",
           neighbors: [],
           links: [],
           split: node.id.toString(),
-          index: Graph.graphData().nodes.length-1,
+          index: gData.nodes.length-1,
           label: 0,
         };
         console.log(temp_node);
           node.split = temp_node.id.toString(); 
-            Graph.graphData().nodes.push(temp_node);
+            gData.nodes.push(temp_node);
       let temp_link = 
         { source: node.id, target: temp_node.id, targetNode: temp_node, split: "1" };
-        Graph.graphData().links.push(temp_link);
+        gData.links.push(temp_link);
             Graph.graphData(Graph.graphData());
             node.__threeObj.remove(node.__threeObj.children[0]);
               let geom = new THREE.SphereGeometry(
@@ -1468,7 +1525,7 @@
                 }
                 create_node(node);
               });
-              Graph.graphData(gData);
+              Graph.graphData(getPrunedTree());
             },
             false
           );
