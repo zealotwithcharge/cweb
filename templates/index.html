@@ -419,12 +419,23 @@
         // node settings
         .nodeLabel((node) => node.label)
         .nodeColor((node) => {
+        const colors = [[new Three.Color(0.5,0,0),new Three.Color(1,0,0)],[new Three.Color(0,0.5,0.5),new Three.Color(0,1,1)]];
+        let temp_color;
           if (node.split != "" && parseInt(node.name) < 0) {
-            return "red";
+            temp_color = 0;
           }
-
-          return "blue";
-        })
+          else{
+          temp_color = 1;
+          }
+          let selected;
+            if(selectedNode.has(node)){
+            selected = 1;
+            }
+            else{
+            selected = 0
+            }
+          return colors[temp_color][selected];
+          })
         .nodeVisibility((node) => node.text !== "dummy")
         .nodeThreeObject((node) => {
           let mesh;
@@ -1127,6 +1138,9 @@ Graph.d3Force('charge').strength(null);
         return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
       }
       function text_change(event) {
+      Graph.d3Force('charge').strength(null);
+      Graph.d3Force('link').strength(null);
+      Graph.d3Force('center').strength(null);
         const field = event.target;
         const temp_id = field.parentElement.graph_id;
         console.log(temp_id);
