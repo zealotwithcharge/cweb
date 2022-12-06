@@ -1250,19 +1250,19 @@ Graph.d3Force('charge').strength(null);
         parent.children[0].style.display = "block";
         text_area.style.display = "none";
       };
-//      document.addEventListener('click',(event) => {
-//        let actions_cont = document.getElementById("node_actions");
-//        if (
-//          actions_cont.children[0].style.display === "block" &&
-//          event.target.className !== "action_creator"
-//        ) {
-//          for (const child of actions_cont.children) {
-//            child.style.display = "none";
-//          }
-//          actions_cont.style.top = "0px";
-//          actions_cont.style.right = "0px";
-//        }
-//      });
+        document.addEventListener('click',(event) => {
+          let actions_cont = document.getElementById("node_actions");
+          if (
+            actions_cont.children[0].style.display === "block" &&
+            event.target.className !== "action_creator"
+          ) {
+            for (const child of actions_cont.children) {
+              child.style.display = "none";
+            }
+            actions_cont.style.top = "0px";
+            actions_cont.style.right = "0px";
+          }
+        });
       document.getElementById("focus_button").onblur = function () {
         let actions_cont = document.getElementById("node_actions");
         for (const child of actions_cont.children) {
