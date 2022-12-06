@@ -220,6 +220,7 @@
         display: flex;
         flex-flow: row nowrap;
       }
+
     </style>
     <script src="//unpkg.com/d3-dsv"></script>
     <script src="//unpkg.com/dat.gui"></script>
@@ -1205,14 +1206,14 @@ Graph.d3Force('charge').strength(null);
           currentdate.getMonth() + 1
         }-${currentdate.getFullYear()}_${currentdate.getHours()}-${currentdate.getMinutes()}-${currentdate.getSeconds()}.json`;
         if (
-          document.getElementById("title_bar_div").firstChild.innerText ===
+          document.getElementById("title_bar_div").children[0].innerText ===
           "Title"
         ) {
           pom.setAttribute("download", datetime);
         } else {
           pom.setAttribute(
             "download",
-            document.getElementById("title_bar_div").firstChild.innerText
+            document.getElementById("title_bar_div").children[0].innerText
           );
         }
 
@@ -1224,11 +1225,13 @@ Graph.d3Force('charge').strength(null);
         document.body.removeChild(pom);
       };
 
-      document.getElementById("title_bar_div").firstChild.onclick =
+        document.getElementById("title_bar_div").children[0].onclick = 
         function () {
           let bar_div = document.getElementById("title_bar_div");
-          let first = bar_div.firstChild;
-          let last = bar_div.lastChild;
+          let first = bar_div.children[0];
+          let last = bar_div.children[1];
+        console.log(first);
+        console.log(last);
           if (bar_div.getAttribute("data-editing") === "false") {
             first.style.display = "none";
             last.style.display = "block";
@@ -1237,28 +1240,29 @@ Graph.d3Force('charge').strength(null);
             last.focus();
           }
         };
+//      document.getElementById("title_bar_div").children[0].addEventListener('click',focus_title());
 
       document.getElementById("title_bar_textarea").onblur = function () {
         let text_area = document.getElementById("title_bar_textarea");
         let parent = text_area.parentElement;
-        parent.firstChild.innerText = text_area.value;
+        parent.children[0].innerText = text_area.value;
         parent.setAttribute("data-editing", "false");
-        parent.firstChild.style.display = "block";
+        parent.children[0].style.display = "block";
         text_area.style.display = "none";
       };
-      document.onclick = (event) => {
-        let actions_cont = document.getElementById("node_actions");
-        if (
-          actions_cont.children[0].style.display === "block" &&
-          event.target.className !== "action_creator"
-        ) {
-          for (const child of actions_cont.children) {
-            child.style.display = "none";
-          }
-          actions_cont.style.top = "0px";
-          actions_cont.style.right = "0px";
-        }
-      };
+//      document.addEventListener('click',(event) => {
+//        let actions_cont = document.getElementById("node_actions");
+//        if (
+//          actions_cont.children[0].style.display === "block" &&
+//          event.target.className !== "action_creator"
+//        ) {
+//          for (const child of actions_cont.children) {
+//            child.style.display = "none";
+//          }
+//          actions_cont.style.top = "0px";
+//          actions_cont.style.right = "0px";
+//        }
+//      });
       document.getElementById("focus_button").onblur = function () {
         let actions_cont = document.getElementById("node_actions");
         for (const child of actions_cont.children) {
