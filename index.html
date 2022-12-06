@@ -220,6 +220,7 @@
         display: flex;
         flex-flow: row nowrap;
       }
+
     </style>
     <script src="//unpkg.com/d3-dsv"></script>
     <script src="//unpkg.com/dat.gui"></script>
@@ -296,21 +297,6 @@
 
       const materials = {};
       // controls
-//      const controls = { "DAG Orientation": "td" };
-//      const gui = new dat.GUI();
-//      gui
-//        .add(controls, "DAG Orientation", [
-//          "td",
-//          "bu",
-//          "lr",
-//          "rl",
-//          "zout",
-//          "zin",
-//          "radialout",
-//          "radialin",
-//          null,
-//        ])
-//        .onChange((orientation) => graph && graph.dagMode(orientation));
 
       // graph config
       const NODE_REL_SIZE = 6;
@@ -328,20 +314,8 @@
           index: 0,
           label: 1,
         },
-//        {
-//          id: 2,
-//          name: "-1",
-//          val: 10,
-//          text: "",
-//          neighbors: [],
-//          links: [],
-//          split: "1",
-//          index: 1,
-//          label: 0,
-//        },
       ];
       const links = [
-//        { source: 1, target: 2, targetNode: nodes.at(1), split: "1" },
       ];
       let gData = {
         nodes,
@@ -446,12 +420,23 @@
         // node settings
         .nodeLabel((node) => node.label)
         .nodeColor((node) => {
+        const colors = [[new Three.Color(0.5,0,0),new Three.Color(1,0,0)],[new Three.Color(0,0.5,0.5),new Three.Color(0,1,1)]];
+        let temp_color;
           if (node.split != "" && parseInt(node.name) < 0) {
-            return "red";
+            temp_color = 0;
           }
-
-          return "blue";
-        })
+          else{
+          temp_color = 1;
+          }
+          let selected;
+            if(selectedNode.has(node)){
+            selected = 1;
+            }
+            else{
+            selected = 0
+            }
+          return colors[temp_color][selected];
+          })
         .nodeVisibility((node) => node.text !== "dummy")
         .nodeThreeObject((node) => {
           let mesh;
@@ -573,12 +558,17 @@
           return group;
         })
         .onNodeHover((node, prev_node) => {
-          if (node) {
-            if (node.text != "dummy" && node.__threeObj.size > 1) {
+            console.log(node);
+          if (node!=null) {
+          if(visible_node!= null){
+            visible_node.__threeObj.children[1].element.style.visibility = "hidden";
+          }
+            if (node.text !== "dummy") {
               node.__threeObj.children[1].element.style.visibility = "visible";
               visible_node = node;
             }
           } else if (visible_node != null) {
+          console.log(visible_node);
             if (
               !selectedNodes.has(visible_node) &&
               !visible_nodes.has(visible_node)
@@ -702,6 +692,9 @@
           });
         })
         .onNodeClick((node, event) => {
+Graph.d3Force('charge').strength(null);
+      Graph.d3Force('link').strength(null);
+      Graph.d3Force('center').strength(null);
           if (event.shiftKey) {
             // multi-selection
             selectedNodes.has(node)
@@ -1063,14 +1056,20 @@
         } else if (event.key === "ArrowUp") {
           visible_nodes.clear();
           gData.nodes.forEach((node) => {
-            if (node.__threeObj.children[1] !== null) {
+        console.log(node);
+          console.log(node.__threeObj);
+
+            if (node.hasOwnProperty("__threeObj") && node.__threeObj.children[1] !== null) {
               node.__threeObj.children[1].element.style.visibility = "visible";
               visible_nodes.add(node);
             }
           });
         } else if (event.key === "ArrowDown") {
           gData.nodes.forEach((node) => {
+        
+            if (node.hasOwnProperty("__threeObj") && node.__threeObj.children[1] !== null) {
             node.__threeObj.children[1].element.style.visibility = "hidden";
+            }
           });
 
           visible_nodes.clear();
@@ -1140,6 +1139,9 @@
         return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
       }
       function text_change(event) {
+      Graph.d3Force('charge').strength(null);
+      Graph.d3Force('link').strength(null);
+      Graph.d3Force('center').strength(null);
         const field = event.target;
         const temp_id = field.parentElement.graph_id;
         console.log(temp_id);
@@ -1204,14 +1206,14 @@
           currentdate.getMonth() + 1
         }-${currentdate.getFullYear()}_${currentdate.getHours()}-${currentdate.getMinutes()}-${currentdate.getSeconds()}.json`;
         if (
-          document.getElementById("title_bar_div").firstChild.innerText ===
+          document.getElementById("title_bar_div").children[0].innerText ===
           "Title"
         ) {
           pom.setAttribute("download", datetime);
         } else {
           pom.setAttribute(
             "download",
-            document.getElementById("title_bar_div").firstChild.innerText
+            document.getElementById("title_bar_div").children[0].innerText
           );
         }
 
@@ -1223,11 +1225,13 @@
         document.body.removeChild(pom);
       };
 
-      document.getElementById("title_bar_div").firstChild.onclick =
+        document.getElementById("title_bar_div").children[0].onclick = 
         function () {
           let bar_div = document.getElementById("title_bar_div");
-          let first = bar_div.firstChild;
-          let last = bar_div.lastChild;
+          let first = bar_div.children[0];
+          let last = bar_div.children[1];
+        console.log(first);
+        console.log(last);
           if (bar_div.getAttribute("data-editing") === "false") {
             first.style.display = "none";
             last.style.display = "block";
@@ -1236,28 +1240,29 @@
             last.focus();
           }
         };
+//      document.getElementById("title_bar_div").children[0].addEventListener('click',focus_title());
 
       document.getElementById("title_bar_textarea").onblur = function () {
         let text_area = document.getElementById("title_bar_textarea");
         let parent = text_area.parentElement;
-        parent.firstChild.innerText = text_area.value;
+        parent.children[0].innerText = text_area.value;
         parent.setAttribute("data-editing", "false");
-        parent.firstChild.style.display = "block";
+        parent.children[0].style.display = "block";
         text_area.style.display = "none";
       };
-      document.onclick = (event) => {
-        let actions_cont = document.getElementById("node_actions");
-        if (
-          actions_cont.children[0].style.display === "block" &&
-          event.target.className !== "action_creator"
-        ) {
-          for (const child of actions_cont.children) {
-            child.style.display = "none";
+        document.addEventListener('click',(event) => {
+          let actions_cont = document.getElementById("node_actions");
+          if (
+            actions_cont.children[0].style.display === "block" &&
+            event.target.className !== "action_creator"
+          ) {
+            for (const child of actions_cont.children) {
+              child.style.display = "none";
+            }
+            actions_cont.style.top = "0px";
+            actions_cont.style.right = "0px";
           }
-          actions_cont.style.top = "0px";
-          actions_cont.style.right = "0px";
-        }
-      };
+        });
       document.getElementById("focus_button").onblur = function () {
         let actions_cont = document.getElementById("node_actions");
         for (const child of actions_cont.children) {
