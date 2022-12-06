@@ -296,21 +296,6 @@
 
       const materials = {};
       // controls
-//      const controls = { "DAG Orientation": "td" };
-//      const gui = new dat.GUI();
-//      gui
-//        .add(controls, "DAG Orientation", [
-//          "td",
-//          "bu",
-//          "lr",
-//          "rl",
-//          "zout",
-//          "zin",
-//          "radialout",
-//          "radialin",
-//          null,
-//        ])
-//        .onChange((orientation) => graph && graph.dagMode(orientation));
 
       // graph config
       const NODE_REL_SIZE = 6;
@@ -328,20 +313,8 @@
           index: 0,
           label: 1,
         },
-//        {
-//          id: 2,
-//          name: "-1",
-//          val: 10,
-//          text: "",
-//          neighbors: [],
-//          links: [],
-//          split: "1",
-//          index: 1,
-//          label: 0,
-//        },
       ];
       const links = [
-//        { source: 1, target: 2, targetNode: nodes.at(1), split: "1" },
       ];
       let gData = {
         nodes,
@@ -573,12 +546,17 @@
           return group;
         })
         .onNodeHover((node, prev_node) => {
-          if (node) {
-            if (node.text != "dummy" && node.__threeObj.size > 1) {
+            console.log(node);
+          if (node!=null) {
+          if(visible_node!= null){
+            visible_node.__threeObj.children[1].element.style.visibility = "hidden";
+          }
+            if (node.text !== "dummy") {
               node.__threeObj.children[1].element.style.visibility = "visible";
               visible_node = node;
             }
           } else if (visible_node != null) {
+          console.log(visible_node);
             if (
               !selectedNodes.has(visible_node) &&
               !visible_nodes.has(visible_node)
@@ -702,6 +680,9 @@
           });
         })
         .onNodeClick((node, event) => {
+Graph.d3Force('charge').strength(null);
+      Graph.d3Force('link').strength(null);
+      Graph.d3Force('center').strength(null);
           if (event.shiftKey) {
             // multi-selection
             selectedNodes.has(node)
@@ -1063,14 +1044,20 @@
         } else if (event.key === "ArrowUp") {
           visible_nodes.clear();
           gData.nodes.forEach((node) => {
-            if (node.__threeObj.children[1] !== null) {
+        console.log(node);
+          console.log(node.__threeObj);
+
+            if (node.hasOwnProperty("__threeObj") && node.__threeObj.children[1] !== null) {
               node.__threeObj.children[1].element.style.visibility = "visible";
               visible_nodes.add(node);
             }
           });
         } else if (event.key === "ArrowDown") {
           gData.nodes.forEach((node) => {
+        
+            if (node.hasOwnProperty("__threeObj") && node.__threeObj.children[1] !== null) {
             node.__threeObj.children[1].element.style.visibility = "hidden";
+            }
           });
 
           visible_nodes.clear();
