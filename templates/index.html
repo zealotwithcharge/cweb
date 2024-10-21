@@ -1028,88 +1028,7 @@ Graph.d3Force('charge').strength(null);
         return arr;
       }
       //onchange for search bar
-      document
-        .getElementById("search_bar")
-        .addEventListener("change", (event) => {
-          let text = document.getElementById("search_bar").value.trim();
-          Graph.graphData().nodes.forEach((node) => {
-            if (node.label !== 0) {
-              let container = document.getElementById(
-                "node_container" + node.id.toString()
-              );
-              console.log(text);
-              console.log(node.text);
-              if (node.text.includes(text)) {
-                container.style.display = "flex";
-              } else {
-                container.style.display = "none";
-                console.log(container);
-              }
-            }
-          });
-        });
       // show and hide text
-      document.addEventListener("keydown", (event) => {
-        // console.log(event);
-        if (event.key === "Escape") {
-          selectedNodes.forEach((node) => {
-            node.__threeObj.children[0].material.color.r /= 2;
-            node.__threeObj.children[0].material.color.g /= 2;
-            node.__threeObj.children[0].material.color.b /= 2;
-            node.__threeObj.children[1].element.style.visibility = "hidden";
-          });
-
-          visible_nodes.forEach((node) => {
-            node.__threeObj.children[1].element.style.visibility = "hidden";
-          });
-          selectedNodes.clear();
-          highlightLinks.clear();
-          visible_nodes.clear();
-          updateHighlight();
-        } else if (event.key === "ArrowUp") {
-          visible_nodes.clear();
-          gData.nodes.forEach((node) => {
-        console.log(node);
-          console.log(node.__threeObj);
-
-            if (node.hasOwnProperty("__threeObj") && node.__threeObj.children[1] !== null) {
-              node.__threeObj.children[1].element.style.visibility = "visible";
-              visible_nodes.add(node);
-            }
-          });
-        } else if (event.key === "ArrowDown") {
-          gData.nodes.forEach((node) => {
-        
-            if (node.hasOwnProperty("__threeObj") && node.__threeObj.children[1] !== null) {
-            node.__threeObj.children[1].element.style.visibility = "hidden";
-            }
-          });
-
-          visible_nodes.clear();
-        } else if (event.key === "-") {
-          const current_size_px =
-            gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
-          const desired_size = parseInt(current_size_px.slice(0, -2)) - 10;
-          const desired_size_px = `${desired_size}px`;
-          gData.nodes.forEach((node) => {
-            node.__threeObj.children[1].element.style.maxWidth =
-              desired_size_px;
-            node.__threeObj.children[1].element.style.maxHeight =
-              desired_size_px;
-          });
-        } else if (event.key === "+") {
-          const current_size_px =
-            gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
-          const desired_size = parseInt(current_size_px.slice(0, -2)) + 10;
-          const desired_size_px = `${desired_size}px`;
-          gData.nodes.forEach((node) => {
-            node.__threeObj.children[1].element.style.maxWidth =
-              desired_size_px;
-            node.__threeObj.children[1].element.style.maxHeight =
-              desired_size_px;
-          });
-        }
-      });
         let rels = [];
         let additions = [];
         let index = 0;
@@ -1128,8 +1047,6 @@ Graph.d3Force('charge').strength(null);
 
         // Set up the canvas for graphical representation
 
-        let canvas = document.getElementById('relation-canvas');
-        let ctx = canvas.getContext('2d');
         let nodePositions = {};  // Store positions for each number
         // Draw circles and arrowed lines representing the relations
         function drawRelation(a, b, c) {
