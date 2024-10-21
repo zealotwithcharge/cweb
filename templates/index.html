@@ -4,6 +4,34 @@
 <html lang="en-us">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Relations with Arrowed Lines</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin: 20px;
+        }
+        .info {
+            margin-bottom: 20px;
+        }
+        #next-button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .addition-list {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            width: 300px;
+            background-color: #f9f9f9;
+        }
+        canvas {
+            border: 1px solid black;
+            margin-top: 20px;
+        }
+    </style>
     <style>
       .node-label {
         font-size: 12px;
@@ -227,13 +255,26 @@
     <script src="//unpkg.com/d3-octree"></script>
     <script src="//unpkg.com/d3-force-3d"></script>
     <script src="//unpkg.com/three@0.142.0/build/three.js"></script>
-    <script src="//unpkg.com/three/examples/js/renderers/CSS2DRenderer.js"></script>
+<script src="//unpkg.com/three@0.142.0/examples/js/renderers/CSS2DRenderer.js"></script>
     <script src="//unpkg.com/3d-force-graph"></script>
     <!--<script src="../../dist/3d-force-graph.js"></script>-->
     <title>Charlette's Web</title>
   </head>
 
   <body>
+
+    <div class="container">
+        <h1>Interactive Relations with Graphical Representation</h1>
+        <div id="current-rel" class="info">
+            Press "Next" to start evaluating relations.
+        </div>
+        <button id="next-button">Next</button>
+        <div id="feedback" class="info"></div>
+        <div id="addition-title"><strong>Current Additions:</strong></div>
+        <ul id="addition-list" class="addition-list"></ul>
+        <canvas id="relation-canvas" width="600" height="300"></canvas>
+    </div>
+
     <div id="drop_area">
       <span class="close" id="close_drop">&times;</span>
       <span id="drag_text">Drag and drop file here</span>
@@ -274,7 +315,8 @@
         <button type="button" id="download_file">download database</button>
       </div>
     </div>
-    <div id="3d-graph"></div>
+    <div id="3d-graph">
+    </div>
     <script>
       class _Node {
         constructor(id, text, name, val, links, neighbors, split) {
@@ -303,6 +345,7 @@
 
       // Graph Data starter
       const nodes = [
+      /*
         {
           id: 1,
           name: "1",
@@ -314,6 +357,7 @@
           index: 0,
           label: 1,
         },
+        */
       ];
       const links = [
       ];
@@ -775,7 +819,7 @@ Graph.d3Force('charge').strength(null);
                 source: dummy_node.id,
                 target: node.id,
                 targetNode: node,
-                color: "blue",
+                color: "purple",
               };
               gData.links.push(mult_temp_link);
               dummy_node.neighbors.push(node);
@@ -891,6 +935,13 @@ Graph.d3Force('charge').strength(null);
         .linkColor((link) => link.color)
         .linkWidth((link) => (highlightLinks.has(link) ? 3 : 1))
         .linkVisibility((link) => {
+          if(link.color === "green"){
+            return false;
+          }
+          else{
+          return true;
+          }
+
           let source;
           let target;
           console.log(Graph.graphData());
@@ -936,7 +987,7 @@ Graph.d3Force('charge').strength(null);
         .linkDirectionalParticleWidth(1)
         .linkDirectionalParticleColor((link) => link.color)
         .linkDirectionalArrowColor((link) => link.color)
-        .linkWidth(0)
+        .linkWidth(5)
         .onEngineTick(() => {
           gData.nodes.forEach((node) => {
             if (parseInt(node.name) < 0) {
@@ -985,12 +1036,15 @@ Graph.d3Force('charge').strength(null);
 
       Graph.d3Force("link").strength(0);
       Graph.d3Force("center").strength(0);
+      Graph.d3Force("charge").strength(0);
+      /*
       Graph.d3Force("charge").strength((node, i, nodes) => {
         if (parseInt(node.name) < 0) {
           return 0;
         }
         return -30;
       });
+            */
 
       function keepCloning(objectpassed) {
         if (objectpassed === null || typeof objectpassed !== "object") {
@@ -1097,6 +1151,361 @@ Graph.d3Force('charge').strength(null);
           });
         }
       });
+        let rels = [];
+        let additions = [];
+        let index = 0;
+
+        let lim = 50;
+        for (let i = 0; i < lim; i++) {
+            for (let j = 0; j < lim; j++) {
+                for (let k = 0; k < lim; k++) {
+                    rels.push([i, j, k]);
+                }
+            }
+        }
+
+        // Sort the array based on the maximum value in each sublist
+        rels.sort((a, b) => Math.max(...a) - Math.max(...b));
+
+        // Set up the canvas for graphical representation
+
+        let canvas = document.getElementById('relation-canvas');
+        let ctx = canvas.getContext('2d');
+        let nodePositions = {};  // Store positions for each number
+        // Draw circles and arrowed lines representing the relations
+        function drawRelation(a, b, c) {
+            let radius = 20;
+            let centerY = canvas.height / 2; // Keep all nodes on the same vertical line
+            let horizontalSpacing = 80; // Distance between each node
+
+            // Calculate positions for the nodes (circles)
+            if (!(a in nodePositions)) {
+                nodePositions[a] = { x: 100 + a * horizontalSpacing, y: centerY };
+            }
+            if (!(b in nodePositions)) {
+                nodePositions[b] = { x: 100 + b * horizontalSpacing, y: centerY };
+            }
+            if (!(c in nodePositions)) {
+                nodePositions[c] = { x: 100 + c * horizontalSpacing, y: centerY };
+            }
+
+            // Draw circles for a, b, c
+            drawCircle(nodePositions[a].x, nodePositions[a].y, radius, a);
+            drawCircle(nodePositions[b].x, nodePositions[b].y, radius, b);
+            drawCircle(nodePositions[c].x, nodePositions[c].y, radius, c);
+
+            // Draw arrowed lines from perimeter to perimeter
+            // TODO: FIX THIS
+            drawArrowedLine(nodePositions[a], nodePositions[c], radius);
+            drawArrowedLine(nodePositions[b], nodePositions[c], radius);
+        }
+
+        // Draw a circle with a number inside
+        function drawCircle(x, y, radius, number) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.closePath();
+
+            // Draw the number inside the circle
+            ctx.font = "16px Arial";
+            ctx.fillText(number, x - 5, y + 5);
+        }
+
+        // Draw a line with an arrow from perimeter to perimeter
+        function drawArrowedLine(startPos, endPos, radius) {
+            let angle = Math.atan2(endPos.y - startPos.y, endPos.x - startPos.x);
+            
+            // Calculate start and end points on the circle perimeter
+            let startX = startPos.x + radius * Math.cos(angle);
+            let startY = startPos.y + radius * Math.sin(angle);
+            let endX = endPos.x - radius * Math.cos(angle);
+            let endY = endPos.y - radius * Math.sin(angle);
+
+            // Draw the line
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+
+            // Draw arrowhead
+            drawArrowhead(endX, endY, angle);
+        }
+
+        // Draw an arrowhead at the end of a line
+        function drawArrowhead(x, y, angle) {
+            const headLength = 10; // Arrowhead length
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x - headLength * Math.cos(angle - Math.PI / 6), y - headLength * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x - headLength * Math.cos(angle + Math.PI / 6), y - headLength * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+      function selectAdd(i,j,k)
+      {
+            let addTarget;
+            let addFlag = true;
+            gData.nodes.forEach((node) => {
+                if (node.name === i+1){
+                selectedNodes.add(node);
+                }
+                if (node.name === j+1){
+                selectedNodes.add(node);
+                }
+                if (node.name === k+1){
+                addTarget = node;
+                addFlag = false;
+                }
+            });
+
+            if (addFlag){
+
+                addTarget = {
+                id: gData.nodes.length + 1,
+                text: "added",
+                //                name: `-${node.id}`,
+                name: k+1,
+                val: 0,
+                neighbors: [],
+                links: [],
+                split: "",
+                label: k,
+                x:30*(k+1),
+                y:0,
+                z:0
+                };
+
+                gData.nodes.push(addTarget);
+            }
+            gData.links.forEach((link)=>{
+
+          link.color = "green";          });
+            Graph.refresh();
+
+            gData.nodes.forEach((node) => {
+                if (node.name === i+1){
+                selectedNodes.add(node);
+                }
+                if (node.name === j+1){
+                selectedNodes.add(node);
+                }
+            });
+
+            console.log(selectedNodes.size);
+            if (k === 0){
+            return;
+            }
+
+
+            let target_value;
+            let targetNode_value;
+              const dummy_node = {
+                id: gData.nodes.length + 1,
+                text: "dummy",
+                //                name: `-${node.id}`,
+                name: "0",
+                val: 0,
+                neighbors: [],
+                links: [],
+                split: "",
+                label: 0,
+                x:(i+j+2)*15,
+                y:50,
+                z:0
+              };
+              // dummy_node.__threeObj.visible = 'false';
+              let temp_id = "_";
+              selectedNodes.forEach((small_node) => {
+                temp_id += `${small_node.id}-`;
+              });
+              dummy_node.name = temp_id;
+              let mult_temp_link;
+              if (j === k || i === k){
+              mult_temp_link = {
+                source: dummy_node.id,
+                target: addTarget.id,
+                targetNode: addTarget,
+                color: "purple",
+              };
+              }
+              else{
+              mult_temp_link = {
+                source: dummy_node.id,
+                target: addTarget.id,
+                targetNode: addTarget,
+                color: "red",
+              };
+              }
+              gData.links.push(mult_temp_link);
+              dummy_node.neighbors.push(addTarget);
+              dummy_node.links.push(mult_temp_link);
+              addTarget.neighbors.push(dummy_node);
+              addTarget.links.push(mult_temp_link);
+              target_value = dummy_node.id;
+              targetNode_value = dummy_node;
+              gData.nodes.push(dummy_node);
+              Graph.graphData(getPrunedTree());
+
+              /*
+              let avg_pos = { x: 0, y: 0, z: 0 };
+              selectedNodes.forEach((small_node) => {
+                ["x", "y", "z"].forEach((coord) => {
+                  avg_pos[coord] += small_node[coord];
+                });
+              });
+              ["x", "y", "z"].forEach((coord) => {
+                avg_pos[coord] /= 2;
+              });
+
+              let fin_pos = { x: 0, y: 0, z: 0 };
+              ["x", "y", "z"].forEach((coord) => {
+                fin_pos[coord] = (avg_pos[coord] + addTarget[coord]) / 2;
+              });
+
+              ["x", "y", "z"].forEach((coord) => {
+                dummy_node[`f${coord}`] = fin_pos[coord];
+              });
+              */
+
+            selectedNodes.forEach((small_node) => {
+              console.log(small_node);
+              const temp_link = {
+                source: small_node.id,
+                target: target_value,
+                targetNode: targetNode_value,
+                color: "blue",
+              };
+              let flag = true;
+              small_node.links.forEach((link) => {
+                if (link.source === small_node && link.target === addTarget) {
+                  flag = false;
+                }
+              });
+              if (small_node.id !== addTarget.id && flag) {
+                gData.links.push(temp_link);
+                small_node.neighbors.push(targetNode_value);
+                small_node.links.push(temp_link);
+                targetNode_value.neighbors.push(small_node);
+                targetNode_value.links.push(temp_link);
+              }
+            });
+/*
+            selectedNodes.forEach((selected) => {
+              selected.__threeObj.children[0].material.color.r *= 1;
+              selected.__threeObj.children[0].material.color.g *= 1;
+              selected.__threeObj.children[0].material.color.b *= 1;
+
+              if (selected.links != null) {
+                selected.links.forEach((link) => highlightLinks.add(link));
+                updateHighlight();
+              } else {
+                highlightLinks.clear();
+                selectedNodes.forEach((from_selected) => {
+                  selectedNodes.forEach((to_selected) => {
+                    if (from_selected.links != null) {
+                      from_selected.links.forEach((link) => {
+                        if (
+                          link.source === from_selected &&
+                          link.target === to_selected
+                        ) {
+                          highlightLinks.add(link);
+                        }
+                        updateHighlight();
+                      });
+                    }
+                  });
+                });
+              }
+            });
+            */
+            Graph.graphData(getPrunedTree());
+            Graph.refresh();
+            if (selectedNodes.size !== 1) {
+              const event = document.createEvent("Event");
+              event.initEvent("build", true, true);
+              document.dispatchEvent(event);
+            }
+            selectedNodes.clear();
+      }
+
+        // Add functionality to "Next" button
+        document.getElementById('next-button').addEventListener('click', evaluateNextRel);
+
+        function evaluateNextRel() {
+            if (index >= rels.length) {
+                document.getElementById('current-rel').innerText = "No more relations to evaluate.";
+                return;
+            }
+
+            let rel = rels[index];
+            let flag = true;
+            let feedbackMessage = `Considering relation: ${rel[0]} + ${rel[1]} = ${rel[2]}`;
+
+            // Check if relation is already in additions
+            for (let rele of additions) {
+                if (rel[0] === rele[0] && rel[1] === rele[1] && rel[2] !== rele[2]) {
+                    flag = false;
+                    feedbackMessage += ` - Not added: Breaks the rule of indiscernibility because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
+                    break;
+                }
+                if (rel[0] === rele[0] && rel[1] !== rele[1] && rel[2] === rele[2]) {
+                    flag = false;
+                    feedbackMessage += ` - Not added: Breaks the rule of indiscernibility because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
+                    break;
+                }
+                if (rel[0] !== rele[0] && rel[1] === rele[1] && rel[2] === rele[2]) {
+                    flag = false;
+                    feedbackMessage += ` - Not added: Breaks the rule of indiscernibility because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
+                    break;
+                }
+                if (rel[0] === rele[1] && rel[1] !== rele[0] && rel[2] === rele[2]) {
+                    flag = false;
+                    feedbackMessage += ` - Not added: Breaks the rule of indiscernibility because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
+                    break;
+                }
+                if (rel[0] !== rele[1] && rel[1] === rele[0] && rel[2] === rele[2]) {
+                    flag = false;
+                    feedbackMessage += ` - Not added: Breaks the rule of indiscernibility because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
+                    break;
+                }
+                if ((rele[0] === rel[2] || rele[1] === rel[2]) && (rel[0] === rele[2] || rel[1] === rele[2])) {
+                    flag = false;
+                    feedbackMessage += ` - Not added: Breaks the rule of order because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
+                    break;
+                }
+            }
+
+            if (flag) {
+                additions.push(rel);
+                feedbackMessage += ` - Added to Additions.`;
+                if (rel[0] !== rel[1]) {
+                    additions.push([rel[1], rel[0], rel[2]]);
+                }
+                selectAdd(rel[0],rel[1],rel[2]);
+
+            }
+
+            // Update the display with the current relation and feedback
+            document.getElementById('current-rel').innerText = feedbackMessage;
+            updateAdditionsList();
+
+            // Move to the next relation
+            index++;
+        }
+
+        // Update the additions list on the page
+        function updateAdditionsList() {
+            let listElement = document.getElementById('addition-list');
+            listElement.innerHTML = ''; // Clear the current list
+
+            additions.forEach(rel => {
+                let li = document.createElement('li');
+                li.innerText = `${rel[0]} + ${rel[1]} = ${rel[2]}`;
+                listElement.appendChild(li);
+            });
+        }
       document.getElementById("add_submit").onclick = function () {
         let highest = 0;
         let i = gData.nodes.length - 1;
