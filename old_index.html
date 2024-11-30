@@ -4,34 +4,6 @@
 <html lang="en-us">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Interactive Relations with Arrowed Lines</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            margin: 20px;
-        }
-        .info {
-            margin-bottom: 20px;
-        }
-        #next-button {
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .addition-list {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            width: 300px;
-            background-color: #f9f9f9;
-        }
-        canvas {
-            border: 1px solid black;
-            margin-top: 20px;
-        }
-    </style>
     <style>
       .node-label {
         font-size: 12px;
@@ -262,19 +234,48 @@
   </head>
 
   <body>
-
-    <div class="container">
-        <h1>Interactive Relations with Graphical Representation</h1>
-        <div id="current-rel" class="info" style = "height:10%;">
-            Press "Next" to start evaluating relations.
-        </div>
-        <button id="next-button">Next</button>
-        <div id="feedback" class="info"></div>
-        <div id="addition-title"><strong>Current Additions:</strong></div>
-        <ul id="addition-list" class="addition-list"></ul>
+    <div id="drop_area">
+      <span class="close" id="close_drop">&times;</span>
+      <span id="drag_text">Drag and drop file here</span>
     </div>
-
+    <div id="node_actions">
+      <button type="button" class="action_buttons" id="focus_button">F</button>
+      <button type="button" class="action_buttons" id="select_button">
+        Se
+      </button>
+      <button type="button" class="action_buttons" id="split_button">Sp</button>
+      <button type="button" class="action_buttons" id="prune_button">P</button>
+      <button type="button" class="action_buttons" id="unprune_button">
+        UP
+      </button>
+    </div>
+    <div id="interface">
+      <div id="title_bar_div" data-editing="false">
+        <h1 style="display: block">Title</h1>
+        <textarea
+          id="title_bar_textarea"
+          rows="1"
+          column="120"
+          style="display: none"
+        ></textarea>
+      </div>
+      <div id="search_bar_div">
+        <textarea id="search_bar" rows="1" column="120"></textarea>
+      </div>
+      <div id="node_lister"></div>
+      <div id="submit_button">
+        <div class="dummy"></div>
+        <button type="button" id="add_submit">Add Node</button>
+        <div class="dummy"></div>
+      </div>
+      <div id="db_buttons">
+        <div class="dummy"></div>
+        <button type="button" id="load_file">load database</button>
+        <button type="button" id="download_file">download database</button>
+      </div>
+    </div>
     <div id="3d-graph">
+<div style="position: relative;"><div><div class="scene-container" style="position: relative; width: 696px; height: 440px;"><div class="scene-nav-info">Left-click: rotate, Mouse-wheel/middle-click: zoom, Right-click: pan</div><div class="scene-tooltip" style="top: 206.717px; left: 358.645px; transform: translate(-51.5294%, 21px);">1</div><canvas data-engine="three.js r142" width="1280" height="809" style="display: block; touch-action: none; width: 696px; height: 440px;" class="clickable"></canvas><div style="overflow: hidden; position: absolute; top: 0px; pointer-events: none; width: 696px; height: 440px;"><div class="node-label" id="node_1" draggable="false" style="visibility: visible; color: rgb(0, 255, 255); position: absolute; user-select: none; transform: translate(-50%, -50%) translate(347.81px, 197.969px); z-index: 1;"></div></div></div></div><div class="graph-info-msg"></div></div>
     </div>
     <script>
       class _Node {
@@ -304,7 +305,6 @@
 
       // Graph Data starter
       const nodes = [
-      /*
         {
           id: 1,
           name: "1",
@@ -316,7 +316,6 @@
           index: 0,
           label: 1,
         },
-        */
       ];
       const links = [
       ];
@@ -778,7 +777,7 @@ Graph.d3Force('charge').strength(null);
                 source: dummy_node.id,
                 target: node.id,
                 targetNode: node,
-                color: "purple",
+                color: "blue",
               };
               gData.links.push(mult_temp_link);
               dummy_node.neighbors.push(node);
@@ -894,13 +893,6 @@ Graph.d3Force('charge').strength(null);
         .linkColor((link) => link.color)
         .linkWidth((link) => (highlightLinks.has(link) ? 3 : 1))
         .linkVisibility((link) => {
-          if(link.color === "green"){
-            return false;
-          }
-          else{
-          return true;
-          }
-
           let source;
           let target;
           console.log(Graph.graphData());
@@ -946,7 +938,7 @@ Graph.d3Force('charge').strength(null);
         .linkDirectionalParticleWidth(1)
         .linkDirectionalParticleColor((link) => link.color)
         .linkDirectionalArrowColor((link) => link.color)
-        .linkWidth(5)
+        .linkWidth(0)
         .onEngineTick(() => {
           gData.nodes.forEach((node) => {
             if (parseInt(node.name) < 0) {
@@ -995,15 +987,12 @@ Graph.d3Force('charge').strength(null);
 
       Graph.d3Force("link").strength(0);
       Graph.d3Force("center").strength(0);
-      Graph.d3Force("charge").strength(0);
-      /*
       Graph.d3Force("charge").strength((node, i, nodes) => {
         if (parseInt(node.name) < 0) {
           return 0;
         }
         return -30;
       });
-            */
 
       function keepCloning(objectpassed) {
         if (objectpassed === null || typeof objectpassed !== "object") {
@@ -1028,361 +1017,88 @@ Graph.d3Force('charge').strength(null);
         return arr;
       }
       //onchange for search bar
-      // show and hide text
-        let rels = [];
-        let additions = [];
-        let index = 0;
-
-        let lim = 50;
-        for (let i = 0; i < lim; i++) {
-            for (let j = 0; j < lim; j++) {
-                for (let k = 0; k < lim; k++) {
-                    rels.push([i, j, k]);
-                }
-            }
-        }
-
-        // Sort the array based on the maximum value in each sublist
-        rels.sort((a, b) => Math.max(...a) - Math.max(...b));
-
-        // Set up the canvas for graphical representation
-
-        let nodePositions = {};  // Store positions for each number
-        // Draw circles and arrowed lines representing the relations
-        function drawRelation(a, b, c) {
-            let radius = 20;
-            let centerY = canvas.height / 2; // Keep all nodes on the same vertical line
-            let horizontalSpacing = 80; // Distance between each node
-
-            // Calculate positions for the nodes (circles)
-            if (!(a in nodePositions)) {
-                nodePositions[a] = { x: 100 + a * horizontalSpacing, y: centerY };
-            }
-            if (!(b in nodePositions)) {
-                nodePositions[b] = { x: 100 + b * horizontalSpacing, y: centerY };
-            }
-            if (!(c in nodePositions)) {
-                nodePositions[c] = { x: 100 + c * horizontalSpacing, y: centerY };
-            }
-
-            // Draw circles for a, b, c
-            drawCircle(nodePositions[a].x, nodePositions[a].y, radius, a);
-            drawCircle(nodePositions[b].x, nodePositions[b].y, radius, b);
-            drawCircle(nodePositions[c].x, nodePositions[c].y, radius, c);
-
-            // Draw arrowed lines from perimeter to perimeter
-            // TODO: FIX THIS
-            drawArrowedLine(nodePositions[a], nodePositions[c], radius);
-            drawArrowedLine(nodePositions[b], nodePositions[c], radius);
-        }
-
-        // Draw a circle with a number inside
-        function drawCircle(x, y, radius, number) {
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, 2 * Math.PI);
-            ctx.stroke();
-            ctx.closePath();
-
-            // Draw the number inside the circle
-            ctx.font = "16px Arial";
-            ctx.fillText(number, x - 5, y + 5);
-        }
-
-        // Draw a line with an arrow from perimeter to perimeter
-        function drawArrowedLine(startPos, endPos, radius) {
-            let angle = Math.atan2(endPos.y - startPos.y, endPos.x - startPos.x);
-            
-            // Calculate start and end points on the circle perimeter
-            let startX = startPos.x + radius * Math.cos(angle);
-            let startY = startPos.y + radius * Math.sin(angle);
-            let endX = endPos.x - radius * Math.cos(angle);
-            let endY = endPos.y - radius * Math.sin(angle);
-
-            // Draw the line
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-            ctx.lineTo(endX, endY);
-            ctx.stroke();
-
-            // Draw arrowhead
-            drawArrowhead(endX, endY, angle);
-        }
-
-        // Draw an arrowhead at the end of a line
-        function drawArrowhead(x, y, angle) {
-            const headLength = 10; // Arrowhead length
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x - headLength * Math.cos(angle - Math.PI / 6), y - headLength * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(x - headLength * Math.cos(angle + Math.PI / 6), y - headLength * Math.sin(angle + Math.PI / 6));
-            ctx.closePath();
-            ctx.fill();
-        }
-
-      function selectAdd(i,j,k)
-      {
-            let addTarget;
-            let addFlag = true;
-            gData.nodes.forEach((node) => {
-                if (node.name === i+1){
-                selectedNodes.add(node);
-                }
-                if (node.name === j+1){
-                selectedNodes.add(node);
-                }
-                if (node.name === k+1){
-                addTarget = node;
-                addFlag = false;
-                }
-            });
-
-            if (addFlag){
-
-                addTarget = {
-                id: gData.nodes.length + 1,
-                text: `${k}`,
-                //                name: `-${node.id}`,
-                name: k+1,
-                val: 0,
-                neighbors: [],
-                links: [],
-                split: "",
-                label: k,
-                x:30*(k+1),
-                y:7.937005259840998,
-                z:0
-                };
-
-                gData.nodes.push(addTarget);
-            }
-            gData.links.forEach((link)=>{
-
-          link.color = "green";          });
-            Graph.refresh();
-
-            gData.nodes.forEach((node) => {
-                if (node.name === i+1){
-                selectedNodes.add(node);
-                }
-                if (node.name === j+1){
-                selectedNodes.add(node);
-                }
-            });
-
-            console.log(selectedNodes.size);
-            if (k === 0){
-            return;
-            }
-
-
-            let target_value;
-            let targetNode_value;
-              const dummy_node = {
-                id: gData.nodes.length + 1,
-                text: "dummy",
-                //                name: `-${node.id}`,
-                name: "0",
-                val: 0,
-                neighbors: [],
-                links: [],
-                split: "",
-                label: 0,
-                x:(i+j+2)*15,
-                y:50,
-                z:0
-              };
-              // dummy_node.__threeObj.visible = 'false';
-              let temp_id = "_";
-              selectedNodes.forEach((small_node) => {
-                temp_id += `${small_node.id}-`;
-              });
-              dummy_node.name = temp_id;
-              let mult_temp_link;
-              if (j === k || i === k){
-              mult_temp_link = {
-                source: dummy_node.id,
-                target: addTarget.id,
-                targetNode: addTarget,
-                color: "purple",
-              };
-              }
-              else{
-              mult_temp_link = {
-                source: dummy_node.id,
-                target: addTarget.id,
-                targetNode: addTarget,
-                color: "red",
-              };
-              }
-              gData.links.push(mult_temp_link);
-              dummy_node.neighbors.push(addTarget);
-              dummy_node.links.push(mult_temp_link);
-              addTarget.neighbors.push(dummy_node);
-              addTarget.links.push(mult_temp_link);
-              target_value = dummy_node.id;
-              targetNode_value = dummy_node;
-              gData.nodes.push(dummy_node);
-              Graph.graphData(getPrunedTree());
-
-              /*
-              let avg_pos = { x: 0, y: 0, z: 0 };
-              selectedNodes.forEach((small_node) => {
-                ["x", "y", "z"].forEach((coord) => {
-                  avg_pos[coord] += small_node[coord];
-                });
-              });
-              ["x", "y", "z"].forEach((coord) => {
-                avg_pos[coord] /= 2;
-              });
-
-              let fin_pos = { x: 0, y: 0, z: 0 };
-              ["x", "y", "z"].forEach((coord) => {
-                fin_pos[coord] = (avg_pos[coord] + addTarget[coord]) / 2;
-              });
-
-              ["x", "y", "z"].forEach((coord) => {
-                dummy_node[`f${coord}`] = fin_pos[coord];
-              });
-              */
-
-            selectedNodes.forEach((small_node) => {
-              console.log(small_node);
-              const temp_link = {
-                source: small_node.id,
-                target: target_value,
-                targetNode: targetNode_value,
-                color: "blue",
-              };
-              let flag = true;
-              small_node.links.forEach((link) => {
-                if (link.source === small_node && link.target === addTarget) {
-                  flag = false;
-                }
-              });
-              if (small_node.id !== addTarget.id && flag) {
-                gData.links.push(temp_link);
-                small_node.neighbors.push(targetNode_value);
-                small_node.links.push(temp_link);
-                targetNode_value.neighbors.push(small_node);
-                targetNode_value.links.push(temp_link);
-              }
-            });
-/*
-            selectedNodes.forEach((selected) => {
-              selected.__threeObj.children[0].material.color.r *= 1;
-              selected.__threeObj.children[0].material.color.g *= 1;
-              selected.__threeObj.children[0].material.color.b *= 1;
-
-              if (selected.links != null) {
-                selected.links.forEach((link) => highlightLinks.add(link));
-                updateHighlight();
+      document
+        .getElementById("search_bar")
+        .addEventListener("change", (event) => {
+          let text = document.getElementById("search_bar").value.trim();
+          Graph.graphData().nodes.forEach((node) => {
+            if (node.label !== 0) {
+              let container = document.getElementById(
+                "node_container" + node.id.toString()
+              );
+              console.log(text);
+              console.log(node.text);
+              if (node.text.includes(text)) {
+                container.style.display = "flex";
               } else {
-                highlightLinks.clear();
-                selectedNodes.forEach((from_selected) => {
-                  selectedNodes.forEach((to_selected) => {
-                    if (from_selected.links != null) {
-                      from_selected.links.forEach((link) => {
-                        if (
-                          link.source === from_selected &&
-                          link.target === to_selected
-                        ) {
-                          highlightLinks.add(link);
-                        }
-                        updateHighlight();
-                      });
-                    }
-                  });
-                });
+                container.style.display = "none";
+                console.log(container);
               }
-            });
-            */
-            Graph.graphData(getPrunedTree());
-            Graph.refresh();
-            if (selectedNodes.size !== 1) {
-              const event = document.createEvent("Event");
-              event.initEvent("build", true, true);
-              document.dispatchEvent(event);
             }
-            selectedNodes.clear();
-      }
+          });
+        });
+      // show and hide text
+      document.addEventListener("keydown", (event) => {
+        // console.log(event);
+        if (event.key === "Escape") {
+          selectedNodes.forEach((node) => {
+            node.__threeObj.children[0].material.color.r /= 2;
+            node.__threeObj.children[0].material.color.g /= 2;
+            node.__threeObj.children[0].material.color.b /= 2;
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+          });
 
-        // Add functionality to "Next" button
-        document.getElementById('next-button').addEventListener('click', evaluateNextRel);
+          visible_nodes.forEach((node) => {
+            node.__threeObj.children[1].element.style.visibility = "hidden";
+          });
+          selectedNodes.clear();
+          highlightLinks.clear();
+          visible_nodes.clear();
+          updateHighlight();
+        } else if (event.key === "ArrowUp") {
+          visible_nodes.clear();
+          gData.nodes.forEach((node) => {
+        console.log(node);
+          console.log(node.__threeObj);
 
-        function evaluateNextRel() {
-            if (index >= rels.length) {
-                document.getElementById('current-rel').innerText = "No more relations to evaluate.";
-                return;
+            if (node.hasOwnProperty("__threeObj") && node.__threeObj.children[1] !== null) {
+              node.__threeObj.children[1].element.style.visibility = "visible";
+              visible_nodes.add(node);
             }
-
-            let rel = rels[index];
-            let flag = true;
-            let feedbackMessage = `Considering relation: ${rel[0]} + ${rel[1]} = ${rel[2]}`;
-
-            // Check if relation is already in additions
-            for (let rele of additions) {
-                if (rel[0] === rele[0] && rel[1] === rele[1] && rel[2] !== rele[2]) {
-                    flag = false;
-                    feedbackMessage += ` - Not added: Breaks the rule of indiscernibility because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
-                    break;
-                }
-                if (rel[0] === rele[0] && rel[1] !== rele[1] && rel[2] === rele[2]) {
-                    flag = false;
-                    feedbackMessage += ` - Not added: Breaks the rule of indiscernibility because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
-                    break;
-                }
-                if (rel[0] !== rele[0] && rel[1] === rele[1] && rel[2] === rele[2]) {
-                    flag = false;
-                    feedbackMessage += ` - Not added: Breaks the rule of indiscernibility because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
-                    break;
-                }
-                if (rel[0] === rele[1] && rel[1] !== rele[0] && rel[2] === rele[2]) {
-                    flag = false;
-                    feedbackMessage += ` - Not added: Breaks the rule of indiscernibility because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
-                    break;
-                }
-                if (rel[0] !== rele[1] && rel[1] === rele[0] && rel[2] === rele[2]) {
-                    flag = false;
-                    feedbackMessage += ` - Not added: Breaks the rule of indiscernibility because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
-                    break;
-                }
-                if ((rele[0] === rel[2] || rele[1] === rel[2]) && (rel[0] === rele[2] || rel[1] === rele[2])) {
-                    flag = false;
-                    feedbackMessage += ` - Not added: Breaks the rule of order because ${rele[0]} + ${rele[1]} = ${rele[2]}`;
-                    break;
-                }
+          });
+        } else if (event.key === "ArrowDown") {
+          gData.nodes.forEach((node) => {
+        
+            if (node.hasOwnProperty("__threeObj") && node.__threeObj.children[1] !== null) {
+            node.__threeObj.children[1].element.style.visibility = "hidden";
             }
+          });
 
-            if (flag) {
-                additions.push(rel);
-                feedbackMessage += ` - Added to Additions.`;
-                if (rel[0] !== rel[1]) {
-                    additions.push([rel[1], rel[0], rel[2]]);
-                }
-                selectAdd(rel[0],rel[1],rel[2]);
-
-            }
-
-            // Update the display with the current relation and feedback
-            document.getElementById('current-rel').innerText = feedbackMessage;
-            updateAdditionsList();
-
-            // Move to the next relation
-            index++;
+          visible_nodes.clear();
+        } else if (event.key === "-") {
+          const current_size_px =
+            gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
+          const desired_size = parseInt(current_size_px.slice(0, -2)) - 10;
+          const desired_size_px = `${desired_size}px`;
+          gData.nodes.forEach((node) => {
+            node.__threeObj.children[1].element.style.maxWidth =
+              desired_size_px;
+            node.__threeObj.children[1].element.style.maxHeight =
+              desired_size_px;
+          });
+        } else if (event.key === "+") {
+          const current_size_px =
+            gData.nodes[0].__threeObj.children[1].element.style.maxWidth;
+          const desired_size = parseInt(current_size_px.slice(0, -2)) + 10;
+          const desired_size_px = `${desired_size}px`;
+          gData.nodes.forEach((node) => {
+            node.__threeObj.children[1].element.style.maxWidth =
+              desired_size_px;
+            node.__threeObj.children[1].element.style.maxHeight =
+              desired_size_px;
+          });
         }
-
-        // Update the additions list on the page
-        function updateAdditionsList() {
-            let listElement = document.getElementById('addition-list');
-            listElement.innerHTML = ''; // Clear the current list
-
-            additions.forEach(rel => {
-                let li = document.createElement('li');
-                li.innerText = `${rel[0]} + ${rel[1]} = ${rel[2]}`;
-                listElement.appendChild(li);
-            });
-        }
-        /*
+      });
       document.getElementById("add_submit").onclick = function () {
         let highest = 0;
         let i = gData.nodes.length - 1;
@@ -1406,7 +1122,6 @@ Graph.d3Force('charge').strength(null);
         Graph.graphData(getPrunedTree());
       };
 
-    */
       document.addEventListener(
         "hide_dummy",
         (e) => {
@@ -1468,7 +1183,6 @@ Graph.d3Force('charge').strength(null);
         gData.nodes[temp_id - 1].text = field.value;
         Graph.graphData(getPrunedTree());
       }
-      /*
       document.getElementById("download_file").onclick = function () {
         const pom = document.createElement("a");
         let db_string = '{"nodes":[';
@@ -1569,7 +1283,6 @@ Graph.d3Force('charge').strength(null);
           child.style.display = "none";
         }
       };
-      */
       function create_node(node) {
         if (node.label !== 0) {
           const new_container = document.createElement("div");
@@ -1631,7 +1344,6 @@ Graph.d3Force('charge').strength(null);
           node_container.appendChild(new_container);
         }
       }
-      /*
       document.getElementById("focus_button").onclick = function () {
         const temp_id = event.target.getAttribute("data-graphid");
         const node = gData.nodes.at(temp_id - 1);
@@ -1846,7 +1558,6 @@ Graph.d3Force('charge').strength(null);
           drop_area.style.display = "none";
         });
       };
-      */
     </script>
   </body>
 </html>
