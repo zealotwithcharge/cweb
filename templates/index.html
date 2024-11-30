@@ -255,7 +255,7 @@
     <script src="//unpkg.com/d3-octree"></script>
     <script src="//unpkg.com/d3-force-3d"></script>
     <script src="//unpkg.com/three@0.142.0/build/three.js"></script>
-<script src="//unpkg.com/three@0.142.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    <script src="//unpkg.com/three@0.142.0/examples/js/renderers/CSS2DRenderer.js"></script>
     <script src="//unpkg.com/3d-force-graph"></script>
     <!--<script src="../../dist/3d-force-graph.js"></script>-->
     <title>Charlette's Web</title>
@@ -265,7 +265,7 @@
 
     <div class="container">
         <h1>Interactive Relations with Graphical Representation</h1>
-        <div id="current-rel" class="info">
+        <div id="current-rel" class="info" style = "height:10%;">
             Press "Next" to start evaluating relations.
         </div>
         <button id="next-button">Next</button>
@@ -1140,7 +1140,7 @@ Graph.d3Force('charge').strength(null);
 
                 addTarget = {
                 id: gData.nodes.length + 1,
-                text: "added",
+                text: `${k}`,
                 //                name: `-${node.id}`,
                 name: k+1,
                 val: 0,
@@ -1149,7 +1149,7 @@ Graph.d3Force('charge').strength(null);
                 split: "",
                 label: k,
                 x:30*(k+1),
-                y:0,
+                y:7.937005259840998,
                 z:0
                 };
 
@@ -1382,6 +1382,7 @@ Graph.d3Force('charge').strength(null);
                 listElement.appendChild(li);
             });
         }
+        /*
       document.getElementById("add_submit").onclick = function () {
         let highest = 0;
         let i = gData.nodes.length - 1;
@@ -1405,6 +1406,7 @@ Graph.d3Force('charge').strength(null);
         Graph.graphData(getPrunedTree());
       };
 
+    */
       document.addEventListener(
         "hide_dummy",
         (e) => {
@@ -1466,6 +1468,7 @@ Graph.d3Force('charge').strength(null);
         gData.nodes[temp_id - 1].text = field.value;
         Graph.graphData(getPrunedTree());
       }
+      /*
       document.getElementById("download_file").onclick = function () {
         const pom = document.createElement("a");
         let db_string = '{"nodes":[';
@@ -1566,6 +1569,7 @@ Graph.d3Force('charge').strength(null);
           child.style.display = "none";
         }
       };
+      */
       function create_node(node) {
         if (node.label !== 0) {
           const new_container = document.createElement("div");
@@ -1627,6 +1631,7 @@ Graph.d3Force('charge').strength(null);
           node_container.appendChild(new_container);
         }
       }
+      /*
       document.getElementById("focus_button").onclick = function () {
         const temp_id = event.target.getAttribute("data-graphid");
         const node = gData.nodes.at(temp_id - 1);
@@ -1841,6 +1846,7 @@ Graph.d3Force('charge').strength(null);
           drop_area.style.display = "none";
         });
       };
+      */
     </script>
   </body>
 </html>
